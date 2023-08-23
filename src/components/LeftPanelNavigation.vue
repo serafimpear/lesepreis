@@ -1,0 +1,57 @@
+<template>
+    <nav class="left-panel-navigation">
+        <div class="left-panel-navigation-container">
+            <div class="nav-element-logo">
+                <img src="@/assets/svgs/oberschulen-fallmerayer-pure-logo.svg" style="width: 2.3em;" class="oberschulen-fallmerayer-logo">
+                <span class="nav-element-description">
+                    <span style="display: block; font-size: 1em; line-height: 1em;">Oberschulen_Fallmerayer</span>
+                    <span
+                        style="display: block; font-size: 1em; font-weight: 700; line-height: 1em;">Schulbibliothek</span>
+                </span>
+            </div>
+            <div class="nav-element-logo">
+                <img src="@/assets/svgs/lesepreis-logo.png" class="lesepreis-logo" height="52">
+                <span class="nav-element-description">
+                    <span style="display: block; font-size: 1.2em; line-height: 1.2em;">Verwaltung</span>
+                    <span style="display: block; font-size: 1.2em; font-weight: 600; line-height: 1.2em;">Lesepreis</span>
+                </span>
+            </div>
+            <nav class="app-navigation-list">
+                <NavElement to="/students-leaderboard" text="Rangliste"><img src="@/assets/svgs/icon-people-group.svg"> </NavElement>
+                <NavElement to="/books" text="Bücher"><img src="@/assets/svgs/icon-books.svg"> </NavElement>
+                <NavElement to="/manage" text="Verwalten"><img src="@/assets/svgs/circle-dummy-icon.svg"> </NavElement>
+                <NavElement to="/settings" text="Einstellungen"><img src="@/assets/svgs/icon-settings.svg"> </NavElement>
+            </nav>
+            <div class="ps">
+                erstellt von<br style="font-size: 1em;">
+                <span style="font-weight: 600;font-size: 1em;">
+                    Divina Sandra<br style="font-size: 1em;">
+                </span><br style="font-size: 1em;">
+                <a target="_blank" href="https://github.com/4AT-TP-19-20/projekt-lesepreisui" style="font-size: 1em;">inspiriert <img class="icon-link" src="@/assets/svgs/icon-link.svg"></a> von<br>
+                <span style="font-weight: 400;font-size: 1em;">
+                    Manuel Ploner<br style="font-size: 1em;">
+                    Mattia Galiani<br style="font-size: 1em;">
+                    Maximilian Mitterrutzner</span>
+            </div>
+            <div class="nav-element" id="return-to-main-menu">
+                <img src="@/assets/svgs/icon-sign-out.svg">
+                <span class="nav-element-description">Zum Startbildschirm</span>
+            </div>
+        </div>
+        <div class="left-panel-navigation-slider">
+            <img src="@/assets/svgs/icon-slider-left.svg">
+        </div>
+    </nav>
+</template>
+
+<style scoped></style>
+
+<script>
+import NavElement from "@/components/NavElement.vue"
+
+export default {
+  components: {
+    NavElement
+  }
+}
+</script>

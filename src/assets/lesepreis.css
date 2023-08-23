@@ -1,0 +1,271 @@
+@import './lesepreis.smallscreen.css';
+
+#smallscreen {
+    visibility: hidden;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+* {
+    font-family: 'Open Sans';
+    font-weight: 300;
+    white-space: nowrap;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a img.icon-link {
+    height: 1em;
+    margin-bottom: -0.14em;
+}
+
+a:hover, a:active {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: black;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+div#root {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+}
+
+nav.left-panel-navigation {
+    display: grid;
+    filter: drop-shadow(0 0 40px #ddd);
+    grid-template-columns: 100px 50px;
+}
+
+nav.left-panel-navigation, nav.left-panel-navigation * {
+    transition-property: width, grid-template-columns, display, margin-left, padding;
+    transition-duration: 0.7s;
+    transition-timing-function: ease-in;
+    transition-delay: 0.2s;
+}
+
+nav.left-panel-navigation:hover, nav.left-panel-navigation:active {
+    grid-template-columns: 350px 50px;
+}
+
+div.left-panel-navigation-container {
+    background: #F9F9F9;
+    font-size: 20px;
+    display: grid;
+    grid-template-rows: 41px 68px 1fr 130px 35px;
+    gap: 50px;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 60px 30px 30px 30px;
+}
+
+nav.left-panel-navigation:hover div.left-panel-navigation-container, nav.left-panel-navigation:active div.left-panel-navigation-container {
+    padding: 60px 30px 30px 40px;
+}
+
+nav.left-panel-navigation:hover div.nav-element-logo img.nav-element-logo-text, nav.left-panel-navigation:active div.nav-element-logo img.nav-element-logo-text {
+    width: 150px;
+    height: 60px;
+}
+
+nav.left-panel-navigation div.nav-element-logo img.nav-element-logo-text {
+    overflow: hidden;
+    width: 0;
+    height: 60px;
+}
+
+nav.left-panel-navigation div.nav-element-logo {
+    display: flex;
+    align-items: center;
+    line-break: loose;
+    column-gap: 10px;
+}
+
+nav.left-panel-navigation div.ps {
+    font-size: 14px;
+    overflow: hidden;
+    width: 0;
+}
+
+nav.left-panel-navigation:hover div.ps, nav.left-panel-navigation:active div.ps {
+    width: 200px;
+}
+
+nav.app-navigation-list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+
+div.nav-element#return-to-main-menu {
+    margin-left: 0px;
+}
+
+nav.left-panel-navigation div.left-panel-navigation-slider {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #F9F9F9;
+    margin-top: 50px;
+}
+
+main {
+    padding: 30px;
+    gap: 30px;
+    display: grid;
+    grid-template-columns: 2fr 1px 3fr;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+}
+
+div.vertical-line {
+    background: black;
+}
+
+div.ui-table {
+    display: flex;
+    width: 100%;
+    overflow-y: auto;
+    flex-direction: column;
+    font-size: 18px;
+}
+
+div.ui-table div.table-row {
+    height: 40px;
+    width: 100%;
+    display: grid;
+    gap: 15px;
+    padding: 0px 15px;
+    box-sizing: border-box;
+}
+
+div.student-leaderboard div.table-row {
+    grid-template-columns: 26px 26px 1fr 1fr 67px 55px;
+}
+
+div.student-books div.table-row {
+    grid-template-columns: 26px 1fr 1fr 83px 90px 55px;
+}
+
+div.multiplied-books div.table-row {
+    grid-template-columns: 1fr 1fr 88px 57px;
+}
+
+div.ui-table div.table-row.table-header-row {
+    font-weight: 600;
+}
+
+div.ui-table div.table-row div.table-cell {
+    display: flex;
+    align-items: center;
+    column-gap: 3px;
+    overflow: hidden;
+}
+
+div.ui-table div.table-row div.table-cell div.table-cell-centered-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+div.ui-table div.table-row:nth-child(odd) {
+    background: #F5F5F5;
+}
+
+div.ui-table div.table-row:nth-child(even) {
+    background: #FBFBFB;
+}
+
+div.student-leaderboard-section {
+    display: grid;
+    grid-template-rows: 68px 40px 1fr 40px;
+    gap: 20px;
+}
+
+main h1 {
+    font-size: 33px;
+}
+
+div.student-information {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 40px 40px;
+    gap: 8px 40px;
+}
+
+.ui-styled {
+    border-radius: 20px;
+    border: 1px solid black;box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    height: 40px;
+    font-size: 18px;
+}
+
+div.student-leaderboard-section-footer button.add-student {
+    width: 215px;
+}
+
+div.readed-books-header {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    column-gap: 20px;
+}
+
+div.multiplication {
+    display: grid;
+    grid-template-rows: 40px 1fr;
+    gap: 20px;
+}
+
+div.multiplication-header {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    column-gap: 20px;
+}
+
+div.student-information-section div.content {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 3.53em 4.5em 1fr auto;
+    gap: 30px;
+}
+
+div.student-information-section div.content div.student-header-title button {
+    margin-top: 22px;
+}
+
+div.student-information-section div.content div.student-header-title {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+div.readed-books {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    gap: 20px;
+    grid-template-rows: 40px 1fr;
+}

@@ -1,0 +1,125 @@
+@media only screen and (max-width: 1700px) and (max-height: 800px) {
+    html body * {
+        font-size: 2.3vmin;
+    }
+    
+    body #smallscreen {
+        visibility: visible;
+    }
+
+    body main {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    body div.student-leaderboard-section, body div.student-information-section div.content {
+        gap: 1.2em;
+    }
+
+    body div.student-leaderboard-section {
+        grid-template-rows: 4em 2em 1fr 2em;
+    }
+
+    body div.left-panel-navigation-container {
+        grid-template-rows: 1.5em 2.5em 1fr 6em 1.7em;
+        gap: 25px;
+        padding: 2.7em 1em 1.2em 1.2em;
+    }
+
+    body nav.left-panel-navigation:hover div.left-panel-navigation-container,
+    body nav.left-panel-navigation:active div.left-panel-navigation-container {
+        padding: 2.7em 1em 1.2em 1.2em;
+    }
+
+    body nav.left-panel-navigation {
+        grid-template-columns: 5em 3em;
+    }
+
+    body nav.left-panel-navigation:hover, body nav.left-panel-navigation:active {
+        grid-template-columns: 300px 40px;
+    }
+
+    body nav.left-panel-navigation div.left-panel-navigation-slider {
+        width: 3em;
+        height: 3em;
+        margin-top: 3em;
+    }
+
+    body nav.left-panel-navigation:hover span.nav-element-description,
+    body nav.left-panel-navigation:active span.nav-element-description {
+        width: 200px;
+    }
+
+    body div.nav-element {
+        height: 2.5em;
+        column-gap: 1em;
+        margin-left: -1.3em;
+    }
+
+    body div.nav-element img {
+        width: 2em;
+    }
+
+    body nav.app-navigation-list {
+        row-gap: 0.7em;
+    }
+
+    body nav.left-panel-navigation div.ps {
+        font-size: 0.7em;
+    }
+
+    body div.ui-table {
+        font-size: 1em;
+    }
+
+    body div.ui-table div.table-row {
+        height: 2em;
+        gap: 0.6em;
+        padding: 0 0.6em;
+    }
+
+    body div.ui-table img.table-icon {
+        height: 1.5em;
+    }
+
+    body div.ui-table img.sort-icon-image, body .search-icon, body .ui-styled img {
+        height: 0.9em;
+    }
+
+    body div.input-field {
+        font-size: 1em;
+    }
+
+    body div.input-field input, body div.search input {
+        font-size: 1em;
+    }
+
+    body .ui-styled {
+        border-radius: 17px;
+        padding: 6px 10px;
+        height: 2.01em;
+        font-size: 1em;
+    }
+
+    body main h1 {
+        font-size: 25px;
+    }
+
+    body div.student-information {
+        grid-template-rows: 2em 2em;
+        gap: 6px 2em;
+    }
+
+    body div.multiplication {
+        grid-template-rows: 2em 1fr;
+        gap: 1.2em;
+    }
+
+    body img.lesepreis-logo {
+        height: 3em;
+    }
+
+    body div.nav-element#return-to-main-menu {
+        /*margin-left: -0.1em;*/
+    }
+}

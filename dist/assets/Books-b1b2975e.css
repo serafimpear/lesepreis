@@ -1,0 +1,1 @@
+.books-list-section{padding:30px;display:grid;grid-template-rows:68px 40px 1fr 40px;gap:20px;width:100%}div.books-list div.table-row{grid-template-columns:1fr 1fr 5em 3em 10em;text-overflow:ellipsis;white-space:nowrap}
