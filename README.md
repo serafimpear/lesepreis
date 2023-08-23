@@ -1,4 +1,5 @@
-# lesepreis
+> ELECTRON-APP
+# lesepreis-app
 
 Eine Web-App, basiert auf vue.js für die Verwaltung vom Lesepreis in den Oberschulen Fallmerayer
 
