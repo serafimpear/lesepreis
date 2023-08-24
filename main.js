@@ -11,6 +11,7 @@ function createWindow () {
     }
   })
   win.maximize();
+  win.removeMenu()
   win.show();
   win.loadFile('dist/index.html')
 }
