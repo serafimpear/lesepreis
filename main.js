@@ -6,8 +6,6 @@ function createWindow() {
     var dimensions = screen.getPrimaryDisplay().size;
     const isSmallScreen = false;
     if (dimensions.width < 1700 || dimensions.height < 800) { const isSmallScreen = true; console.log('small'); } else { console.log('big'); }
-    const process = require('process');
-    console.log(process.env.APPDATA + "\\"+ app.getName() + "\\Cache");
 
     const win = new BrowserWindow({
         show: false,
@@ -15,12 +13,12 @@ function createWindow() {
         height: 700,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            zoomFactor: isSmallScreen ? 0.8 : 1.0
+            zoomFactor: isSmallScreen ? 0.08 : 1.0 // if screen is small, use 80% scale level for the app
         }
     });
 
     win.maximize();
-    win.removeMenu();
+    win.removeMenu(); // remove menu bar at top (file - edit etc...)
     win.show();
     win.loadFile('dist/index.html');
 }
