@@ -14,6 +14,8 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             zoomFactor: isSmallScreen ? 0.08 : 1.0 // if screen is small, use 80% scale level for the app
+                                                   // bug: the zoomFactor is cached:
+                                                   // https://github.com/electron/electron/issues/10572
         }
     });
 
