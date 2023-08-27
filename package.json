@@ -19,9 +19,13 @@
     "@electron-forge/maker-squirrel": "^6.4.1",
     "@electron-forge/maker-zip": "^6.4.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.4.1",
-    "electron": "^26.0.0"
+    "electron": "^26.0.0",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.3.9"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.2"
   }
 }
