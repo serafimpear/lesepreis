@@ -30,25 +30,33 @@
                                 src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                         <div v-else class="table-cell" title="Schüler hat noch NICHT multipliziert"><img
                                 src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
-                        <div class="table-cell"><div class="table-cell-centered-content">{{ student.name }}</div></div>
-                        <div class="table-cell"><div class="table-cell-centered-content">{{ student.surname }}</div></div>
-                        <div class="table-cell"><div class="table-cell-centered-content">{{ student.class }}</div></div>
-                        <div class="table-cell"><div class="table-cell-centered-content">{{ student.points }}</div></div>
+                        <div class="table-cell">
+                            <div class="table-cell-centered-content">{{ student.name }}</div>
+                        </div>
+                        <div class="table-cell">
+                            <div class="table-cell-centered-content">{{ student.surname }}</div>
+                        </div>
+                        <div class="table-cell">
+                            <div class="table-cell-centered-content">{{ student.class }}</div>
+                        </div>
+                        <div class="table-cell">
+                            <div class="table-cell-centered-content">{{ student.points }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="student-leaderboard-section-footer">
-                <Button type="add" text="Sch&uuml;ler hinzuf&uuml;gen" />
+                <Button type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
             </div>
         </div>
         <div class="vertical-line"></div>
         <div class="student-information-section">
-            <div v-if="typeof currentStudent !== 'undefined'" class="content">
+            <div v-if="showStudentInfo == true" class="content">
                 <div class="student-header-title">
                     <h1>Student:in</h1>
                     <Button type="yes" text="Speichern und schließen" @click="saveStudent()" />
                 </div>
-                
+
                 <div class="student-information">
                     <InputField text="Vorname&nbsp;&nbsp;&nbsp;" variable="" :value=currentStudent.name />
                     <InputField text="Klasse" variable="" number="number" :value=currentStudent.class />
@@ -62,7 +70,7 @@
                         <InputField text="Gelesene Bücher" variable="" value="4" disabled="disabled" number="number" />
                         <Button type="add" text="Hinzufügen" />
                     </div>
-                    <div class="student-books ui-table">
+                    <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
                         <div class="table-row table-header-row">
                             <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
                             <div class="table-cell">Titel
@@ -87,11 +95,26 @@
                             <div v-else class="table-cell" title="Prüfung NICHT bestanden"><img
                                     src="@/assets/svgs/icon-no.svg" class="table-icon">
                             </div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === student_book.id).title }}</div></div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === student_book.id).author }}</div></div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === student_book.id).language }}</div></div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ new Date(student_book.date_added).toLocaleDateString("de-DE") }}</div></div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === student_book.id).points }}</div></div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    student_book.id).title }}</div>
+                            </div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    student_book.id).author }}</div>
+                            </div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    student_book.id).language }}</div>
+                            </div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ new
+                                    Date(student_book.date_added).toLocaleDateString("de-DE") }}</div>
+                            </div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    student_book.id).points }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,24 +129,40 @@
                     </div>
                     <div class="multiplied-books ui-table">
                         <div class="table-row table-header-row">
-                            <div class="table-cell"><div class="table-cell-centered-content">Titel</div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">Titel</div>
                                 <SortIcon />
                             </div>
-                            <div class="table-cell"><div class="table-cell-centered-content">Autor:in</div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">Autor:in</div>
                                 <SortIcon />
                             </div>
-                            <div class="table-cell"><div class="table-cell-centered-content">Sprache</div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">Sprache</div>
                                 <SortIcon />
                             </div>
-                            <div class="table-cell"><div class="table-cell-centered-content">Lose</div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">Lose</div>
                                 <SortIcon />
                             </div>
                         </div>
                         <div class="table-row" v-for="book_id in currentStudent.multiplied_books">
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).title }}</div></div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).author }}</div></div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).language }}</div></div>
-                            <div class="table-cell"><div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).points }}</div></div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).title }}
+                                </div>
+                            </div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).author
+                                }}</div>
+                            </div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).language
+                                }}</div>
+                            </div>
+                            <div class="table-cell">
+                                <div class="table-cell-centered-content">{{ books.find(book => book.id === book_id).points
+                                }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -175,24 +214,43 @@ export default {
             books: books,
             currentStudent: undefined,
             searchStudent: '',
+            showStudentInfo: false
         }
     },
 
     methods: {
         selectStudent: function (student) {
             this.currentStudent = student;
+            this.showStudentInfo = true;
             console.log('User selcted with id ' + this.currentStudent);
         },
 
-        userSelected: function () {
+        /*userSelected: function () {
             console.log(typeof currentStudent !== 'undefined');
             return typeof currentStudent !== 'undefined';
-        },
+        }, <------------------------------- to delete               */
 
         saveStudent: function () {
             console.log(this.currentStudent.name + ' saved');
             this.currentStudent = undefined;
+            this.showStudentInfo = false;
         },
+
+        newStudent: function () {
+            console.log('open new student');
+            this.currentStudent = {
+                uid: 1,
+                name: "",
+                surname: "",
+                class: "",
+                points: 0,
+                readed_books: 0,
+                passed: false,
+                multiplied: false,
+                books: [],
+            },
+            this.showStudentInfo = true;
+        }
     },
 
     computed: {
