@@ -59,6 +59,10 @@ function createWindow() {
         }
         win.webContents.send('books', books);
     })
+    ipc.on("addBook", (event, dataReceived) => {
+        bookFile.set(bookFile.get('amountOfBooks'), dataReceived);
+        bookFile.set('amountOfBooks', bookFile.get('amountOfBooks') + 1);
+    })
 }
 
 app.whenReady().then(() => {

@@ -2,7 +2,7 @@
     <main id="main-books">
         <div class="books-list-section">
             <h1>Bücher</h1>
-            <SearchBar placeholder="Suche Bücher..." />
+            <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
             <div class="books-list ui-table">
                 <div class="table-row table-header-row">
                     <div class="table-cell">Titel
@@ -166,6 +166,17 @@ export default {
 
         saveBook: function () {
             console.log(this.currentBook.title + ' saved');
+            this.books.push({
+        "id": 7,
+        "title": "The Rabbits",
+        "author": "Vladimir Putin",
+        "language": "Ukrain",
+        "foreign_language": false,
+        "points": 7,
+        "isbn": "9783257261054"
+    });
+            ipcRenderer.send("addBook", currentBook);
+
             this.currentBook = undefined;
             this.showBookInfo = false;
         },
