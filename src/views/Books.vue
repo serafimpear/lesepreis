@@ -119,7 +119,6 @@ import Button from "@/components/Button.vue"
 import SortIcon from "@/components/SortIcon.vue"
 import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
-import { students } from '@/assets/dataOld.js';
 import axios from 'axios';
 
 let books = [];
@@ -148,7 +147,7 @@ export default {
                 'it': 'Italienisch',
                 'ru': 'Russisch',
                 'fr': 'Französisch'
-            }
+            },
         }
     },
 
@@ -169,6 +168,12 @@ export default {
 
         saveBook: function () {
             console.log(this.currentBook.title + ' saved');
+            
+            ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
+            if (this.currentBook.id == -1) {
+                this.currentBook.id = this.books.length;
+                this.books.push(this.currentBook);
+            }
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;
@@ -178,7 +183,7 @@ export default {
             console.log('open new book');
             this.bookResults = [];
             this.currentBook = {
-                id: 1,
+                id: -1,
                 title: "",
                 author: "",
                 language: "",
@@ -187,6 +192,8 @@ export default {
                 isbn: "",
             },
                 this.showBookInfo = true;
+            this.isNew = true;
+
         },
         searchBookWEB: function () {
             this.bookResults = [];
