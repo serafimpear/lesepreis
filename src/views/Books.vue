@@ -2,7 +2,7 @@
     <main id="main-books">
         <div class="books-list-section">
             <h1>Bücher</h1>
-            <SearchBar v-model="searchBook" placeholder="Suche Bücher..." />
+            <SearchBar placeholder="Suche Bücher..." />
             <div class="books-list ui-table">
                 <div class="table-row table-header-row">
                     <div class="table-cell">Titel
@@ -17,7 +17,7 @@
                     <div class="table-cell">Lose
                         <SortIcon />
                     </div>
-                    <div class="table-cell">IBAN
+                    <div class="table-cell">ISBN
                         <SortIcon />
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                         <div class="table-cell">{{ book.author }}</div>
                         <div class="table-cell">{{ book.language }}</div>
                         <div class="table-cell">{{ book.points }}</div>
-                        <div class="table-cell">{{ book.iban }}</div>
+                        <div class="table-cell">{{ book.isbn }}</div>
                     </div>
                 </div>
             </div>
@@ -45,15 +45,34 @@
                     <Button type="yes" text="Speichern und schließen" @click="saveBook()" />
                 </div>
                 <div class="book-information">
-                    <InputField text="Titel&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.title />
-                    <InputField text="Autor" variable="" :value=currentBook.author />
-                    <InputField text="Sprache" variable="" :value=currentBook.language />
-                    <InputField text="Lose&nbsp;&nbsp;&nbsp;" variable="" number="number" :value=currentBook.points />
-                    <InputField text="IBAN" variable="" :value=currentBook.iban />
+                    <InputField text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable=""
+                        :value=currentBook.title />
+                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.author />
+                    <div class="book-language-points">
+                        <InputField class="language-input" text="Sprache" variable="" :value=currentBook.language />
+                        <InputField class="points-input" text="Lose" variable="" number="number"
+                            :value=currentBook.points />
+                    </div>
+                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
+                        v-model="currentBook.isbn" @input="searchBookWEB" />
+                    <div class="book-search-status" v-if="isLoading">Suche nach Informationen...
+                        <LoadingIcon />
+                    </div>
+                    <div class="book-search-status" v-if="noResults">Keine Ergebnisse</div>
+                </div>
+                <div class="book-search">
+                    <div class="book-result" v-for="result in bookResults">
+                        <div class="book-result-cover">
+                            <img :src="result.thumbnailURL">
+                        </div>
+                        <div class="book-result-author">{{ result.author }}</div>
+                        <div class="book-result-title">“{{ result.title }}”</div><br>
+                        <div class="book-result-language">{{ result.language }}</div>
+                    </div>
                 </div>
             </div>
             <div v-else id="no_book_selected">Klicken Sie auf ein Buch,<br>
-                um dessen Informationen zu bearbeiten</div>
+                um seine Informationen zu bearbeiten</div>
         </div>
     </main>
 </template>
@@ -94,16 +113,18 @@ main#main-books {
 import SearchBar from "@/components/SearchBar.vue"
 import Button from "@/components/Button.vue"
 import SortIcon from "@/components/SortIcon.vue"
+import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
 import { students, books } from '@/assets/dataOld.js';
-
+import axios from 'axios';
 
 export default {
     components: {
         SearchBar,
         Button,
         SortIcon,
-        InputField
+        InputField,
+        LoadingIcon
     },
 
     data() {
@@ -112,7 +133,10 @@ export default {
             books: books,
             searchBook: '',
             currentBook: undefined,
-            showBookInfo: false
+            showBookInfo: false,
+            isLoading: false,
+            bookResults: [],
+            noResults: false,
         }
     },
 
@@ -138,9 +162,42 @@ export default {
                 language: "",
                 foreign_language: false,
                 points: 0,
-                iban: "",
+                isbn: "",
             },
                 this.showBookInfo = true;
+        },
+        searchBookWEB() {
+            if (this.currentBook.isbn.length >= 10) {
+                this.isLoading = true;
+                axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${this.currentBook.isbn}`).then(response => {
+                    const data = response.data;
+                    if (data.totalItems > 0) {
+                        for (var resultId = 0; resultId <= data.totalItems; resultId++) {
+                            const bookInfo = data.items[resultId].volumeInfo;
+
+                            const book = {
+                                title: bookInfo.title,
+                                author: bookInfo.authors.join(', '),
+                                thumbnailURL: bookInfo.imageLinks.thumbnail,
+                                language: bookInfo.language,
+                            };
+
+                            this.bookResults.push(book);
+                        }
+                    } else {
+                        this.bookResults = [];
+                        this.noResults = true;
+                    }
+                })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    })
+                    .finally(() => {
+                        this.isLoading = false;
+                    });
+            } else {
+                this.bookResults = [];
+            }
         }
     },
 
@@ -150,8 +207,8 @@ export default {
                 console.log(response)
             })
             var s = this.searchBook.toLowerCase();
-            return infos.studentFile.get(1).filter(book => {
-                return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.iban.toLowerCase().includes(s))
+            return this.books.filter(book => {
+                return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
             })
         }
     }
