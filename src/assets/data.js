@@ -443,7 +443,7 @@ const books = [
         language: "German",
         foreign_language: false,
         points: 10,
-        iban: "ISBN-9783257229535",
+        isbn: "9783257229535",
     },
     {
         id: 102,
@@ -452,7 +452,7 @@ const books = [
         language: "German",
         foreign_language: false,
         points: 8,
-        iban: "ISBN-9783499209387",
+        isbn: "9783499209387",
     },
     {
         id: 103,
@@ -461,7 +461,7 @@ const books = [
         language: "German",
         foreign_language: false,
         points: 12,
-        iban: "ISBN-9783423341546",
+        isbn: "9783423341546",
     },
     {
         id: 104,
@@ -470,7 +470,7 @@ const books = [
         language: "German",
         foreign_language: false,
         points: 9,
-        iban: "ISBN-9783150000090",
+        isbn: "9783150000090",
     },
     {
         id: 105,
@@ -479,7 +479,7 @@ const books = [
         language: "German",
         foreign_language: false,
         points: 11,
-        iban: "ISBN-9783518366758",
+        isbn: "9783518366758",
     },
     {
         id: 106,
@@ -488,7 +488,7 @@ const books = [
         language: "German",
         foreign_language: false,
         points: 11,
-        iban: "ISBN-9783518366759",
+        isbn: "9783518366759",
     },
     {
         id: 107,
@@ -497,7 +497,7 @@ const books = [
         language: "German",
         foreign_language: false,
         points: 7,
-        iban: "ISBN-9783257261054",
+        isbn: "9783257261054",
     },{
         id: 108,
         title: "The Rabbits",
@@ -505,7 +505,7 @@ const books = [
         language: "Ukrain",
         foreign_language: false,
         points: 7,
-        iban: "ISBN-9783257261054",
+        isbn: "9783257261054",
     },
 ];
 

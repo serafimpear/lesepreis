@@ -1,7 +1,7 @@
 <template>
     <div class="search ui-styled">
         <img src="@/assets/svgs/search-icon.svg" class="search-icon">
-        <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" type="text" :placeholder=placeholder>
+        <input @input="$emit('update:modelValue', $event.target.value)" type="text" :placeholder=placeholder>
     </div>
 </template>
 

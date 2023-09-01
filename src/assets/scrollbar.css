@@ -16,7 +16,7 @@
 	background: #AAAAAA;
 }
 
-::-webkit-scrollbar-button {
+/*::-webkit-scrollbar-button {
 	background: #CCCCCC;
 	border: 3px solid #FBFBFB;
 	border-radius: 50%;
@@ -28,4 +28,4 @@
 
 ::-webkit-scrollbar-corner {
 	background: #FBFBFB;
-}
+}*/

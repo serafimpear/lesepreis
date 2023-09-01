@@ -2,8 +2,8 @@
     <div :class="`input-field ${disabled}`">
         <div class="input-field-text">{{ text }}</div>
         <div :class="`input-field-field ui-styled  ${number}`">
-            <input v-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`">
-            <input v-else type="text" placeholder="..." :name="`${variable}`">
+            <input @input="$emit('update:modelValue', $event.target.value)" v-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`">
+            <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`">
         </div>
     </div>
 </template>
@@ -11,6 +11,7 @@
 <script>
 export default {
     props: ['text', 'variable', 'disabled', 'number', 'value'],
+    emits: ['update:modelValue']
 }
 </script>
 
@@ -27,10 +28,6 @@ div.input-field .input-field-text {
     font-weight: 600;
     display: flex;
     align-items: center;
-}
-
-div.input-field .input-field-field {
-    /*width: 100%;*/
 }
 
 div.input-field .input-field-field.number {

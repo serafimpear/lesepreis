@@ -290,3 +290,110 @@ div.readed-books {
     gap: 20px;
     grid-template-rows: 40px 1fr;
 }
+
+div.book-information {
+    display: grid;
+    grid-template-rows: 40px 40px 40px 40px 22px;
+    gap: 8px;
+}
+
+div.book-information .book-language-points {
+    display: grid;
+    grid-template-columns: 1fr 115px;
+    gap: 18px;
+}
+
+div.book-information .book-language-points .language-input {
+    grid-template-columns: 71px auto;
+}
+
+div.book-information .book-language-points .points-input {
+    grid-template-columns: 40px auto;
+}
+
+div.book-information .book-language-points .points-input .input-field-field.number {
+    width: unset;
+}
+
+div.book-information-section {
+    height: 100%;
+    overflow: hidden;
+}
+
+div.book-information-section div.content {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 4em 13.5em 1fr;
+    gap: 30px;
+}
+
+div.book-information-section div.content div.book-header-title button {
+    margin-top: 22px;
+}
+
+div.book-information-section div.content div.book-header-title {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+div.book-search-status {
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 300;
+    text-align: right;
+}
+
+div.book-search {
+    overflow-y: auto;
+}
+
+div.book-result {
+    height: 160px;
+    background: #F5F5F5;
+    padding: 1em;
+    gap: 1em;
+    cursor: pointer;
+}
+
+div.book-result:not(:last-child) {
+    margin-bottom: 15px;
+}
+
+div.book-result:hover {
+    background: #e0e0e0;
+}
+
+div.book-result .book-result-cover {
+    height: 160px;
+    width: 100px;
+    float: left;
+    margin-right: 1em;
+}
+
+div.book-result .book-result-cover img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+div.book-result .book-result-author {
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 300;
+    margin-top: 0.5em;
+}
+
+div.book-result .book-result-title {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+div.book-result .book-result-language {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 300;
+}
