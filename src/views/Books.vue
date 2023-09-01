@@ -45,12 +45,12 @@
                     <Button type="yes" text="Speichern und schließen" @click="saveBook()" />
                 </div>
                 <div class="book-information">
-                    <InputField text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable=""
+                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable=""
                         :value=currentBook.title />
-                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.author />
+                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable="" :value=currentBook.author />
                     <div class="book-language-points">
-                        <InputField class="language-input" text="Sprache" variable="" :value=currentBook.language />
-                        <InputField class="points-input" text="Lose" variable="" number="number"
+                        <InputField class="language-input" v-model="currentBook.language" text="Sprache" variable="" :value=currentBook.language />
+                        <InputField class="points-input" v-model="currentBook.points" text="Lose" variable="" number="number"
                             :value=currentBook.points />
                     </div>
                     <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
