@@ -236,11 +236,6 @@ export default {
             console.log('User selcted with id ' + this.currentStudent);
         },
 
-        /*userSelected: function () {
-            console.log(typeof currentStudent !== 'undefined');
-            return typeof currentStudent !== 'undefined';
-        }, <------------------------------- to delete               */
-
         saveStudent: function () {
             console.log(this.currentStudent.name + ' saved');
             this.currentStudent = undefined;
