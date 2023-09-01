@@ -61,7 +61,7 @@
                     <div class="book-search-status" v-if="noResults">Keine Ergebnisse</div>
                 </div>
                 <div class="book-search">
-                    <div class="book-result" v-for="result in bookResults">
+                    <div class="book-result" v-for="result in bookResults" @click="selectResultBook(result)">
                         <div class="book-result-cover">
                             <img :src="result.thumbnailURL">
                         </div>
@@ -137,12 +137,19 @@ export default {
             isLoading: false,
             bookResults: [],
             noResults: false,
+            languageMap: {
+                'de': 'Deutsch',
+                'it': 'Italienisch',
+                'ru': 'Russisch',
+                'fr': 'Französisch'
+            }
         }
     },
 
     methods: {
         selectBook: function (book) {
             this.currentBook = book;
+            this.bookResults = [];
             this.showBookInfo = true;
             console.log('Book selcted ' + this.currentBook);
         },
@@ -166,7 +173,7 @@ export default {
             },
                 this.showBookInfo = true;
         },
-        searchBookWEB() {
+        searchBookWEB: function () {
             if (this.currentBook.isbn.length >= 10) {
                 this.isLoading = true;
                 axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${this.currentBook.isbn}`).then(response => {
@@ -179,7 +186,7 @@ export default {
                                 title: bookInfo.title,
                                 author: bookInfo.authors.join(', '),
                                 thumbnailURL: bookInfo.imageLinks.thumbnail,
-                                language: bookInfo.language,
+                                language: this.languageMap[bookInfo.language],
                             };
 
                             this.bookResults.push(book);
@@ -187,6 +194,9 @@ export default {
                     } else {
                         this.bookResults = [];
                         this.noResults = true;
+                        setTimeout(() => {
+                            this.noResults = false;
+                        }, 2000);
                     }
                 })
                     .catch(error => {
@@ -198,6 +208,11 @@ export default {
             } else {
                 this.bookResults = [];
             }
+        },
+        selectResultBook: function (result) {
+            this.currentBook.title = result.title;
+            this.currentBook.author = result.author;
+            this.currentBook.language = result.language;
         }
     },
 

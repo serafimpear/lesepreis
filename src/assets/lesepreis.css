@@ -356,6 +356,7 @@ div.book-result {
     padding: 1em;
     gap: 1em;
     cursor: pointer;
+    white-space: wrap;
 }
 
 div.book-result:not(:last-child) {
