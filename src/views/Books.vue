@@ -119,7 +119,6 @@ import Button from "@/components/Button.vue"
 import SortIcon from "@/components/SortIcon.vue"
 import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
-import { students } from '@/assets/dataOld.js';
 import axios from 'axios';
 
 let books = [];
