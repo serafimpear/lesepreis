@@ -67,7 +67,7 @@
 
                 <div class="readed-books">
                     <div class="readed-books-header">
-                        <InputField text="Gelesene Bücher" variable="" value="4" disabled="disabled" number="number" />
+                        <InputField text="Gelesene Bücher" variable="" :value=currentStudent.readed_books disabled="disabled" number="number" />
                         <Button type="add" text="Hinzufügen" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
