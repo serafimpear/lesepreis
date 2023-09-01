@@ -3,6 +3,8 @@
         {{ text }}
         <img v-if="type == 'add'" src="@/assets/svgs/icon-plus.svg">
         <img v-if="type == 'yes'" src="@/assets/svgs/icon-yes.svg">
+        <img v-if="type == 'no'" src="@/assets/svgs/icon-no.svg">
+        <img v-if="type == 'delete'" src="@/assets/svgs/icon-trashcan.svg">
     </button>
 </template>
 

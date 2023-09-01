@@ -56,7 +56,8 @@
             <div v-if="showStudentInfo == true" class="content">
                 <div class="student-header-title">
                     <h1>Student:in</h1>
-                    <Button type="yes" text="Speichern und schließen" @click="saveStudent()" />
+                    <Button type="delete" text="Löschen" @click="deleteStudent()" />
+                    <Button type="yes" text="Speichern" @click="saveStudent()" />
                 </div>
 
                 <div class="student-information">

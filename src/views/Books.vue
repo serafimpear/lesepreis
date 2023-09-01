@@ -42,7 +42,8 @@
             <div v-if="showBookInfo == true" class="content">
                 <div class="book-header-title">
                     <h1>Buch</h1>
-                    <Button type="yes" text="Speichern und schließen" @click="saveBook()" />
+                    <Button type="delete" text="Löschen" @click="deleteBook()" />
+                    <Button type="yes" text="Speichern" @click="saveBook()" />
                 </div>
                 <div class="book-information">
                     <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -134,7 +135,6 @@ export default {
 
     data() {
         return {
-            students: students,
             books: books,
             searchBook: '',
             currentBook: undefined,
