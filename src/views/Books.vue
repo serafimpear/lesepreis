@@ -2,7 +2,7 @@
     <main id="main-books">
         <div class="books-list-section">
             <h1>Bücher</h1>
-            <SearchBar placeholder="Suche Bücher..." />
+            <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
             <div class="books-list ui-table">
                 <div class="table-row table-header-row">
                     <div class="table-cell">Titel
