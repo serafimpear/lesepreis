@@ -95,7 +95,7 @@ import SearchBar from "@/components/SearchBar.vue"
 import Button from "@/components/Button.vue"
 import SortIcon from "@/components/SortIcon.vue"
 import InputField from "@/components/InputField.vue"
-import { students, books } from '@/assets/data.js';
+import { students, books } from '@/assets/dataOld.js';
 
 
 export default {
@@ -146,8 +146,11 @@ export default {
 
     computed: {
         filteredBooksList() {
+            infos = window.bridge.getSettings().then(response => {
+                console.log(response)
+            })
             var s = this.searchBook.toLowerCase();
-            return this.books.filter(book => {
+            return infos.studentFile.get(1).filter(book => {
                 return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.iban.toLowerCase().includes(s))
             })
         }

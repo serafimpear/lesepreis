@@ -207,7 +207,7 @@ import Button from "@/components/Button.vue"
 import InputField from "@/components/InputField.vue"
 import InputFieldTrueFalse from "@/components/InputFieldTrueFalse.vue"
 import SortIcon from "@/components/SortIcon.vue"
-import { students, books } from '@/assets/data.js';
+import { students, books } from '@/assets/dataOld.js';
 
 
 export default {
