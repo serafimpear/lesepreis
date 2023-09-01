@@ -170,11 +170,13 @@ export default {
         saveBook: function () {
             console.log(this.currentBook.title + ' saved');
             this.currentBook = undefined;
+            this.bookResults = [];
             this.showBookInfo = false;
         },
 
         newBook: function () {
             console.log('open new book');
+            this.bookResults = [];
             this.currentBook = {
                 id: 1,
                 title: "",
@@ -187,19 +189,20 @@ export default {
                 this.showBookInfo = true;
         },
         searchBookWEB: function () {
+            this.bookResults = [];
             if (this.currentBook.isbn.length >= 10) {
                 this.isLoading = true;
                 axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${this.currentBook.isbn}`).then(response => {
                     const data = response.data;
                     if (data.totalItems > 0) {
-                        for (var resultId = 0; resultId <= data.totalItems; resultId++) {
+                        for (var resultId = 0; resultId < data.totalItems; resultId++) {
                             const bookInfo = data.items[resultId].volumeInfo;
 
                             const book = {
-                                title: bookInfo.title,
-                                author: bookInfo.authors.join(', '),
-                                thumbnailURL: bookInfo.imageLinks.thumbnail,
-                                language: this.languageMap[bookInfo.language],
+                                title: bookInfo.subtitle ? `${bookInfo.title} ${bookInfo.subtitle}` : bookInfo.title,
+                                author: bookInfo.authors ? bookInfo.authors.join(', ') : '',
+                                thumbnailURL: bookInfo.imageLinks && bookInfo.imageLinks.thumbnail ? bookInfo.imageLinks.thumbnail : '/src/assets/blankCover.svg',
+                                language: bookInfo.language ? this.languageMap[bookInfo.language] : '',
                             };
 
                             this.bookResults.push(book);
