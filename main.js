@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const Store = require('./src/assets/Store');
-const {studentFile, bookFile} = require('./src/assets/data.js');
+const { studentFile, bookFile } = require('./src/assets/data.js');
 
 const ipc = ipcMain
 
@@ -21,8 +21,8 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             zoomFactor: isSmallScreen ? 0.8 : 1.0, // if screen is small, use 80% scale level for the app
-                                                   // bug: the zoomFactor is cached:
-                                                   // https://github.com/electron/electron/issues/10572
+            // bug: the zoomFactor is cached:
+            // https://github.com/electron/electron/issues/10572
             nodeIntegration: true,
             contextIsolation: false
         }
@@ -60,8 +60,10 @@ function createWindow() {
         win.webContents.send('books', books);
     })
     ipc.on("addBook", (event, dataReceived) => {
-        bookFile.set(bookFile.get('amountOfBooks'), dataReceived);
-        bookFile.set('amountOfBooks', bookFile.get('amountOfBooks') + 1);
+        bookFile.set(bookFile.get('amountOfBooks'), JSON.parse(dataReceived.json));
+        if (dataReceived.isNew == true) {
+            bookFile.set('amountOfBooks', bookFile.get('amountOfBooks') + 1);
+        }
     })
 }
 

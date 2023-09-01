@@ -148,7 +148,8 @@ export default {
                 'it': 'Italienisch',
                 'ru': 'Russisch',
                 'fr': 'Französisch'
-            }
+            },
+            isNew: false
         }
     },
 
@@ -164,21 +165,16 @@ export default {
             this.currentBook = book;
             this.bookResults = [];
             this.showBookInfo = true;
+            this.isNew = false;
             console.log('Book selcted ' + this.currentBook);
         },
 
         saveBook: function () {
             console.log(this.currentBook.title + ' saved');
-            this.books.push({
-        "id": 7,
-        "title": "The Rabbits",
-        "author": "Vladimir Putin",
-        "language": "Ukrain",
-        "foreign_language": false,
-        "points": 7,
-        "isbn": "9783257261054"
-    });
-            ipcRenderer.send("addBook", currentBook);
+            if (this.isNew) {
+                this.books.push(this.currentBook);
+            }
+            ipcRenderer.send("addBook", { json: JSON.stringify(this.currentBook), isNew: this.isNew });
 
             this.currentBook = undefined;
             this.showBookInfo = false;
@@ -196,6 +192,8 @@ export default {
                 isbn: "",
             },
                 this.showBookInfo = true;
+            this.isNew = true;
+
         },
         searchBookWEB: function () {
             if (this.currentBook.isbn.length >= 10) {
