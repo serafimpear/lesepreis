@@ -45,13 +45,15 @@
                     <Button type="yes" text="Speichern und schließen" @click="saveBook()" />
                 </div>
                 <div class="book-information">
-                    <InputField text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable=""
-                        :value=currentBook.title />
-                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.author />
+                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                        variable="" :value=currentBook.title />
+                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable=""
+                        :value=currentBook.author />
                     <div class="book-language-points">
-                        <InputField class="language-input" text="Sprache" variable="" :value=currentBook.language />
-                        <InputField class="points-input" text="Lose" variable="" number="number"
-                            :value=currentBook.points />
+                        <InputField class="language-input" v-model="currentBook.language" text="Sprache" variable=""
+                            :value=currentBook.language />
+                        <InputField class="points-input" v-model="currentBook.points" text="Lose" variable=""
+                            number="number" :value=currentBook.points />
                     </div>
                     <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
                         v-model="currentBook.isbn" @input="searchBookWEB" />
@@ -122,12 +124,6 @@ import axios from 'axios';
 
 let books = [];
 
-ipcRenderer.send("getBooks");
-ipcRenderer.on("books", (event, dataReceived) => {
-    books = books.concat(dataReceived);
-})
-
-
 export default {
     components: {
         SearchBar,
@@ -157,6 +153,13 @@ export default {
     },
 
     methods: {
+        updateBooksRemote: function () {
+            ipcRenderer.send("getBooks");
+            ipcRenderer.on("books", (event, dataReceived) => {
+                this.books = this.books.concat(dataReceived);
+            })
+        },
+
         selectBook: function (book) {
             this.currentBook = book;
             this.bookResults = [];
@@ -237,9 +240,12 @@ export default {
         }
     },
 
+    beforeMount() {
+        this.updateBooksRemote();
+    },
+
     computed: {
         filteredBooksList() {
-            
             var s = this.searchBook.toLowerCase();
             return this.books.filter(book => {
                 return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
