@@ -60,10 +60,12 @@ function createWindow() {
         win.webContents.send('books', books);
     })
     ipc.on("addBook", (event, dataReceived) => {
-        bookFile.set(bookFile.get('amountOfBooks'), JSON.parse(dataReceived.json));
-        if (dataReceived.isNew == true) {
+        data = JSON.parse(dataReceived);
+        if (data.id == -1) {
+            data.id = bookFile.get('amountOfBooks');
             bookFile.set('amountOfBooks', bookFile.get('amountOfBooks') + 1);
         }
+        bookFile.set(data.id, data);
     })
 }
 

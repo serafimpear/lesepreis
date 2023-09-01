@@ -149,7 +149,6 @@ export default {
                 'ru': 'Russisch',
                 'fr': 'Französisch'
             },
-            isNew: false
         }
     },
 
@@ -165,17 +164,17 @@ export default {
             this.currentBook = book;
             this.bookResults = [];
             this.showBookInfo = true;
-            this.isNew = false;
             console.log('Book selcted ' + this.currentBook);
         },
 
         saveBook: function () {
             console.log(this.currentBook.title + ' saved');
-            if (this.isNew) {
+            
+            ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
+            if (this.currentBook.id == -1) {
+                this.currentBook.id = this.books.length;
                 this.books.push(this.currentBook);
             }
-            ipcRenderer.send("addBook", { json: JSON.stringify(this.currentBook), isNew: this.isNew });
-
             this.currentBook = undefined;
             this.showBookInfo = false;
         },
@@ -183,7 +182,7 @@ export default {
         newBook: function () {
             console.log('open new book');
             this.currentBook = {
-                id: 1,
+                id: -1,
                 title: "",
                 author: "",
                 language: "",
