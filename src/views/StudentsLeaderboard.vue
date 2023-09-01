@@ -257,6 +257,12 @@ export default {
                 books: [],
             },
                 this.showStudentInfo = true;
+        },
+
+        deleteStudent: function () {
+            console.log('delete student' + this.currentStudent);
+            this.currentStudent = undefined;
+            this.showStudentInfo = false;
         }
     },
 

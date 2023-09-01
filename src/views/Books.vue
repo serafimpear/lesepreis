@@ -179,6 +179,19 @@ export default {
             this.showBookInfo = false;
         },
 
+        deleteBook: function () {
+            console.log(this.currentBook.title + ' deleted');
+            
+            /*ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
+            if (this.currentBook.id == -1) {
+                this.currentBook.id = this.books.length;
+                this.books.push(this.currentBook);
+            }*/
+            this.currentBook = undefined;
+            this.bookResults = [];
+            this.showBookInfo = false;
+        },
+
         newBook: function () {
             console.log('open new book');
             this.bookResults = [];

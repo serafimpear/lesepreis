@@ -7,7 +7,6 @@ import TitleBar from '@/components/TitleBar.vue'
 <template>
     <TitleBar />
     <div id="root">
-        <div id="smallscreen">SMALLSCREEN</div>
         <LeftPanelNavigation />
         <RouterView />
     </div>
