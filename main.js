@@ -1,5 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
+const Store = require('./src/assets/Store');
+const {studentFile, bookFile} = require('./src/assets/data.js');
+
 const ipc = ipcMain
 
 function createWindow() {
@@ -25,6 +28,8 @@ function createWindow() {
         }
     });
 
+    win.webContents.openDevTools();
+
     win.maximize();
     win.removeMenu(); // remove menu bar at top (file - edit etc...)
     win.show();
@@ -44,6 +49,15 @@ function createWindow() {
 
     ipc.on('minimizeApp', () => {
         win.minimize()
+    })
+
+    ipc.on('getBooks', () => {
+        const books = [];
+        num = bookFile.get('amountOfBooks');
+        for (let i = 0; i < num; i++) {
+            books.push(bookFile.get(i));
+        }
+        win.webContents.send('books', books);
     })
 }
 
