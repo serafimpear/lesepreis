@@ -110,13 +110,23 @@ main#main-books {
 </style>
 
 <script>
+const { ipcRenderer } = require('electron')
+
 import SearchBar from "@/components/SearchBar.vue"
 import Button from "@/components/Button.vue"
 import SortIcon from "@/components/SortIcon.vue"
 import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
-import { students, books } from '@/assets/dataOld.js';
+import { students } from '@/assets/dataOld.js';
 import axios from 'axios';
+
+let books = [];
+
+ipcRenderer.send("getBooks");
+ipcRenderer.on("books", (event, dataReceived) => {
+    books = books.concat(dataReceived);
+})
+
 
 export default {
     components: {
@@ -218,9 +228,7 @@ export default {
 
     computed: {
         filteredBooksList() {
-            infos = window.bridge.getSettings().then(response => {
-                console.log(response)
-            })
+            
             var s = this.searchBook.toLowerCase();
             return this.books.filter(book => {
                 return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))

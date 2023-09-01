@@ -51,8 +51,13 @@ function createWindow() {
         win.minimize()
     })
 
-    ipc.handle('getSettings', () => {
-        return {studentFile, bookFile}
+    ipc.on('getBooks', () => {
+        const books = [];
+        num = bookFile.get('amountOfBooks');
+        for (let i = 0; i < num; i++) {
+            books.push(bookFile.get(i));
+        }
+        win.webContents.send('books', books);
     })
 }
 
