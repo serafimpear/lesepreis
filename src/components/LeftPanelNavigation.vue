@@ -23,7 +23,7 @@
                 <NavElement to="/settings" text="Einstellungen"><img src="@/assets/svgs/icon-settings.svg"> </NavElement>
             </nav>
             <div class="ps">
-                erstellt von<br style="font-size: 1em;">
+                <!--erstellt von<br style="font-size: 1em;">
                 <span style="font-weight: 600;font-size: 1em;">
                     Divina Sandra<br style="font-size: 1em;">
                 </span><br style="font-size: 1em;">
@@ -31,7 +31,11 @@
                 <span style="font-weight: 400;font-size: 1em;">
                     Manuel Ploner<br style="font-size: 1em;">
                     Mattia Galiani<br style="font-size: 1em;">
-                    Maximilian Mitterrutzner</span>
+                    Maximilian Mitterrutzner</span
+        
+                    BESSER BEIM STARTBILDSHIRM
+        
+            -->
             </div>
             <div class="nav-element" id="return-to-main-menu">
                 <img src="@/assets/svgs/icon-sign-out.svg">

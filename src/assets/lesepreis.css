@@ -24,7 +24,8 @@ a img.icon-link {
     margin-bottom: -0.14em;
 }
 
-a:hover, a:active {
+a:hover,
+a:active {
     text-decoration: underline;
 }
 
@@ -50,14 +51,16 @@ nav.left-panel-navigation {
     grid-template-columns: 100px 50px;
 }
 
-nav.left-panel-navigation, nav.left-panel-navigation * {
+nav.left-panel-navigation,
+nav.left-panel-navigation * {
     transition-property: width, grid-template-columns, display, margin-left, padding;
     transition-duration: 0.7s;
     transition-timing-function: ease-in;
     transition-delay: 0.2s;
 }
 
-nav.left-panel-navigation:hover, nav.left-panel-navigation:active {
+nav.left-panel-navigation:hover,
+nav.left-panel-navigation:active {
     grid-template-columns: 350px 50px;
 }
 
@@ -73,11 +76,13 @@ div.left-panel-navigation-container {
     padding: 60px 30px 30px 30px;
 }
 
-nav.left-panel-navigation:hover div.left-panel-navigation-container, nav.left-panel-navigation:active div.left-panel-navigation-container {
+nav.left-panel-navigation:hover div.left-panel-navigation-container,
+nav.left-panel-navigation:active div.left-panel-navigation-container {
     padding: 60px 30px 30px 40px;
 }
 
-nav.left-panel-navigation:hover div.nav-element-logo img.nav-element-logo-text, nav.left-panel-navigation:active div.nav-element-logo img.nav-element-logo-text {
+nav.left-panel-navigation:hover div.nav-element-logo img.nav-element-logo-text,
+nav.left-panel-navigation:active div.nav-element-logo img.nav-element-logo-text {
     width: 150px;
     height: 60px;
 }
@@ -101,7 +106,8 @@ nav.left-panel-navigation div.ps {
     width: 0;
 }
 
-nav.left-panel-navigation:hover div.ps, nav.left-panel-navigation:active div.ps {
+nav.left-panel-navigation:hover div.ps,
+nav.left-panel-navigation:active div.ps {
     width: 200px;
 }
 
@@ -142,9 +148,14 @@ div.vertical-line {
 div.ui-table {
     display: flex;
     width: 100%;
-    overflow-y: auto;
+    height: 100%;
+    overflow: hidden;
     flex-direction: column;
     font-size: 18px;
+}
+
+div.ui-table .table-data {
+    overflow-y: auto;
 }
 
 div.ui-table div.table-row {
@@ -152,7 +163,7 @@ div.ui-table div.table-row {
     width: 100%;
     display: grid;
     gap: 15px;
-    padding: 0px 15px;
+    padding: 7px 15px;
     box-sizing: border-box;
 }
 
@@ -170,6 +181,7 @@ div.multiplied-books div.table-row {
 
 div.ui-table div.table-row.table-header-row {
     font-weight: 600;
+    background: #F5F5F5 !important;
 }
 
 div.ui-table div.table-row div.table-cell {
@@ -184,11 +196,11 @@ div.ui-table div.table-row div.table-cell div.table-cell-centered-content {
     text-overflow: ellipsis;
 }
 
-div.ui-table div.table-row:nth-child(odd) {
+div.ui-table div.table-row:nth-child(even) {
     background: #F5F5F5;
 }
 
-div.ui-table div.table-row:nth-child(even) {
+div.ui-table div.table-row:nth-child(odd) {
     background: #FBFBFB;
 }
 
@@ -196,6 +208,8 @@ div.student-leaderboard-section {
     display: grid;
     grid-template-rows: 68px 40px 1fr 40px;
     gap: 20px;
+    height: 100%;
+    overflow: hidden;
 }
 
 main h1 {
@@ -211,7 +225,8 @@ div.student-information {
 
 .ui-styled {
     border-radius: 20px;
-    border: 1px solid black;box-sizing: border-box;
+    border: 1px solid black;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     padding: 8px 12px;
@@ -243,6 +258,11 @@ div.multiplication-header {
     column-gap: 20px;
 }
 
+div.student-information-section {
+    height: 100%;
+    overflow: hidden;
+}
+
 div.student-information-section div.content {
     width: 100%;
     height: 100%;
@@ -265,6 +285,7 @@ div.student-information-section div.content div.student-header-title {
 div.readed-books {
     width: 100%;
     height: 100%;
+    overflow: hidden;
     display: grid;
     gap: 20px;
     grid-template-rows: 40px 1fr;

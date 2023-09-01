@@ -2,14 +2,25 @@
     <div class="books-list-section">
         <h1>Bücher</h1>
         <SearchBar v-model="searchBook" placeholder="Suche Bücher..." />
-            <div class="books-list ui-table">
-                <div class="table-row table-header-row">
-                    <div class="table-cell">Titel<SortIcon /></div>
-                    <div class="table-cell">Autor:in<SortIcon /></div>
-                    <div class="table-cell">Sprache<SortIcon /></div>
-                    <div class="table-cell">Lose<SortIcon /></div>
-                    <div class="table-cell">IBAN<SortIcon /></div>
+        <div class="books-list ui-table">
+            <div class="table-row table-header-row">
+                <div class="table-cell">Titel
+                    <SortIcon />
                 </div>
+                <div class="table-cell">Autor:in
+                    <SortIcon />
+                </div>
+                <div class="table-cell">Sprache
+                    <SortIcon />
+                </div>
+                <div class="table-cell">Lose
+                    <SortIcon />
+                </div>
+                <div class="table-cell">IBAN
+                    <SortIcon />
+                </div>
+            </div>
+            <div class="table-data">
                 <div class="table-row" v-for="book in filteredBooksList" @click="">
                     <div class="table-cell">{{ book.title }}</div>
                     <div class="table-cell">{{ book.author }}</div>
@@ -18,6 +29,7 @@
                     <div class="table-cell">{{ book.iban }}</div>
                 </div>
             </div>
+        </div>
         <div class="books-list-section-footer">
             <Button type="add" text="Buch hinzuf&uuml;gen" />
         </div>
@@ -62,7 +74,7 @@ export default {
         }
     },
 
-    methods: { },
+    methods: {},
 
     computed: {
         filteredBooksList() {
