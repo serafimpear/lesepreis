@@ -42,13 +42,12 @@
             <div v-if="showBookInfo == true" class="content">
                 <div class="book-header-title">
                     <h1>Buch</h1>
-                    <Button type="delete" text="Löschen" @click="deleteBook()" />
-                    <Button type="yes" text="Speichern" @click="saveBook()" />
+                    <IconButton @click="closeBook()" type="no" />
                 </div>
                 <div class="book-information">
                     <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
                         variable="" :value=currentBook.title />
-                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable=""
+                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable=""
                         :value=currentBook.author />
                     <div class="book-language-points">
                         <InputField class="language-input" v-model="currentBook.language" text="Sprache" variable=""
@@ -56,12 +55,22 @@
                         <InputField class="points-input" v-model="currentBook.points" text="Lose" variable=""
                             number="number" :value=currentBook.points />
                     </div>
-                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
+                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
                         v-model="currentBook.isbn" @input="searchBookWEB" />
-                    <div class="book-search-status" v-if="isLoading">Suche nach Informationen...
-                        <LoadingIcon />
+                    <div>
+                        <div class="book-search-status">
+                            <span v-if="isLoading">Suche nach Informationen...
+                                <LoadingIcon />
+                            </span>
+                            <span v-else-if="noResults">Keine Ergebnisse</span>
+                            <span v-else-if="noResults != true && isLoading != true">&nbsp;</span>
+                        </div>
+                        <div v-if="bookResults.length > 0" style="font-size: 18px;font-style: normal;font-weight: 300;">
+                            Mögliche Bücher</div>
+                        <div v-if="bookResults.length > 0" style="font-size: 12px;font-style: italic;font-weight: 300;">
+                            Kicken Sie auf ein Ergebnis, um
+                            die Daten automatisch auszufüllen</div>
                     </div>
-                    <div class="book-search-status" v-if="noResults">Keine Ergebnisse</div>
                 </div>
                 <div class="book-search">
                     <div class="book-result" v-for="result in bookResults" @click="selectResultBook(result)">
@@ -72,6 +81,10 @@
                         <div class="book-result-title">“{{ result.title }}”</div><br>
                         <div class="book-result-language">{{ result.language }}</div>
                     </div>
+                </div>
+                <div class="delete-save-bar">
+                    <Button type="delete" text="Löschen" color="red" @click="deleteBook()" />
+                    <Button type="yes" text="Speichern" color="green" @click="saveBook()" />
                 </div>
             </div>
             <div v-else id="no_book_selected">Klicken Sie auf ein Buch,<br>
@@ -117,6 +130,7 @@ const { ipcRenderer } = require('electron')
 
 import SearchBar from "@/components/SearchBar.vue"
 import Button from "@/components/Button.vue"
+import IconButton from "@/components/IconButton.vue"
 import SortIcon from "@/components/SortIcon.vue"
 import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
@@ -130,7 +144,8 @@ export default {
         Button,
         SortIcon,
         InputField,
-        LoadingIcon
+        LoadingIcon,
+        IconButton
     },
 
     data() {
@@ -146,29 +161,42 @@ export default {
                 'de': 'Deutsch',
                 'it': 'Italienisch',
                 'ru': 'Russisch',
-                'fr': 'Französisch'
+                'fr': 'Französisch',
+                'la': 'Latein',
+                'en': 'Englisch',
             },
+            currentStudentLink: undefined,
         }
     },
 
     methods: {
+        deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
+
         updateBooksRemote: function () {
             ipcRenderer.send("getBooks");
             ipcRenderer.on("books", (event, dataReceived) => {
-                this.books = this.books.concat(dataReceived);
+                this.books = dataReceived;
             })
         },
 
         selectBook: function (book) {
-            this.currentBook = book;
+            this.currentBook = this.deepClone(book);
+            this.currentBookLink = book.id;
             this.bookResults = [];
             this.showBookInfo = true;
             console.log('Book selcted ' + this.currentBook);
         },
 
+        closeBook: function (book) {
+            this.currentBook = undefined;
+            this.bookResults = [];
+            this.showBookInfo = false;
+            console.log('Book closed ' + this.currentBook);
+        },
+
         saveBook: function () {
             console.log(this.currentBook.title + ' saved');
-            
+
             ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
             if (this.currentBook.id == -1) {
                 this.currentBook.id = this.books.length;
@@ -177,11 +205,13 @@ export default {
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;
+
+            this.updateBooksRemote();
         },
 
         deleteBook: function () {
             console.log(this.currentBook.title + ' deleted');
-            
+
             /*ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
             if (this.currentBook.id == -1) {
                 this.currentBook.id = this.books.length;
@@ -212,7 +242,7 @@ export default {
             this.bookResults = [];
             if (this.currentBook.isbn.length >= 10) {
                 this.isLoading = true;
-                axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${this.currentBook.isbn}`).then(response => {
+                axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${this.currentBook.isbn}&key=AIzaSyA81ig_LA7piHwhiYhJ0pHkqhZGMq9gdcQ`).then(response => {
                     const data = response.data;
                     if (data.totalItems > 0) {
                         for (var resultId = 0; resultId < data.totalItems; resultId++) {
@@ -222,7 +252,7 @@ export default {
                                 title: bookInfo.subtitle ? `${bookInfo.title} ${bookInfo.subtitle}` : bookInfo.title,
                                 author: bookInfo.authors ? bookInfo.authors.join(', ') : '',
                                 thumbnailURL: bookInfo.imageLinks && bookInfo.imageLinks.thumbnail ? bookInfo.imageLinks.thumbnail : '/src/assets/blankCover.svg',
-                                language: bookInfo.language ? this.languageMap[bookInfo.language] : '',
+                                language: typeof bookInfo.language !== 'undefined' ? this.languageMap[bookInfo.language] : '',
                             };
 
                             this.bookResults.push(book);

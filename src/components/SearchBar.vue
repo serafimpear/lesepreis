@@ -1,7 +1,7 @@
 <template>
     <div class="search ui-styled">
         <img src="@/assets/svgs/search-icon.svg" class="search-icon">
-        <input @input="$emit('update:modelValue', $event.target.value)" type="text" :placeholder=placeholder>
+        <input @input="$emit('update:modelValue', $event.target.value)" type="text" :placeholder=placeholder class="ui-search-input">
     </div>
 </template>
 
@@ -27,5 +27,16 @@ div.search input {
     outline: none;
     width: 100%;
     font-size: 18px;
+    background: transparent;
+}
+
+div.search:hover {
+    background: #F5F5F5;
+    border-width: 2px;
+}
+
+div.search:has(input:focus) {
+    background: #F5F5F5;
+    border-width: 2px;
 }
 </style>

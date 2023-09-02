@@ -56,8 +56,7 @@
             <div v-if="showStudentInfo == true" class="content">
                 <div class="student-header-title">
                     <h1>Student:in</h1>
-                    <Button type="delete" text="Löschen" @click="deleteStudent()" />
-                    <Button type="yes" text="Speichern" @click="saveStudent()" />
+                    <IconButton @click="closeStudent()" type="no" />
                 </div>
 
                 <div class="student-information">
@@ -137,19 +136,15 @@
                         <div class="table-row table-header-row">
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">Titel</div>
-                                <SortIcon />
                             </div>
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">Autor:in</div>
-                                <SortIcon />
                             </div>
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">Sprache</div>
-                                <SortIcon />
                             </div>
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">Lose</div>
-                                <SortIcon />
                             </div>
                         </div>
                         <div class="table-data">
@@ -184,6 +179,10 @@
                         <Button text="Bücher multiplizieren" />
                     </div>
                 </div>
+                <div class="delete-save-bar">
+                    <Button type="delete" text="Löschen" color="red" @click="deleteStudent()" />
+                    <Button type="yes" text="Speichern" color="green" @click="saveStudent()" />
+                </div>
             </div>
             <div v-else id="no_student_selected">Klicken Sie auf einen Schüler,<br>
                 um seine Informationen zu sehen</div>
@@ -208,6 +207,7 @@ import Button from "@/components/Button.vue"
 import InputField from "@/components/InputField.vue"
 import InputFieldTrueFalse from "@/components/InputFieldTrueFalse.vue"
 import SortIcon from "@/components/SortIcon.vue"
+import IconButton from "@/components/IconButton.vue"
 import { students, books } from '@/assets/dataOld.js';
 
 
@@ -217,7 +217,8 @@ export default {
         Button,
         InputField,
         InputFieldTrueFalse,
-        SortIcon
+        SortIcon,
+        IconButton
     },
 
     data() {
@@ -226,18 +227,24 @@ export default {
             books: books,
             currentStudent: undefined,
             searchStudent: '',
-            showStudentInfo: false
+            showStudentInfo: false,
+            currentStudentLink: undefined
         }
     },
 
     methods: {
+        deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
+
         selectStudent: function (student) {
-            this.currentStudent = student;
+            this.currentStudent = this.deepClone(student);
+            this.currentStudentLink = student;
             this.showStudentInfo = true;
             console.log('User selcted with id ' + this.currentStudent);
         },
 
         saveStudent: function () {
+            this.currentStudentLink = this.currentStudent // weil currentStudentLink a Link zum student selber isch, wird student glei in der liste aktualisiert 
+
             console.log(this.currentStudent.name + ' saved');
             this.currentStudent = undefined;
             this.showStudentInfo = false;
@@ -261,6 +268,12 @@ export default {
 
         deleteStudent: function () {
             console.log('delete student' + this.currentStudent);
+            this.currentStudent = undefined;
+            this.showStudentInfo = false;
+        },
+
+        closeStudent: function () {
+            console.log(this.currentStudent + ' closed');
             this.currentStudent = undefined;
             this.showStudentInfo = false;
         }
