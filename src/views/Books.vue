@@ -164,7 +164,6 @@ export default {
                 'la': 'Latein',
                 'en': 'Englisch',
             },
-            currentStudentLink: undefined,
         }
     },
 
@@ -180,7 +179,6 @@ export default {
 
         selectBook: function (book) {
             this.currentBook = this.deepClone(book);
-            this.currentBookLink = book.id;
             this.bookResults = [];
             this.showBookInfo = true;
             console.log('Book selcted ' + this.currentBook);

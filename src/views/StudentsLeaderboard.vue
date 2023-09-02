@@ -229,7 +229,6 @@ export default {
             currentStudent: undefined,
             searchStudent: '',
             showStudentInfo: false,
-            currentStudentLink: undefined
         }
     },
 
@@ -250,13 +249,12 @@ export default {
         },
         selectStudent: function (student) {
             this.currentStudent = this.deepClone(student);
-            this.currentStudentLink = student;
             this.showStudentInfo = true;
             console.log('User selcted with id ' + this.currentStudent.uid);
         },
 
         saveStudent: function () {
-            this.currentStudentLink = this.currentStudent // weil currentStudentLink a Link zum student selber isch, wird student glei in der liste aktualisiert 
+            this.currentStudent // weil currentStudentLink a Link zum student selber isch, wird student glei in der liste aktualisiert 
 
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
