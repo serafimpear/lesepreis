@@ -241,12 +241,14 @@ export default {
                 this.books = dataReceived;
             })
         },
+
         updateStudentsRemote: function () {
             ipcRenderer.send("getStudents");
             ipcRenderer.on("students", (event, dataReceived) => {
                 this.students = dataReceived;
             })
         },
+
         selectStudent: function (student) {
             this.currentStudent = this.deepClone(student);
             this.showStudentInfo = true;
@@ -254,8 +256,6 @@ export default {
         },
 
         saveStudent: function () {
-            this.currentStudent // weil currentStudentLink a Link zum student selber isch, wird student glei in der liste aktualisiert 
-
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
             if (this.currentStudent.uid == -1) {
@@ -264,6 +264,7 @@ export default {
             }
             this.currentStudent = undefined;
             this.showStudentInfo = false;
+            this.updateStudentsRemote();
         },
 
         newStudent: function () {
