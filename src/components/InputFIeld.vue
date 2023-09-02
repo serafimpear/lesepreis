@@ -2,8 +2,8 @@
     <div :class="`input-field ${disabled}`">
         <div class="input-field-text">{{ text }}</div>
         <div :class="`input-field-field ui-styled  ${number}`">
-            <input @input="$emit('update:modelValue', $event.target.value)" v-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`">
-            <input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`">
+            <input :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`">
+            <input :disabled="disabled" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`">
         </div>
     </div>
 </template>
@@ -43,5 +43,16 @@ div.input-field input {
     outline: none;
     width: 100%;
     font-size: 18px;
+    background: transparent;
+}
+
+div.input-field-field:hover {
+    background: #F5F5F5;
+    border-width: 2px;
+}
+
+div.input-field-field:has(input:focus) {
+    background: #F5F5F5;
+    border-width: 2px;
 }
 </style>
