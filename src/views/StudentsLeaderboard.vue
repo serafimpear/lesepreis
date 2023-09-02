@@ -260,8 +260,8 @@ export default {
 
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
-            if (this.currentStudent.id == -1) {
-                this.currentStudent.id = this.students.length;
+            if (this.currentStudent.uid == -1) {
+                this.currentStudent.uid = this.students.length;
                 this.students.push(this.currentStudent);
             }
             this.currentStudent = undefined;
