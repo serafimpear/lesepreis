@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const Store = require('./src/assets/Store');
 const { studentFile, bookFile } = require('./src/assets/data.js');
-const { sign } = require('crypto');
 
 const ipc = ipcMain
 
@@ -60,6 +59,23 @@ function createWindow() {
         }
         win.webContents.send('students', students);
     })
+    ipc.on("addStudent", (event, dataReceived) => {
+        data = JSON.parse(dataReceived);
+        if (data.uid == -1) {
+            data.uid = studentFile.get('amountOfStudents');
+            studentFile.set('amountOfStudents', studentFile.get('amountOfStudents') + 1);
+        }
+        studentFile.set(data.uid, data);
+    })
+    ipc.on("deleteStudent", (event, dataReceived) => {
+        data = JSON.parse(dataReceived);
+        size = studentFile.get('amountOfStudents');
+        lastItem = studentFile.get(size - 1);
+        lastItem.uid = data.uid;
+        studentFile.set(data.uid, lastItem);
+        studentFile.set('amountOfStudents', size - 1);
+        // man muss no die id in students updaten!
+    })
 
     ipc.on('getBooks', () => {
         const books = [];
@@ -80,10 +96,12 @@ function createWindow() {
     ipc.on("deleteBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
         size = bookFile.get('amountOfBooks');
-        lastItem = bookFile.get(size-1);
+        lastItem = bookFile.get(size - 1);
+        prevId = lastItem.id;
         lastItem.id = data.id;
         bookFile.set(data.id, lastItem);
-        bookFile.set('amountOfBooks', size-1);
+        bookFile.set('amountOfBooks', size - 1);
+        // man muss no die id in students updaten!
     })
 }
 

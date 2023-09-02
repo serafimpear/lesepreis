@@ -210,7 +210,6 @@ import Button from "@/components/Button.vue"
 import InputField from "@/components/InputField.vue"
 import InputFieldTrueFalse from "@/components/InputFieldTrueFalse.vue"
 import SortIcon from "@/components/SortIcon.vue"
-//import { students, books } from '@/assets/dataOld.js';
 
 
 export default {
@@ -253,6 +252,11 @@ export default {
 
         saveStudent: function () {
             console.log(this.currentStudent.name + ' saved');
+            ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
+            if (this.currentStudent.id == -1) {
+                this.currentStudent.id = this.students.length;
+                this.students.push(this.currentStudent);
+            }
             this.currentStudent = undefined;
             this.showStudentInfo = false;
         },
@@ -275,6 +279,10 @@ export default {
 
         deleteStudent: function () {
             console.log('delete student' + this.currentStudent);
+            ipcRenderer.send("deleteStudent", JSON.stringify(this.currentStudent));
+
+            this.updateStudentsRemote();
+
             this.currentStudent = undefined;
             this.showStudentInfo = false;
         }
