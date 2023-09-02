@@ -136,7 +136,6 @@ import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
 import axios from 'axios';
 
-
 export default {
     components: {
         SearchBar,
@@ -164,6 +163,7 @@ export default {
                 'fr': 'Französisch',
                 'la': 'Latein',
                 'en': 'Englisch',
+                'es': 'Spanisch',
             },
         }
     },
