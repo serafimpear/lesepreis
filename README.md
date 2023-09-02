@@ -3,10 +3,14 @@
 Eine Web-App, basiert auf vue.js für die Verwaltung vom Lesepreis in den Oberschulen Fallmerayer
 
 ## Benutzerfreundliches UI
-![image](https://github.com/serafimpear/lesepreis/assets/67895914/9249c933-c94e-45ed-b859-01504b75ad2d)
+![image](https://github.com/serafimpear/lesepreis/assets/67895914/0b1307d0-b4de-4b15-b468-9e9a1a06bd58)
 
 ## Automatische Suche nach ISBN
-![image](https://github.com/serafimpear/lesepreis/assets/67895914/e7e7423d-8e36-430d-ae8a-d6f4c68aa202)
+![image](https://github.com/serafimpear/lesepreis/assets/67895914/5552b688-c918-4cad-afca-0da3bb9fad83)
+
+## Änderungsverlauf 
+![image](https://github.com/serafimpear/lesepreis/assets/67895914/5b5fdab8-5225-483d-b50b-c6c5904670f8)
+
 
 ## Recommended IDE Setup
 
