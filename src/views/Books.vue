@@ -150,6 +150,7 @@ export default {
     data() {
         return {
             books: [],
+            students: [],
             searchBook: '',
             currentBook: undefined,
             showBookInfo: false,
@@ -174,6 +175,12 @@ export default {
             ipcRenderer.send("getBooks");
             ipcRenderer.on("books", (event, dataReceived) => {
                 this.books = dataReceived;
+            })
+        },
+        updateStudentsRemote: function () {
+            ipcRenderer.send("getStudents");
+            ipcRenderer.on("students", (event, dataReceived) => {
+                this.students = dataReceived;
             })
         },
 
@@ -204,14 +211,32 @@ export default {
             this.showBookInfo = false;
 
             this.updateBooksRemote();
+            
         },
 
         deleteBook: function () {
+            if (this.currentBook.id == -1) {
+                return;
+            }
+            let readCount = 0;
+            for (let i = 0; i < this.students.length; i++) {
+                for (let j = 0; j < this.students[i].books.length; j++) {
+                    if (this.students[i].books[j].id == this.currentBook.id) {
+                        readCount++;
+                    }
+                }
+            }
+
+            if (readCount != 0) {
+                console.log('dieses Buch haben ' + readCount + 'Schüler gelesen. Sie können dieses Buch nicht löschen. Um es zu löschen, entfernen sie bei jedem Schüler dieses aus der liste der gelesenen Bücher!');
+                return;
+            }
             console.log(this.currentBook.title + ' deleted');
-            
+
             ipcRenderer.send("deleteBook", JSON.stringify(this.currentBook));
 
             this.updateBooksRemote();
+            this.updateStudentsRemote();
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;
@@ -278,6 +303,7 @@ export default {
     },
 
     beforeMount() {
+        this.updateStudentsRemote();
         this.updateBooksRemote();
     },
 
