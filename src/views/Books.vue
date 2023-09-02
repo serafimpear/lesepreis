@@ -136,7 +136,6 @@ import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
 import axios from 'axios';
 
-let books = [];
 
 export default {
     components: {
@@ -150,7 +149,7 @@ export default {
 
     data() {
         return {
-            books: books,
+            books: [],
             searchBook: '',
             currentBook: undefined,
             showBookInfo: false,
@@ -211,12 +210,10 @@ export default {
 
         deleteBook: function () {
             console.log(this.currentBook.title + ' deleted');
+            
+            ipcRenderer.send("deleteBook", JSON.stringify(this.currentBook));
 
-            /*ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
-            if (this.currentBook.id == -1) {
-                this.currentBook.id = this.books.length;
-                this.books.push(this.currentBook);
-            }*/
+            this.updateBooksRemote();
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;

@@ -202,6 +202,8 @@ div#no_student_selected {
 </style>
 
 <script>
+const { ipcRenderer } = require('electron')
+
 import SearchBar from "@/components/SearchBar.vue"
 import Button from "@/components/Button.vue"
 import InputField from "@/components/InputField.vue"
@@ -223,8 +225,8 @@ export default {
 
     data() {
         return {
-            students: students,
-            books: books,
+            students: [],
+            books: [],
             currentStudent: undefined,
             searchStudent: '',
             showStudentInfo: false,
@@ -235,11 +237,23 @@ export default {
     methods: {
         deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
 
+        updateBooksRemote: function () {
+            ipcRenderer.send("getBooks");
+            ipcRenderer.on("books", (event, dataReceived) => {
+                this.books = dataReceived;
+            })
+        },
+        updateStudentsRemote: function () {
+            ipcRenderer.send("getStudents");
+            ipcRenderer.on("students", (event, dataReceived) => {
+                this.students = dataReceived;
+            })
+        },
         selectStudent: function (student) {
             this.currentStudent = this.deepClone(student);
             this.currentStudentLink = student;
             this.showStudentInfo = true;
-            console.log('User selcted with id ' + this.currentStudent);
+            console.log('User selcted with id ' + this.currentStudent.uid);
         },
 
         saveStudent: function () {
@@ -253,7 +267,7 @@ export default {
         newStudent: function () {
             console.log('open new student');
             this.currentStudent = {
-                uid: 1,
+                uid: -1,
                 name: "",
                 surname: "",
                 class: "",
@@ -277,6 +291,10 @@ export default {
             this.currentStudent = undefined;
             this.showStudentInfo = false;
         }
+    },
+    beforeMount() {
+        this.updateBooksRemote();
+        this.updateStudentsRemote();
     },
 
     computed: {
