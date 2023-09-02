@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 const Store = require('./src/assets/Store');
 const { studentFile, bookFile } = require('./src/assets/data.js');
+const { sign } = require('crypto');
 
 const ipc = ipcMain
 
@@ -51,6 +52,15 @@ function createWindow() {
         win.minimize()
     })
 
+    ipc.on('getStudents', () => {
+        const students = [];
+        num = studentFile.get('amountOfStudents');
+        for (let i = 0; i < num; i++) {
+            students.push(studentFile.get(i));
+        }
+        win.webContents.send('students', students);
+    })
+
     ipc.on('getBooks', () => {
         const books = [];
         num = bookFile.get('amountOfBooks');
@@ -66,6 +76,14 @@ function createWindow() {
             bookFile.set('amountOfBooks', bookFile.get('amountOfBooks') + 1);
         }
         bookFile.set(data.id, data);
+    })
+    ipc.on("deleteBook", (event, dataReceived) => {
+        data = JSON.parse(dataReceived);
+        size = bookFile.get('amountOfBooks');
+        lastItem = bookFile.get(size-1);
+        lastItem.id = data.id;
+        bookFile.set(data.id, lastItem);
+        bookFile.set('amountOfBooks', size-1);
     })
 }
 
