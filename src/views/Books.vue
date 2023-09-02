@@ -211,6 +211,7 @@ export default {
             this.showBookInfo = false;
 
             this.updateBooksRemote();
+            
         },
 
         deleteBook: function () {
@@ -235,6 +236,7 @@ export default {
             ipcRenderer.send("deleteBook", JSON.stringify(this.currentBook));
 
             this.updateBooksRemote();
+            this.updateStudentsRemote();
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;

@@ -99,9 +99,27 @@ function createWindow() {
         lastItem = bookFile.get(size - 1);
         prevId = lastItem.id;
         lastItem.id = data.id;
-        bookFile.set(data.id, lastItem);
+        bookFile.set(lastitem.id, lastItem);
         bookFile.set('amountOfBooks', size - 1);
-        // man muss no die id in students updaten!
+        // man muss no die id in students updaten (wegen swap)!
+        const students = [];
+        num = studentFile.get('amountOfStudents');
+        for (let i = 0; i < num; i++) {
+            students.push(studentFile.get(i));
+        }
+        let changedFlag = false;
+        for (let i = 0; i < num; i++) {
+            for (let j = 0; j < students[i].books.length; j++) {
+                if (students[i].books[j].id == prefId) {
+                    students[i].books[j].id = lastItem.id;
+                    changedFlag = true;
+                }
+            }
+            if (changedFlag) {
+                studentFile.set(i, students[i]);
+                changedFlag = false;
+            }
+        }
     })
 }
 
