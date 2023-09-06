@@ -136,7 +136,6 @@ import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
 import axios from 'axios';
 
-
 export default {
     components: {
         SearchBar,
@@ -164,6 +163,7 @@ export default {
                 'fr': 'Französisch',
                 'la': 'Latein',
                 'en': 'Englisch',
+                'es': 'Spanisch',
             },
         }
     },
@@ -228,7 +228,7 @@ export default {
             }
 
             if (readCount != 0) {
-                console.log('dieses Buch haben ' + readCount + 'Schüler gelesen. Sie können dieses Buch nicht löschen. Um es zu löschen, entfernen sie bei jedem Schüler dieses aus der liste der gelesenen Bücher!');
+                alert(`Sie können das Buch "${this.currentBook.title}" nicht löschen!\nDieses Buch haben ${readCount} Schüler gelesen. Um es zu löschen, entfernen sie bei jedem Schüler dieses aus der liste der gelesenen Bücher!`);
                 return;
             }
             console.log(this.currentBook.title + ' deleted');

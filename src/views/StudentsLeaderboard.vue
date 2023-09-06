@@ -60,16 +60,16 @@
                 </div>
 
                 <div class="student-information">
-                    <InputField text="Vorname&nbsp;&nbsp;&nbsp;" variable="" :value=currentStudent.name />
-                    <InputField text="Klasse" variable="" number="number" :value=currentStudent.class />
-                    <InputField text="Nachname" variable="" :value=currentStudent.surname />
-                    <InputField text="Lose&nbsp;&nbsp;&nbsp;" variable="" disabled="disabled" number="number"
+                    <InputField v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;" :value=currentStudent.name />
+                    <InputField v-model="currentStudent.class" text="Klasse" number="number" :value=currentStudent.class />
+                    <InputField v-model="currentStudent.surname" text="Nachname" :value=currentStudent.surname />
+                    <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled" number="number"
                         :value=currentStudent.points />
                 </div>
 
                 <div class="readed-books">
                     <div class="readed-books-header">
-                        <InputField text="Gelesene Bücher" variable="" :value=currentStudent.readed_books
+                        <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher" :value=currentStudent.readed_books
                             disabled="disabled" number="number" />
                         <Button type="add" text="Hinzufügen" />
                     </div>
@@ -126,7 +126,7 @@
                 <div v-if="currentStudent.multiplied" class="multiplication">
                     <div class="multiplication-header">
                         <InputFieldTrueFalse text="Multiplikation" value="durchgeführt" img="true" />
-                        <InputField text="Punkte" variable="" :value=currentStudent.multiplied_points disabled="disabled"
+                        <InputField text="Punkte" :value=currentStudent.multiplied_points disabled="disabled"
                             number="number" />
                         <InputField text="Datum" variable=""
                             :value="`${new Date(currentStudent.date_multiplied).toLocaleDateString('de-DE')}`"
@@ -241,12 +241,14 @@ export default {
                 this.books = dataReceived;
             })
         },
+
         updateStudentsRemote: function () {
             ipcRenderer.send("getStudents");
             ipcRenderer.on("students", (event, dataReceived) => {
                 this.students = dataReceived;
             })
         },
+
         selectStudent: function (student) {
             this.currentStudent = this.deepClone(student);
             this.showStudentInfo = true;
@@ -254,8 +256,6 @@ export default {
         },
 
         saveStudent: function () {
-            this.currentStudent // weil currentStudentLink a Link zum student selber isch, wird student glei in der liste aktualisiert 
-
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
             if (this.currentStudent.uid == -1) {
@@ -264,6 +264,7 @@ export default {
             }
             this.currentStudent = undefined;
             this.showStudentInfo = false;
+            this.updateStudentsRemote();
         },
 
         newStudent: function () {
