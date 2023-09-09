@@ -73,9 +73,9 @@
     }
 
     body div.ui-table div.table-row {
-        height: 2em;
+        height: 2.222em;
         gap: 0.6em;
-        padding: 0 0.6em;
+        padding: 0.432em 0.6em;
     }
 
     body div.ui-table img.table-icon {

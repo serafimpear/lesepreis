@@ -1,14 +1,17 @@
 <template>
     <div id="titleBarContainer">
         <div id="titleBar">
-            <button id="returnButton">
-                <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="29" height="29" rx="9" fill="#3F3F3F" />
-                    <path
-                        d="M5 12.7483L17 12.7483C20.3137 12.7483 23 15.4346 23 18.7483L23 22M5 12.7483L10.4 7M5 12.7483L10.4 18.5646"
-                        stroke="#D9D9D9" stroke-width="2" stroke-linecap="round" />
-                </svg>
-            </button>
+            <div v-on:mouseover="showHistoryPopup = true;" v-on:mouseleave="showHistoryPopup = false;">
+                <button id="returnButton">
+                    <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="29" height="29" rx="9" fill="#3F3F3F" />
+                        <path
+                            d="M5 12.7483L17 12.7483C20.3137 12.7483 23 15.4346 23 18.7483L23 22M5 12.7483L10.4 7M5 12.7483L10.4 18.5646"
+                            stroke="#D9D9D9" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+                <HistoryPopup v-if="showHistoryPopup == true" />
+            </div>
             <div id="app-title-draggable-bar">
                 <div id="app-title">Lesepreis Verwaltung</div>
             </div>
@@ -41,7 +44,21 @@
     </div>
 </template>
 
-<script></script>
+<script>
+import HistoryPopup from '@/components/HistoryPopup.vue'
+
+export default {
+    components: {
+        HistoryPopup
+    },
+
+    data() {
+        return {
+            showHistoryPopup: false,
+        }
+    }
+}
+</script>
 
 <style>
 div#app {
@@ -60,7 +77,7 @@ div#titleBarContainer {
     width: 100%;
     height: 44px;
     background-color: #3F3F3F;
-    display: fixed;
+    /* position: fixed; <-- breaks the layout */
     top: 0;
     z-index: 1;
 }
@@ -127,4 +144,5 @@ div#titleBar button:hover {
 div#titleBar svg {
     height: 26px;
     width: 26px;
-}</style>
+}
+</style>
