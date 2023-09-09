@@ -63,14 +63,14 @@
                     <InputField v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;" :value=currentStudent.name />
                     <InputField v-model="currentStudent.class" text="Klasse" number="number" :value=currentStudent.class />
                     <InputField v-model="currentStudent.surname" text="Nachname" :value=currentStudent.surname />
-                    <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled" number="number"
-                        :value=currentStudent.points />
+                    <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled"
+                        number="number" :value=currentStudent.points />
                 </div>
 
                 <div class="readed-books">
                     <div class="readed-books-header">
-                        <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher" :value=currentStudent.readed_books
-                            disabled="disabled" number="number" />
+                        <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
+                            :value=currentStudent.readed_books disabled="disabled" number="number" />
                         <Button type="add" text="Hinzufügen" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
@@ -305,6 +305,7 @@ export default {
             this.showStudentInfo = false;
         }
     },
+
     beforeMount() {
         this.updateBooksRemote();
         this.updateStudentsRemote();

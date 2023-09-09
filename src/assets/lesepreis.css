@@ -159,11 +159,11 @@ div.ui-table .table-data {
 }
 
 div.ui-table div.table-row {
-    height: 40px;
+    /* height: 40px; */ height: 2.222em;
     width: 100%;
     display: grid;
     gap: 15px;
-    padding: 7px 15px;
+    padding: 0.432em 15px;
     box-sizing: border-box;
     cursor: pointer;
 }
