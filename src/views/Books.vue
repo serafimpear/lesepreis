@@ -202,16 +202,13 @@ export default {
             console.log(this.currentBook.title + ' saved');
 
             ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
-            if (this.currentBook.id == -1) {
-                this.currentBook.id = this.books.length;
-                this.books.push(this.currentBook);
-            }
+
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;
 
             this.updateBooksRemote();
-            
+
         },
 
         deleteBook: function () {
@@ -253,8 +250,8 @@ export default {
                 foreign_language: false,
                 points: 0,
                 isbn: "",
-            },
-                this.showBookInfo = true;
+            };
+            this.showBookInfo = true;
             this.isNew = true;
 
         },
