@@ -2,7 +2,7 @@
     <main>
         <div class="student-leaderboard-section">
             <h1>Rangliste der Schüler:innen</h1>
-            <SearchBar v-model="searchStudent" placeholder="Suche Schüler..." />
+            <SearchBar v-model="searchStudent" tabindex="1" placeholder="Suche Schüler..." />
             <div style="overflow: hidden;">
                 <div class="student-leaderboard ui-table">
                     <div class="table-row table-header-row">
@@ -48,21 +48,23 @@
                 </div>
             </div>
             <div class="student-leaderboard-section-footer">
-                <Button type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
+                <Button tabindex="2" type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
             </div>
         </div>
         <div class="vertical-line"></div>
         <div class="student-information-section">
             <div v-if="showStudentInfo == true" class="content">
                 <div class="student-header-title">
-                    <h1>Student:in</h1>
+                    <h1>Schüler:in</h1>
+                    <Button type="delete" text="Löschen" color="red" @click="deleteStudent()" />
+                    <Button type="yes" text="Speichern" color="green" @click="saveStudent()" />
                     <IconButton @click="closeStudent()" type="no" />
                 </div>
 
                 <div class="student-information">
-                    <InputField v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;" :value=currentStudent.name />
-                    <InputField v-model="currentStudent.class" text="Klasse" number="number" :value=currentStudent.class />
-                    <InputField v-model="currentStudent.surname" text="Nachname" :value=currentStudent.surname />
+                    <InputField tabindex="3" v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;" :value=currentStudent.name />
+                    <InputField tabindex="5" v-model="currentStudent.class" text="Klasse" number="number" :value=currentStudent.class />
+                    <InputField tabindex="4" v-model="currentStudent.surname" text="Nachname" :value=currentStudent.surname />
                     <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled"
                         number="number" :value=currentStudent.points />
                 </div>
@@ -179,10 +181,10 @@
                         <Button text="Bücher multiplizieren" />
                     </div>
                 </div>
-                <div class="delete-save-bar">
+                <!-- <div class="delete-save-bar">
                     <Button type="delete" text="Löschen" color="red" @click="deleteStudent()" />
                     <Button type="yes" text="Speichern" color="green" @click="saveStudent()" />
-                </div>
+                </div> -->
             </div>
             <div v-else id="no_student_selected">Klicken Sie auf einen Schüler,<br>
                 um seine Informationen zu sehen</div>

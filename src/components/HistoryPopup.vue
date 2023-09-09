@@ -3,7 +3,8 @@
         <div class="history-popup">
             <div class="ui-table">
                 <div class="table-data">
-                    <div class="table-row" v-for="action in actions">
+                    <div class="table-row" v-for="(action, index) in actions" :key="index" :class="{ 'highlight': isHovered(index) }"
+                    @mouseover="setHovered(index)" @mouseout="setHovered(-1)" @click="undo(action)">
                         <div class="table-cell">
                             {{ action.text }}
                         </div>
@@ -19,7 +20,7 @@
 
 <script>
 export default {
-    data () {
+    data() {
         return {
             actions: [
                 {
@@ -43,7 +44,22 @@ export default {
                     'time': '09:29'
                 },
             ],
+
+            hoveredIndex: -1,
         }
+    },
+
+    methods: {
+        undo: (action) => {
+            console.log('undo action ' + action);
+        },
+
+        isHovered(index) {
+      return index <= this.hoveredIndex;
+    },
+    setHovered(index) {
+      this.hoveredIndex = index;
+    },
     }
 }
 </script>
@@ -61,12 +77,16 @@ export default {
 .history-popup {
     border-radius: 9px;
     overflow: hidden;
-    box-shadow: 0 0 32px #00000030;
+    box-shadow: 0 0 40px 4px #00000045;
     width: 100%;
 }
 
 .history-popup .ui-table .table-row {
     grid-template-columns: auto 2em;
+}
+
+.history-popup .ui-table .table-row.highlight {
+    background: #fff3ad;
 }
 
 .history-popup .time-of-change {
