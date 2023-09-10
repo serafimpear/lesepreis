@@ -2,15 +2,15 @@
     <div :class="`input-field ${disabled}`">
         <div class="input-field-text">{{ text }}</div>
         <div :class="`input-field-field ui-styled  ${number}`">
-            <input :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`">
-            <input :disabled="disabled" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`">
+            <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`">
+            <input :tabindex=tabindex :disabled="disabled" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`">
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['text', 'variable', 'disabled', 'number', 'value'],
+    props: ['text', 'variable', 'disabled', 'number', 'value', 'tabindex'],
     emits: ['update:modelValue']
 }
 </script>

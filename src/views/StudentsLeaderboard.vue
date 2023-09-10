@@ -2,7 +2,7 @@
     <main>
         <div class="student-leaderboard-section">
             <h1>Rangliste der Schüler:innen</h1>
-            <SearchBar v-model="searchStudent" placeholder="Suche Schüler..." />
+            <SearchBar v-model="searchStudent" tabindex="1" placeholder="Suche Schüler..." />
             <div style="overflow: hidden;">
                 <div class="student-leaderboard ui-table">
                     <div class="table-row table-header-row">
@@ -48,21 +48,26 @@
                 </div>
             </div>
             <div class="student-leaderboard-section-footer">
-                <Button type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
+                <Button tabindex="2" type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
             </div>
         </div>
         <div class="vertical-line"></div>
         <div class="student-information-section">
             <div v-if="showStudentInfo == true" class="content">
                 <div class="student-header-title">
-                    <h1>Student:in</h1>
+                    <h1>Schüler:in</h1>
+                    <Button type="delete" text="Löschen" color="red" @click="deleteStudent()" />
+                    <Button type="yes" text="Speichern" color="green" @click="saveStudent()" />
                     <IconButton @click="closeStudent()" type="no" />
                 </div>
 
                 <div class="student-information">
-                    <InputField v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;" :value=currentStudent.name />
-                    <InputField v-model="currentStudent.class" text="Klasse" number="number" :value=currentStudent.class />
-                    <InputField v-model="currentStudent.surname" text="Nachname" :value=currentStudent.surname />
+                    <InputField tabindex="3" v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;"
+                        :value=currentStudent.name />
+                    <InputField tabindex="5" v-model="currentStudent.class" text="Klasse" number="number"
+                        :value=currentStudent.class />
+                    <InputField tabindex="4" v-model="currentStudent.surname" text="Nachname"
+                        :value=currentStudent.surname />
                     <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled"
                         number="number" :value=currentStudent.points />
                 </div>
@@ -71,7 +76,7 @@
                     <div class="readed-books-header">
                         <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
                             :value=currentStudent.readed_books disabled="disabled" number="number" />
-                        <Button type="add" text="Hinzufügen" />
+                        <Button type="add" text="Hinzufügen" @click="readBookWindowVisible = true" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
                         <div class="table-row table-header-row">
@@ -179,14 +184,18 @@
                         <Button text="Bücher multiplizieren" />
                     </div>
                 </div>
-                <div class="delete-save-bar">
+                <!-- <div class="delete-save-bar">
                     <Button type="delete" text="Löschen" color="red" @click="deleteStudent()" />
                     <Button type="yes" text="Speichern" color="green" @click="saveStudent()" />
-                </div>
+                </div> -->
             </div>
             <div v-else id="no_student_selected">Klicken Sie auf einen Schüler,<br>
                 um seine Informationen zu sehen</div>
         </div>
+        <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
+            :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
+        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
+            @selectBook="addBookToStudent(book)" />
     </main>
 </template>
 
@@ -210,16 +219,22 @@ import InputField from "@/components/InputField.vue"
 import InputFieldTrueFalse from "@/components/InputFieldTrueFalse.vue"
 import SortIcon from "@/components/SortIcon.vue"
 import IconButton from "@/components/IconButton.vue"
-
+import Modal from "@/components/Modal.vue"
+import ReadBookWindow from "@/components/ReadBookWindow.vue"
+import { modalFunctions } from "@/logic/modal.js"
 
 export default {
+    mixins: [modalFunctions],
+
     components: {
         SearchBar,
         Button,
         InputField,
         InputFieldTrueFalse,
         SortIcon,
-        IconButton
+        IconButton,
+        Modal,
+        ReadBookWindow
     },
 
     data() {
@@ -229,6 +244,7 @@ export default {
             currentStudent: undefined,
             searchStudent: '',
             showStudentInfo: false,
+            readBookWindowVisible: false,
         }
     },
 
@@ -284,13 +300,28 @@ export default {
         },
 
         deleteStudent: function () {
-            console.log('delete student' + this.currentStudent);
-            ipcRenderer.send("deleteStudent", JSON.stringify(this.currentStudent));
+            if (this.currentStudent.uid == -1) {
+                this.currentStudent = undefined;
+                this.showStudentInfo = false;
+                return;
+            }
 
-            this.updateStudentsRemote();
+            this.ask({
+                type: 'warning',
+                subtitle: 'Schüler löschen',
+                content: `Sind Sie sicher, dass sie den Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
+                okButton: 'Schüler löschen'
+            }, () => {
+                console.log('delete student' + this.currentStudent);
+                ipcRenderer.send("deleteStudent", JSON.stringify(this.currentStudent));
 
-            this.currentStudent = undefined;
-            this.showStudentInfo = false;
+                this.updateStudentsRemote();
+
+                this.currentStudent = undefined;
+                this.showStudentInfo = false;
+            }, () => {
+                console.log('student not deleted because modal false');
+            });
         },
 
         closeStudent: function () {
@@ -303,6 +334,11 @@ export default {
             console.log(this.currentStudent + ' closed');
             this.currentStudent = undefined;
             this.showStudentInfo = false;
+        },
+
+        addBookToStudent: function () {
+            this.readBookWindowVisible = false;
+            // ...
         }
     },
 

@@ -1,13 +1,13 @@
 <template>
     <div class="search ui-styled">
         <img src="@/assets/svgs/search-icon.svg" class="search-icon">
-        <input @input="$emit('update:modelValue', $event.target.value)" type="text" :placeholder=placeholder class="ui-search-input">
+        <input :tabindex=tabindex @input="$emit('update:modelValue', $event.target.value)" type="text" :placeholder=placeholder class="ui-search-input">
     </div>
 </template>
 
 <script>
 export default {
-  props: ['modelValue', 'placeholder'],
+  props: ['modelValue', 'placeholder', 'tabindex'],
   emits: ['update:modelValue']
 }
 </script>

@@ -23,7 +23,7 @@ reset_database.serialize(() => {
 const ipc = ipcMain
 function loadFromJsonToSQLite() {
     num = studentFile.get('amountOfStudents');
-    for (let i = 0; i < num; i++) {
+    for (let i = 0; i < 0; i++) {
         data = studentFile.get(i);
         students_database.serialize(() => {
             students_database.run('INSERT INTO students (name, surname, class, points, readed_books, passed, multiplied, books) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
@@ -40,7 +40,7 @@ function loadFromJsonToSQLite() {
         });
     }
     num = bookFile.get('amountOfBooks');
-    for (let i = 0; i < num; i++) {
+    for (let i = 0; i < 0; i++) {
         data = bookFile.get(i);
         books_database.serialize(() => {
             books_database.run('INSERT INTO books (title,author,language, foreign_language, points, isbn) VALUES (?, ?, ?, ?, ?, ?)',
@@ -58,15 +58,15 @@ function loadFromJsonToSQLite() {
 
 function createWindow() {
     //loadFromJsonToSQLite(); // run once to load data from json to the database!
-    const { screen } = require('electron');
+    const { screen } = require('electron'); 
     var dimensions = screen.getPrimaryDisplay().size;
     const isSmallScreen = false;
     if (dimensions.width < 1700 || dimensions.height < 800) { const isSmallScreen = true; console.log('small'); } else { console.log('big'); }
 
     const win = new BrowserWindow({
         show: false,
-        minWidth: 1070,
-        minHeight: 700,
+        minWidth: 1090,
+        minHeight: 650,
         width: 700,
         height: 400,
         frame: false,
@@ -209,7 +209,7 @@ function createWindow() {
     })
     ipc.on("deleteBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
-        boooks_database.serialize(() => {
+        books_database.serialize(() => {
             books_database.run(`DELETE FROM books WHERE id = ?`,
                 [
                     data.id

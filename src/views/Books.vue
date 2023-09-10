@@ -90,6 +90,8 @@
             <div v-else id="no_book_selected">Klicken Sie auf ein Buch,<br>
                 um seine Informationen zu bearbeiten</div>
         </div>
+        <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
+            :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
     </main>
 </template>
 
@@ -105,21 +107,6 @@ div#no_book_selected {
 </style>
 
 <style>
-.books-list-section {
-    display: grid;
-    grid-template-rows: 68px 40px 1fr 40px;
-    gap: 20px;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-div.books-list div.table-row {
-    grid-template-columns: 1fr 1fr 5em 3em 10em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 main#main-books {
     grid-template-columns: 2fr 1px 1fr;
 }
@@ -136,14 +123,20 @@ import LoadingIcon from "@/components/LoadingIcon.vue"
 import InputField from "@/components/InputField.vue"
 import axios from 'axios';
 
+import Modal from "@/components/Modal.vue"
+import { modalFunctions } from "@/logic/modal.js"
+
 export default {
+    mixins: [modalFunctions],
+
     components: {
         SearchBar,
         Button,
         SortIcon,
         InputField,
         LoadingIcon,
-        IconButton
+        IconButton,
+        Modal
     },
 
     data() {
@@ -213,8 +206,12 @@ export default {
 
         deleteBook: function () {
             if (this.currentBook.id == -1) {
+                this.currentBook = undefined;
+                this.bookResults = [];
+                this.showBookInfo = false;
                 return;
             }
+
             let readCount = 0;
             for (let i = 0; i < this.students.length; i++) {
                 for (let j = 0; j < this.students[i].books.length; j++) {
@@ -225,18 +222,38 @@ export default {
             }
 
             if (readCount != 0) {
-                alert(`Sie können das Buch "${this.currentBook.title}" nicht löschen!\nDieses Buch haben ${readCount} Schüler gelesen. Um es zu löschen, entfernen sie bei jedem Schüler dieses aus der liste der gelesenen Bücher!`);
+                this.ask({
+                    type: 'alert',
+                    // if type == alert
+                    // braucht es kein okButton
+                    subtitle: 'Sie können das Buch nicht löschen!',
+                    content: ` "${this.currentBook.title}" haben ${readCount} Schüler gelesen. Um es zu löschen, entfernen Sie bei jedem Schüler dieses aus der Liste der gelesenen Bücher!`,
+                }, () => {
+                    // cannot happen
+                }, () => {
+                    console.log('book not deleted because impossible');
+                });
                 return;
             }
-            console.log(this.currentBook.title + ' deleted');
 
-            ipcRenderer.send("deleteBook", JSON.stringify(this.currentBook));
+            this.ask({
+                type: 'warning',
+                subtitle: 'Buch löschen',
+                content: `Sind Sie sicher, dass sie das Buch “${this.currentBook.title}” entfernen wollen?`,
+                okButton: 'Buch löschen'
+            }, () => {
+                console.log(this.currentBook.title + ' deleted');
 
-            this.updateBooksRemote();
-            this.updateStudentsRemote();
-            this.currentBook = undefined;
-            this.bookResults = [];
-            this.showBookInfo = false;
+                ipcRenderer.send("deleteBook", JSON.stringify(this.currentBook));
+
+                this.updateBooksRemote();
+                this.updateStudentsRemote();
+                this.currentBook = undefined;
+                this.bookResults = [];
+                this.showBookInfo = false;
+            }, () => {
+                console.log('book not deleted because modal false');
+            });
         },
 
         newBook: function () {
