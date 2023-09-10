@@ -64,7 +64,7 @@ export default {
         },
 
         selectBook(book) {
-            this.$emit("selectBook", book); 
+            this.$emit("selectBook", book);
         },
     },
     

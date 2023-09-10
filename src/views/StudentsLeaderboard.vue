@@ -192,9 +192,10 @@
             <div v-else id="no_student_selected">Klicken Sie auf einen Schüler,<br>
                 um seine Informationen zu sehen</div>
         </div>
-        <Modal v-if="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
-        :textOK="modalButtonTextOK" @close="handleModalClose"> {{ modalContent}} </Modal>
-        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books @selectBook="addBookToStudent(book)" />
+        <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
+            :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
+        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
+            @selectBook="addBookToStudent(book)" />
     </main>
 </template>
 
@@ -299,8 +300,14 @@ export default {
         },
 
         deleteStudent: function () {
+            if (this.currentStudent.uid == -1) {
+                this.currentStudent = undefined;
+                this.showStudentInfo = false;
+                return;
+            }
+
             this.ask({
-                title: 'Achtung',
+                type: 'warning',
                 subtitle: 'Schüler löschen',
                 content: `Sind Sie sicher, dass sie den Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
                 okButton: 'Schüler löschen'
@@ -312,7 +319,7 @@ export default {
 
                 this.currentStudent = undefined;
                 this.showStudentInfo = false;
-            }, () => { 
+            }, () => {
                 console.log('student not deleted because modal false');
             });
         },
@@ -330,6 +337,7 @@ export default {
         },
 
         addBookToStudent: function () {
+            this.readBookWindowVisible = false;
             // ...
         }
     },

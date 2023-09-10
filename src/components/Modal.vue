@@ -1,12 +1,13 @@
 <template>
-    <transition name="modal-fade">
+    <transition name="fade">
         <div class="modal-background">
             <div class="modal-window" role="dialog">
                 <div class="modal-title">
                     <div class="modal-icon">
-                        <img src="@/assets/svgs/icon-warning.svg">
+                        <img v-if="type == 'warning'" src="@/assets/svgs/icon-warning-red.svg">
+                        <img v-else src="@/assets/svgs/icon-warning-blue.svg">
                     </div>
-                    <div class="modal-title-title">{{ title }}</div>
+                    <div class="modal-title-title" :class="type">{{ title }}</div>
                     <div class="modal-subtitle">{{ subtitle }}</div>
                 </div>
                 <div class="modal-content">
@@ -29,7 +30,7 @@ export default {
         Button
     },
 
-    props: ['title', 'subtitle', 'content', 'textCancel', 'textOK'],
+    props: ['title', 'subtitle', 'content', 'textCancel', 'textOK', 'type'],
 
     methods: {
         close(result) {
@@ -76,7 +77,14 @@ export default {
     font-size: 24px;
     font-style: normal;
     font-weight: 600;
+}
+
+.modal-window .modal-title .modal-title-title.warning {
     color: #d90000;
+}
+
+.modal-window .modal-title .modal-title-title.alert {
+    color: #005AC3;
 }
 
 .modal-window .modal-title .modal-subtitle {
@@ -105,15 +113,5 @@ export default {
     flex-direction: row;
     justify-content: flex-end;
     column-gap: 17px;
-}
-
-.modal-fade-enter,
-.modal-fade-leave-to {
-    opacity: 0;
-}
-
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-    transition: opacity .3s ease;
 }
 </style>

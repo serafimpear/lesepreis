@@ -7,6 +7,7 @@ export const modalFunctions = {
             modalContent: "meow!",
             modalButtonTextCancel: "Abbrechen",
             modalButtonTextOK: "Bestätigen", // if empty, no 'OK' button
+            modalType: 'alert'
         };
     },
     methods: {
@@ -17,11 +18,23 @@ export const modalFunctions = {
                 this.modalReject = reject;
             });
         },
-        ask({ title = modalTitle, subtitle = modalSubtitle, content = modalContent, okButton = modalButtonTextOK}, functionYES, functionNO) {
-            this.modalTitle = title
-            this.modalSubtitle = subtitle
+        ask({ type = this.modalType, subtitle = this.modalSubtitle, content = this.modalContent, okButton = this.modalButtonTextOK}, functionYES, functionNO) {
+            switch (type) {
+                case 'warning':
+                    this.modalTitle = 'Achtung!';
+                    this.modalType = type;
+                    this.modalSubtitle = subtitle;
+                    this.modalButtonTextOK = okButton;
+                    break;
+            
+                default:
+                    // alert
+                    this.modalTitle = subtitle;
+                    this.modalSubtitle = '';
+                    this.modalButtonTextOK = false;
+                    break;
+            }
             this.modalContent = content
-            this.modalButtonTextOK = okButton
             this.openModal()
                 .then((result) => {
                     console.log("YA!");

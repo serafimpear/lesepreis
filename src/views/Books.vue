@@ -90,8 +90,8 @@
             <div v-else id="no_book_selected">Klicken Sie auf ein Buch,<br>
                 um seine Informationen zu bearbeiten</div>
         </div>
-        <Modal v-if="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
-            :textOK="modalButtonTextOK" @close="handleModalClose"> {{ modalContent }} </Modal>
+        <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
+            :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
     </main>
 </template>
 
@@ -223,10 +223,11 @@ export default {
 
             if (readCount != 0) {
                 this.ask({
-                    title: 'Achtung',
-                    subtitle: 'Buch löschen',
-                    content: `Sie können das Buch "${this.currentBook.title}" nicht löschen!\nDieses Buch haben ${readCount} Schüler gelesen. Um es zu löschen, entfernen sie bei jedem Schüler dieses aus der liste der gelesenen Bücher!`,
-                    okButton: false
+                    type: 'alert',
+                    // if type == alert
+                    // braucht es kein okButton
+                    subtitle: 'Sie können das Buch nicht löschen!',
+                    content: ` "${this.currentBook.title}" haben ${readCount} Schüler gelesen. Um es zu löschen, entfernen Sie bei jedem Schüler dieses aus der Liste der gelesenen Bücher!`,
                 }, () => {
                     // cannot happen
                 }, () => {
@@ -236,7 +237,7 @@ export default {
             }
 
             this.ask({
-                title: 'Achtung',
+                type: 'warning',
                 subtitle: 'Buch löschen',
                 content: `Sind Sie sicher, dass sie das Buch “${this.currentBook.title}” entfernen wollen?`,
                 okButton: 'Buch löschen'
