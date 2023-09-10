@@ -3,8 +3,9 @@
         <div class="history-popup">
             <div class="ui-table">
                 <div class="table-data">
-                    <div class="table-row" v-for="(action, index) in actions" :key="index" :class="{ 'highlight': isHovered(index) }"
-                    @mouseover="setHovered(index)" @mouseout="setHovered(-1)" @click="undo(action)">
+                    <div class="table-row" v-for="(action, index) in actions" :key="index"
+                        :class="{ 'highlight': isHovered(index) }" @mouseover="setHovered(index)" @mouseout="setHovered(-1)"
+                        @click="undo(action)">
                         <div class="table-cell">
                             {{ action.text }}
                         </div>
@@ -13,6 +14,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div v-if="hoveredIndex > -1" class="ui-table history-popup-infobox">
+            <div class="table-row">
+                {{ hoveredIndex + 1 }}&nbsp;Änderungen werden rückgängig gemacht
             </div>
         </div>
     </div>
@@ -55,11 +62,11 @@ export default {
         },
 
         isHovered(index) {
-      return index <= this.hoveredIndex;
-    },
-    setHovered(index) {
-      this.hoveredIndex = index;
-    },
+            return index <= this.hoveredIndex;
+        },
+        setHovered(index) {
+            this.hoveredIndex = index;
+        },
     }
 }
 </script>
@@ -94,5 +101,21 @@ export default {
     font-size: 12px;
     font-style: italic;
     font-weight: 300;
+}
+
+.history-popup-container .history-popup-infobox {
+    margin-top: 6px;
+    border-radius: 1.1em;
+    box-shadow: 0 0 40px 4px #00000045;
+    width: 22.5em;
+    margin-left: auto;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 300;
+    background: #fff3ad !important;
+}
+
+.history-popup-container .history-popup-infobox .ui-table .table-row {
+    background: #fff3ad !important;
 }
 </style>

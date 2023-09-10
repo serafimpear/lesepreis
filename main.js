@@ -207,7 +207,7 @@ function createWindow() {
     })
     ipc.on("deleteBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
-        boooks_database.serialize(() => {
+        books_database.serialize(() => {
             books_database.run(`DELETE FROM books WHERE id = ?`,
                 [
                     data.id
