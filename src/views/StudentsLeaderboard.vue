@@ -8,7 +8,7 @@
                     <div class="table-row table-header-row">
                         <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
                         <div class="table-cell"><img src="@/assets/svgs/icon-2.svg" class="table-icon"></div>
-                        <div class="table-cell">Vorname
+                        <div class="table-cell" @click="">Vorname
                             <SortIcon />
                         </div>
                         <div class="table-cell">Nachname
@@ -245,6 +245,8 @@ export default {
             searchStudent: '',
             showStudentInfo: false,
             readBookWindowVisible: false,
+            studentsSortBy: 'points',
+            studentsSortAscending: false,
         }
     },
 
@@ -352,11 +354,17 @@ export default {
 
     computed: {
         filteredStudentsList() {
-            var s = this.searchStudent.toLowerCase();
-            return this.students.filter(student => {
+            let s = this.searchStudent.toLowerCase();
+            let tempStudentsList = this.students.filter(student => {
                 return (student.name.toLowerCase().includes(s) || student.surname.toLowerCase().includes(s) || student.class.toLowerCase().includes(s) || (student.name.toLowerCase() + ' ' + student.surname.toLowerCase()).includes(s) || (student.surname.toLowerCase() + ' ' + student.name.toLowerCase()).includes(s))
             })
+
+            return tempStudentsList.sortListBy(this.studentsSortBy, this.studentsSortAscending);
         }
     }
+}
+
+Array.prototype.sortListBy = (list, criterion, sortAscending) => {
+    
 }
 </script>
