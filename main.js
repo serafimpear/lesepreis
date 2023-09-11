@@ -8,12 +8,16 @@ const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
 const students_database = new sqlite3.Database(userDataPath + '/students_database.db');
 const books_database = new sqlite3.Database(userDataPath + '/books_database.db');
+const reset_database = new sqlite3.Database(userDataPath + '/reset_database.db');
 
 students_database.serialize(() => {
     students_database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER,passed BOOLEAN,multiplied BOOLEAN,books TEXT)");
 });
 books_database.serialize(() => {
     books_database.run("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY,title TEXT,author TEXT,language TEXT,foreign_language BOOLEAN,points INTEGER,isbn TEXT)");
+});
+reset_database.serialize(() => {
+    reset_database.run("CREATE TABLE IF NOT EXISTS reset (id INTEGER PRIMARY KEY,timestamp INTEGER,message TEXT,command TEXT, database TEXT)");
 });
 
 const ipc = ipcMain
@@ -112,8 +116,6 @@ function createWindow() {
             });
             win.webContents.send('students', students);
         });
-
-
     })
     ipc.on("addStudent", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
@@ -214,6 +216,29 @@ function createWindow() {
                 ])
         });
     })
+    ipc.on("reset", (event, dataReceived) => {
+        // just give how many steps you want to go back as argument?
+        // right now it's a list of all the reset steps
+        data = JSON.parse(dataReceived);
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].database == "books") {
+                books_database.serialize(() => {
+                    books_database.run(data[i].command)
+                });
+                reset_database.serialize(() => {
+                    reset_database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id])
+                })
+            } else if (data[i].database == "students") {
+                students_database.serialize(() => {
+                    students_database.run(data[i].command)
+                });
+                reset_database.serialize(() => {
+                    reset_database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id])
+                })
+            }
+        }
+    })
+
 }
 
 app.whenReady().then(() => {
