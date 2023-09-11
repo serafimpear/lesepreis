@@ -272,6 +272,9 @@ export default {
         },
 
         saveStudent: function () {
+            this.currentStudent.name = this.currentStudent.name.trim();
+            this.currentStudent.surname = this.currentStudent.surname.trim();
+            this.currentStudent.class = this.currentStudent.class.trim();
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
             if (this.currentStudent.uid == -1) {
