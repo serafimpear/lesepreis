@@ -196,7 +196,7 @@ export default {
             this.currentBook.author = this.currentBook.author.trim();
             this.currentBook.language = this.currentBook.language.trim();
             this.currentBook.isbn = this.currentBook.isbn.trim();
-            this.currentBook.points = this.currentBook.points.trim();
+            this.currentBook.points = parseInt(this.currentBook.points);
             console.log(this.currentBook.title + ' saved');
 
             ipcRenderer.send("addBook", JSON.stringify(this.currentBook));

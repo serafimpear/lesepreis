@@ -1,5 +1,5 @@
 <template>
-    <transition name="addbookwindow-fade">
+    <transition name="fade">
         <div class="addbookwindow-background">
             <div class="addbookwindow-window">
                 <div class="addbookwindow-title">Buch hinzufügen</div>

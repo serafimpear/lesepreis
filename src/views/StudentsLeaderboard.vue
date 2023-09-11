@@ -65,7 +65,7 @@
                     <InputField tabindex="3" v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;"
                         :value=currentStudent.name />
                     <InputField tabindex="5" v-model="currentStudent.class" text="Klasse" number="number"
-                        :value=currentStudent.class />
+                        :value=currentStudent.class @keyup.enter="saveStudent()" />
                     <InputField tabindex="4" v-model="currentStudent.surname" text="Nachname"
                         :value=currentStudent.surname />
                     <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled"
@@ -194,7 +194,7 @@
         </div>
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
-        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
+        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
             @selectBook="addBookToStudent(book)" />
     </main>
 </template>
@@ -344,6 +344,11 @@ export default {
         addBookToStudent: function () {
             this.readBookWindowVisible = false;
             // ...
+        },
+
+        sortListBy: (list, criterion, sortAscending) => {
+            return list;
+            //Elias, BITTE
         }
     },
 
@@ -355,16 +360,11 @@ export default {
     computed: {
         filteredStudentsList() {
             let s = this.searchStudent.toLowerCase();
-            let tempStudentsList = this.students.filter(student => {
-                return (student.name.toLowerCase().includes(s) || student.surname.toLowerCase().includes(s) || student.class.toLowerCase().includes(s) || (student.name.toLowerCase() + ' ' + student.surname.toLowerCase()).includes(s) || (student.surname.toLowerCase() + ' ' + student.name.toLowerCase()).includes(s))
-            })
 
-            return tempStudentsList.sortListBy(this.studentsSortBy, this.studentsSortAscending);
+            return this.sortListBy(this.students.filter(student => {
+                return (student.name.toLowerCase().includes(s) || student.surname.toLowerCase().includes(s) || student.class.toLowerCase().includes(s) || (student.name.toLowerCase() + ' ' + student.surname.toLowerCase()).includes(s) || (student.surname.toLowerCase() + ' ' + student.name.toLowerCase()).includes(s))
+            }), this.studentsSortBy, this.studentsSortAscending);
         }
     }
-}
-
-Array.prototype.sortListBy = (list, criterion, sortAscending) => {
-    
 }
 </script>
