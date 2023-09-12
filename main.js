@@ -57,7 +57,7 @@ function loadFromJsonToSQLite() {
 }
 
 function createWindow() {
-    //loadFromJsonToSQLite(); // run once to load data from json to the database!
+    // loadFromJsonToSQLite(); // run once to load data from json to the database!
     const { screen } = require('electron'); 
     var dimensions = screen.getPrimaryDisplay().size;
     const isSmallScreen = false;

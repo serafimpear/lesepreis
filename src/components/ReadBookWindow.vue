@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <div class="table-row" v-for="book in filteredBooksList" @click="selectBook(book)">
+                        <div class="table-row" v-for="book in filteredBooksList" @click="selectBook(book.id);console.log('book: ' + book)">
                             <div class="table-cell">{{ book.title }}</div>
                             <div class="table-cell">{{ book.author }}</div>
                             <div class="table-cell">{{ book.language }}</div>
@@ -57,14 +57,16 @@ export default {
     },
 
     props: ['books'],
+    emits: ['bookid'],
 
     methods: {
         close(result) {
             this.$emit("close", result);
         },
 
-        selectBook(book) {
-            this.$emit("selectBook", book);
+        selectBook(bookid) {
+            this.$emit("selectBook", bookid);
+            console.log('bookid: ' + bookid)
         },
     },
     
