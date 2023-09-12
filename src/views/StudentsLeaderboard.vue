@@ -8,16 +8,16 @@
                     <div class="table-row table-header-row">
                         <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
                         <div class="table-cell"><img src="@/assets/svgs/icon-2.svg" class="table-icon"></div>
-                        <div class="table-cell" @click="">Vorname
+                        <div class="table-cell" @click="studentsSortBy = 'name'; studentsSortAscending = !studentsSortAscending">Vorname
                             <SortIcon />
                         </div>
-                        <div class="table-cell">Nachname
+                        <div class="table-cell" @click="studentsSortBy = 'surname'; studentsSortAscending = !studentsSortAscending">Nachname
                             <SortIcon />
                         </div>
-                        <div class="table-cell">Klasse
+                        <div class="table-cell" @click="studentsSortBy = 'class'; studentsSortAscending = !studentsSortAscending">Klasse
                             <SortIcon />
                         </div>
-                        <div class="table-cell">Lose
+                        <div class="table-cell" @click="studentsSortBy = 'points'; studentsSortAscending = !studentsSortAscending">Lose
                             <SortIcon />
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.name }}</div>
                             </div>
-                            <div class="table-cell">
+                           <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.surname }}</div>
                             </div>
                             <div class="table-cell">
@@ -347,8 +347,31 @@ export default {
         },
 
         sortListBy: (list, criterion, sortAscending) => {
+            list.sort((a, b) => {
+                let elementA, elementB;
+                if(criterion === 'name') {
+                    elementA = a.name.toLowerCase();
+                    elementB = b.name.toLowerCase();
+                } else if (criterion === 'surname') {
+                    elementA = a.surname.toLowerCase();
+                    elementB = b.surname.toLowerCase();
+                } else if (criterion === 'points') {
+                    elementA = a.points;
+                    elementB = b.points;
+                } else if (criterion === 'class') {
+                    elementA = a.class;
+                    elementB = b.class;
+                }
+
+                if(elementA < elementB) {
+                    return ((sortAscending) ? -1 : 1);
+                } else if (elementA > elementB) {
+                    return ((sortAscending) ? 1 : -1);
+                }
+                return 0; 
+            });
             return list;
-            //Elias, BITTE
+            
         }
     },
 
