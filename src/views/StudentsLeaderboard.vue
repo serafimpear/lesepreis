@@ -8,16 +8,20 @@
                     <div class="table-row table-header-row">
                         <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
                         <div class="table-cell"><img src="@/assets/svgs/icon-2.svg" class="table-icon"></div>
-                        <div class="table-cell" @click="studentsSortBy = 'name'; studentsSortAscending = !studentsSortAscending">Vorname
+                        <div class="table-cell"
+                            @click="studentsSortBy = 'name'; studentsSortAscending = !studentsSortAscending">Vorname
                             <SortIcon />
                         </div>
-                        <div class="table-cell" @click="studentsSortBy = 'surname'; studentsSortAscending = !studentsSortAscending">Nachname
+                        <div class="table-cell"
+                            @click="studentsSortBy = 'surname'; studentsSortAscending = !studentsSortAscending">Nachname
                             <SortIcon />
                         </div>
-                        <div class="table-cell" @click="studentsSortBy = 'class'; studentsSortAscending = !studentsSortAscending">Klasse
+                        <div class="table-cell"
+                            @click="studentsSortBy = 'class'; studentsSortAscending = !studentsSortAscending">Klasse
                             <SortIcon />
                         </div>
-                        <div class="table-cell" @click="studentsSortBy = 'points'; studentsSortAscending = !studentsSortAscending">Lose
+                        <div class="table-cell"
+                            @click="studentsSortBy = 'points'; studentsSortAscending = !studentsSortAscending">Lose
                             <SortIcon />
                         </div>
                     </div>
@@ -34,7 +38,7 @@
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.name }}</div>
                             </div>
-                           <div class="table-cell">
+                            <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.surname }}</div>
                             </div>
                             <div class="table-cell">
@@ -195,7 +199,7 @@
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
         <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
-            @selectBook="addBookToStudent(book)" />
+            @selectBook="addBookToStudent(bookid)" v-model="this.bookidToAdd" />
     </main>
 </template>
 
@@ -247,6 +251,7 @@ export default {
             readBookWindowVisible: false,
             studentsSortBy: 'points',
             studentsSortAscending: false,
+            bookidToAdd: undefined
         }
     },
 
@@ -277,12 +282,17 @@ export default {
             this.currentStudent.name = this.currentStudent.name.trim();
             this.currentStudent.surname = this.currentStudent.surname.trim();
             this.currentStudent.class = this.currentStudent.class.trim();
+            if (this.currentStudent.name == "" || this.currentStudent.surname == "" || this.currentStudent.class == "") {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Student speichern',
+                    content: `Bitte füllen Sie alle Felder aus vor dem Speichern!`,
+                });
+                return;
+            }
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
-            if (this.currentStudent.uid == -1) {
-                this.currentStudent.uid = this.students.length;
-                this.students.push(this.currentStudent);
-            }
+
             this.currentStudent = undefined;
             this.showStudentInfo = false;
             this.updateStudentsRemote();
@@ -335,21 +345,30 @@ export default {
             this.showStudentInfo = false;
         },
 
-        closeStudent: function () {
-            console.log(this.currentStudent + ' closed');
-            this.currentStudent = undefined;
-            this.showStudentInfo = false;
-        },
-
-        addBookToStudent: function () {
+        addBookToStudent: function (bookid) {
+            console.log('bookidhere: ' + this.bookidToAdd);
             this.readBookWindowVisible = false;
+            let passed = false;
+            // this.ask({
+            //     type: 'warning',
+            //     subtitle: 'Buch hinzufügen',
+            //     content: `Hat der Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” das Quiz bestanden?`,
+            //     okButton: 'Ja'
+            // }, () => {
+            //     passed = true;
+            // }, () => {
+
+            // });
             // ...
+            console.log(bookid);
+            this.currentStudent.books.push({ id: bookid, date_added: Date.now(), passed: passed, was_multiplied: false });
+            // this.saveStudent();
         },
 
         sortListBy: (list, criterion, sortAscending) => {
             list.sort((a, b) => {
                 let elementA, elementB;
-                if(criterion === 'name') {
+                if (criterion === 'name') {
                     elementA = a.name.toLowerCase();
                     elementB = b.name.toLowerCase();
                 } else if (criterion === 'surname') {
@@ -363,15 +382,15 @@ export default {
                     elementB = b.class;
                 }
 
-                if(elementA < elementB) {
+                if (elementA < elementB) {
                     return ((sortAscending) ? -1 : 1);
                 } else if (elementA > elementB) {
                     return ((sortAscending) ? 1 : -1);
                 }
-                return 0; 
+                return 0;
             });
             return list;
-            
+
         }
     },
 
