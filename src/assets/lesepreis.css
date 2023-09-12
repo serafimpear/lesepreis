@@ -170,6 +170,10 @@ div.ui-table div.table-row {
     cursor: pointer;
 }
 
+div.ui-table div.table-row.red-background {
+    background: red;
+}
+
 div.ui-table div.table-row:not(.table-header-row):hover {
     filter: brightness(0.8);
 }
@@ -358,6 +362,12 @@ div.book-search-status {
     font-style: italic;
     font-weight: 300;
     text-align: right;
+}
+
+.italic-small {
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 300;
 }
 
 div.book-search {

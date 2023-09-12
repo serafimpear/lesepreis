@@ -80,7 +80,7 @@
                     <div class="readed-books-header">
                         <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
                             :value=currentStudent.readed_books disabled="disabled" number="number" />
-                        <Button type="add" text="Hinzufügen" @click="readBookWindowVisible = true" />
+                        <Button text="Verwalten" @click="readBookWindowVisible = true" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
                         <div class="table-row table-header-row">
@@ -185,7 +185,7 @@
                 <div v-else class="multiplication-not-done">
                     <div class="multiplication-header">
                         <InputFieldTrueFalse text="Multiplikation" value="noch nicht durchgeführt" img="false" />
-                        <Button text="Bücher multiplizieren" />
+                        <Button text="Bücher multiplizieren" @click="multiplyIfPossible()" />
                     </div>
                 </div>
                 <!-- <div class="delete-save-bar">
@@ -198,8 +198,10 @@
         </div>
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
-        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
-            @selectBook="addBookToStudent(bookid)" v-model="this.bookidToAdd" />
+        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :students=students
+            :books=books @selectBook="addBookToStudent" />
+        <MultiplyWindow v-show="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
+            :books=books @multiplyBooks="multiplyBooks" />
     </main>
 </template>
 
@@ -225,7 +227,10 @@ import SortIcon from "@/components/SortIcon.vue"
 import IconButton from "@/components/IconButton.vue"
 import Modal from "@/components/Modal.vue"
 import ReadBookWindow from "@/components/ReadBookWindow.vue"
+import MultiplyWindow from "@/components/MultiplyWindow.vue"
 import { modalFunctions } from "@/logic/modal.js"
+//import { rollupVersion } from "vite"
+// ^ idk wer das importiert hat, aber es führt dazu, dass vite nicht builden kann (error)
 
 export default {
     mixins: [modalFunctions],
@@ -238,7 +243,8 @@ export default {
         SortIcon,
         IconButton,
         Modal,
-        ReadBookWindow
+        ReadBookWindow,
+        MultiplyWindow
     },
 
     data() {
@@ -249,9 +255,9 @@ export default {
             searchStudent: '',
             showStudentInfo: false,
             readBookWindowVisible: false,
+            multiplyWindowVisible: false,
             studentsSortBy: 'points',
             studentsSortAscending: false,
-            bookidToAdd: undefined
         }
     },
 
@@ -275,7 +281,7 @@ export default {
         selectStudent: function (student) {
             this.currentStudent = this.deepClone(student);
             this.showStudentInfo = true;
-            console.log('User selcted with id ' + this.currentStudent.uid);
+            console.log('User selcted with id ' + this.currentStudent.uid);console.log(this.currentStudent);
         },
 
         saveStudent: function () {
@@ -345,27 +351,30 @@ export default {
             this.showStudentInfo = false;
         },
 
-        addBookToStudent: function (bookid) {
-            console.log('bookidhere: ' + this.bookidToAdd);
+        addBookToStudent: function (book) {
             this.readBookWindowVisible = false;
             let passed = false;
-            // this.ask({
-            //     type: 'warning',
-            //     subtitle: 'Buch hinzufügen',
-            //     content: `Hat der Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” das Quiz bestanden?`,
-            //     okButton: 'Ja'
-            // }, () => {
-            //     passed = true;
-            // }, () => {
+            this.ask({
+                type: 'warning',
+                subtitle: 'Buch hinzufügen',
+                content: `Hat der Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” das Quiz bestanden?`,
+                okButton: 'Ja'
+            }, () => {
+                passed = true;
+            }, () => {
 
-            // });
-            // ...
-            console.log(bookid);
-            this.currentStudent.books.push({ id: bookid, date_added: Date.now(), passed: passed, was_multiplied: false });
-            // this.saveStudent();
+            });
+
+            this.currentStudent.books.push({ id: book.id, date_added: Date.now(), passed: passed, was_multiplied: false });
+            this.saveStudent();
         },
 
-        sortListBy: (list, criterion, sortAscending) => {
+        multiplyBooks: function([ book1, book2 ]) {
+            console.log([ book1, book2 ]);
+            this.multiplyWindowVisible = false;
+        },
+
+        sortListBy: function (list, criterion, sortAscending) {
             list.sort((a, b) => {
                 let elementA, elementB;
                 if (criterion === 'name') {
@@ -378,8 +387,8 @@ export default {
                     elementA = a.points;
                     elementB = b.points;
                 } else if (criterion === 'class') {
-                    elementA = a.class;
-                    elementB = b.class;
+                    elementA = a.class.toLowerCase();
+                    elementB = b.class.toLowerCase();
                 }
 
                 if (elementA < elementB) {
@@ -391,6 +400,28 @@ export default {
             });
             return list;
 
+        },
+
+        multiplyIfPossible: function () {
+            let bookscount = 0;
+            console.log(this.currentStudent);
+            if (this.currentStudent.books.length > 0) this.currentStudent.books.forEach((book) => {
+                if (book.passed) bookscount += 1;
+            });
+            if (bookscount < 2) {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Sie können nicht multiplizieren',
+                    content: `Der Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” hat zu wenige Bücher gelesen (es müssen mindestens 2 gelesene und bestätigte Bücher sein)`,
+                    okButton: 'Ja'
+                }, () => {
+                    passed = true;
+                }, () => {
+
+                });
+            } else {
+                this.multiplyWindowVisible = true;
+            }
         }
     },
 

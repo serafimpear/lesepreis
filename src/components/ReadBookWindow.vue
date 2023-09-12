@@ -18,17 +18,13 @@
                         <div class="table-cell">Lose
                             <SortIcon />
                         </div>
-                        <div class="table-cell">ISBN
-                            <SortIcon />
-                        </div>
                     </div>
                     <div class="table-data">
-                        <div class="table-row" v-for="book in filteredBooksList" @click="selectBook(book.id);console.log('book: ' + book)">
+                        <div class="table-row" v-for="book in filteredBooksList" @click="$emit('selectBook', book)">
                             <div class="table-cell">{{ book.title }}</div>
                             <div class="table-cell">{{ book.author }}</div>
                             <div class="table-cell">{{ book.language }}</div>
                             <div class="table-cell">{{ book.points }}</div>
-                            <div class="table-cell">{{ book.isbn }}</div>
                         </div>
                     </div>
                 </div>
@@ -56,8 +52,7 @@ export default {
         SearchBar,
     },
 
-    props: ['books'],
-    emits: ['bookid'],
+    props: ['books', 'students'],
 
     methods: {
         close(result) {
@@ -65,7 +60,7 @@ export default {
         },
 
         selectBook(bookid) {
-            this.$emit("selectBook", bookid);
+            this.$emit("selectBook", book);
             console.log('bookid: ' + bookid)
         },
     },
@@ -124,15 +119,5 @@ export default {
     flex-direction: row;
     justify-content: flex-end;
     column-gap: 17px;
-}
-
-.addbookwindow-fade-enter,
-.addbookwindow-fade-leave-to {
-    opacity: 0;
-}
-
-.addbookwindow-fade-enter-active,
-.addbookwindow-fade-leave-active {
-    transition: opacity .3s ease;
 }
 </style>
