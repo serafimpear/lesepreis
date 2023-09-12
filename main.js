@@ -80,8 +80,6 @@ function createWindow() {
         }
     });
 
-    win.webContents.openDevTools();
-
     win.maximize();
     win.removeMenu(); // remove menu bar at top (file - edit etc...)
     win.show();
@@ -101,6 +99,10 @@ function createWindow() {
 
     ipc.on('minimizeApp', () => {
         win.minimize()
+    })
+    
+    ipc.on('devTools', () => {
+        win.webContents.openDevTools();
     })
 
     ipc.on('getStudents', () => {

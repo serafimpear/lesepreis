@@ -8,16 +8,16 @@
                     <div class="table-row table-header-row">
                         <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
                         <div class="table-cell"><img src="@/assets/svgs/icon-2.svg" class="table-icon"></div>
-                        <div class="table-cell">Vorname
+                        <div class="table-cell" @click="studentsSortBy = 'name'; studentsSortAscending = !studentsSortAscending">Vorname
                             <SortIcon />
                         </div>
-                        <div class="table-cell">Nachname
+                        <div class="table-cell" @click="studentsSortBy = 'surname'; studentsSortAscending = !studentsSortAscending">Nachname
                             <SortIcon />
                         </div>
-                        <div class="table-cell">Klasse
+                        <div class="table-cell" @click="studentsSortBy = 'class'; studentsSortAscending = !studentsSortAscending">Klasse
                             <SortIcon />
                         </div>
-                        <div class="table-cell">Lose
+                        <div class="table-cell" @click="studentsSortBy = 'points'; studentsSortAscending = !studentsSortAscending">Lose
                             <SortIcon />
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.name }}</div>
                             </div>
-                            <div class="table-cell">
+                           <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.surname }}</div>
                             </div>
                             <div class="table-cell">
@@ -65,7 +65,7 @@
                     <InputField tabindex="3" v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;"
                         :value=currentStudent.name />
                     <InputField tabindex="5" v-model="currentStudent.class" text="Klasse" number="number"
-                        :value=currentStudent.class />
+                        :value=currentStudent.class @keyup.enter="saveStudent()" />
                     <InputField tabindex="4" v-model="currentStudent.surname" text="Nachname"
                         :value=currentStudent.surname />
                     <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled"
@@ -194,7 +194,7 @@
         </div>
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
-        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
+        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :books=books
             @selectBook="addBookToStudent(book)" />
     </main>
 </template>
@@ -245,6 +245,8 @@ export default {
             searchStudent: '',
             showStudentInfo: false,
             readBookWindowVisible: false,
+            studentsSortBy: 'points',
+            studentsSortAscending: false,
         }
     },
 
@@ -272,6 +274,9 @@ export default {
         },
 
         saveStudent: function () {
+            this.currentStudent.name = this.currentStudent.name.trim();
+            this.currentStudent.surname = this.currentStudent.surname.trim();
+            this.currentStudent.class = this.currentStudent.class.trim();
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
             if (this.currentStudent.uid == -1) {
@@ -339,6 +344,34 @@ export default {
         addBookToStudent: function () {
             this.readBookWindowVisible = false;
             // ...
+        },
+
+        sortListBy: (list, criterion, sortAscending) => {
+            list.sort((a, b) => {
+                let elementA, elementB;
+                if(criterion === 'name') {
+                    elementA = a.name.toLowerCase();
+                    elementB = b.name.toLowerCase();
+                } else if (criterion === 'surname') {
+                    elementA = a.surname.toLowerCase();
+                    elementB = b.surname.toLowerCase();
+                } else if (criterion === 'points') {
+                    elementA = a.points;
+                    elementB = b.points;
+                } else if (criterion === 'class') {
+                    elementA = a.class;
+                    elementB = b.class;
+                }
+
+                if(elementA < elementB) {
+                    return ((sortAscending) ? -1 : 1);
+                } else if (elementA > elementB) {
+                    return ((sortAscending) ? 1 : -1);
+                }
+                return 0; 
+            });
+            return list;
+            
         }
     },
 
@@ -349,10 +382,11 @@ export default {
 
     computed: {
         filteredStudentsList() {
-            var s = this.searchStudent.toLowerCase();
-            return this.students.filter(student => {
+            let s = this.searchStudent.toLowerCase();
+
+            return this.sortListBy(this.students.filter(student => {
                 return (student.name.toLowerCase().includes(s) || student.surname.toLowerCase().includes(s) || student.class.toLowerCase().includes(s) || (student.name.toLowerCase() + ' ' + student.surname.toLowerCase()).includes(s) || (student.surname.toLowerCase() + ' ' + student.name.toLowerCase()).includes(s))
-            })
+            }), this.studentsSortBy, this.studentsSortAscending);
         }
     }
 }

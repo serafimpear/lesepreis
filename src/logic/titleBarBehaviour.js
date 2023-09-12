@@ -16,3 +16,8 @@ document.getElementById('minimizeButton').addEventListener('click', () => {
     ipc.send('minimizeApp')
     console.log('d')
 })
+
+document.getElementById('devToolsButton').addEventListener('click', () => {
+    ipc.send('devTools')
+    console.log('d')
+})
