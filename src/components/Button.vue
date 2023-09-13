@@ -1,5 +1,5 @@
 <template>
-    <button :tabindex=tabindex :class="`ui-button ui-styled ${color}`">
+    <button :tabindex="tabindex" :class="'ui-button ui-styled ' + color + ' ' + tclass">
         {{ text }}
         <img v-if="type == 'add'" src="@/assets/svgs/icon-plus.svg">
         <img v-if="type == 'yes'" src="@/assets/svgs/icon-yes.svg">
@@ -47,6 +47,6 @@ button.ui-button.green img {
 
 <script>
 export default {
-    props: ['type', 'text', 'color', 'tabindex']
+    props: ['type', 'text', 'color', 'tabindex', 'tclass'],
 }
 </script>
