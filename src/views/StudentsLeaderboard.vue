@@ -80,7 +80,8 @@
                     <div class="readed-books-header">
                         <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
                             :value=currentStudent.readed_books disabled="disabled" number="number" />
-                        <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed ? 'ja' : 'nein'" :img=currentStudent.passed />
+                        <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed ? 'ja' : 'nein'"
+                            :img=currentStudent.passed />
                         <Button text="Verwalten" @click="readBookWindowVisible = true" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
@@ -200,7 +201,8 @@
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
         <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :currentStudent=currentStudent
-            :books=books @selectBook="addBookToStudent" />
+            :books=books @selectBook="addBookToStudent" @updateBook="updateBookFromStudent"
+            @removeBook="removeBookFromStudent" />
         <MultiplyWindow v-if="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
             :books=books @multiplyBooks="multiplyBooks" />
     </main>
@@ -282,7 +284,7 @@ export default {
         selectStudent: function (student) {
             this.currentStudent = this.deepClone(student);
             this.showStudentInfo = true;
-            console.log('User selcted with id ' + this.currentStudent.uid);console.log(this.currentStudent);
+            console.log('User selcted with id ' + this.currentStudent.uid); console.log(this.currentStudent);
         },
 
         saveStudent: function (close = true) {
@@ -360,8 +362,31 @@ export default {
             this.saveStudent(false);
         },
 
-        multiplyBooks: function([ book1, book2 ]) {
-            console.log([ book1, book2 ]);
+        removeBookFromStudent: function (bookID) {
+            this.readBookWindowVisible = false;
+            this.ask({
+                type: 'warning',
+                subtitle: 'Buch entfernen',
+                content: `Sind Sie sicher, dass sie das Buch “${this.books.find(book => book.id ===
+                    bookID).title}” von den gelesenen Büchern des Schülers “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
+                okButton: 'Buch entfernen'
+            }, () => {
+                this.currentStudent.books = this.currentStudent.books.filter(book => book.id !== bookID)
+                this.saveStudent(false);
+            }, () => {
+                this.readBookWindowVisible = true;
+                console.log('book  not deleted from student because modal false');
+            });
+        },
+
+        updateBookFromStudent: function ([bookToChangeID, passed]) {
+            this.readBookWindowVisible = false;
+            this.currentStudent.books.find(book => book.id === bookToChangeID).passed = passed;
+            this.saveStudent(false);
+        },
+
+        multiplyBooks: function ([book1, book2]) {
+            console.log([book1, book2]);
             this.multiplyWindowVisible = false;
         },
 
