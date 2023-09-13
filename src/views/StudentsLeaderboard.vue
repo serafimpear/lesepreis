@@ -27,9 +27,9 @@
                     </div>
                     <div class="table-data">
                         <div class="table-row" v-for="student in filteredStudentsList" @click="selectStudent(student)">
-                            <div v-if="student.passed" class="table-cell" title="Schüler zugelassen"><img
+                            <div v-if="student.passed" class="table-cell" title="Schüler qualifiziert"><img
                                     src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
-                            <div v-else class="table-cell" title="Schüler NICHT zugelassen"><img
+                            <div v-else class="table-cell" title="Schüler NICHT qualifiziert"><img
                                     src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
                             <div v-if="student.multiplied" class="table-cell" title="Schüler hat multipliziert"><img
                                     src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
@@ -80,7 +80,7 @@
                     <div class="readed-books-header">
                         <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
                             :value=currentStudent.readed_books disabled="disabled" number="number" />
-                        <InputFieldTrueFalse text="Schüler zugelassen" :value="currentStudent.passed ? 'ja' : 'nein'" :img=currentStudent.passed />
+                        <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed ? 'ja' : 'nein'" :img=currentStudent.passed />
                         <Button text="Verwalten" @click="readBookWindowVisible = true" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
@@ -199,7 +199,7 @@
         </div>
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
-        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :students=students
+        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :currentStudent=currentStudent
             :books=books @selectBook="addBookToStudent" />
         <MultiplyWindow v-show="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
             :books=books @multiplyBooks="multiplyBooks" />
@@ -352,20 +352,8 @@ export default {
             this.showStudentInfo = false;
         },
 
-        addBookToStudent: function (book) {
+        addBookToStudent: function ([book, passed]) {
             this.readBookWindowVisible = false;
-            let passed = false;
-            this.ask({
-                type: 'warning',
-                subtitle: 'Buch hinzufügen',
-                content: `Hat der Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” das Quiz bestanden?`,
-                okButton: 'Ja'
-            }, () => {
-                passed = true;
-            }, () => {
-
-            });
-
             this.currentStudent.books.push({ id: book.id, date_added: Date.now(), passed: passed, was_multiplied: false });
             this.saveStudent();
         },

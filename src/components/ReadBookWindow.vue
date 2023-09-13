@@ -2,9 +2,13 @@
     <transition name="fade">
         <div class="addbookwindow-background">
             <div class="addbookwindow-window">
-                <div class="addbookwindow-title">Buch hinzufügen</div>
+                <div class="addbook-window-title">
+                    <div class="addbook-window-title-title">Bücher verwalten</div>
+                    <Button text="Nicht gelesen" />
+                    <Button text="Gelesen" />
+                </div>
                 <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
-                <div class="books-list ui-table">
+                <div class="books-list-add-unread ui-table">
                     <div class="table-row table-header-row">
                         <div class="table-cell">Titel
                             <SortIcon />
@@ -20,16 +24,24 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <div class="table-row" v-for="book in filteredBooksList" @click="$emit('selectBook', book)">
-                            <div class="table-cell">{{ book.title }}</div>
-                            <div class="table-cell">{{ book.author }}</div>
-                            <div class="table-cell">{{ book.language }}</div>
-                            <div class="table-cell">{{ book.points }}</div>
-                        </div>
+                        <template v-for="currentBook in books" >
+                            <div class="table-row" v-if="!currentStudent.books.some(book => book.id === currentBook.id)" @click="selectedBook = currentBook">
+                                <div class="table-cell">{{ currentBook.title }}</div>
+                                <div class="table-cell">{{ currentBook.author }}</div>
+                                <div class="table-cell">{{ currentBook.language }}</div>
+                                <div class="table-cell">{{ currentBook.points }}</div>
+                            </div>
+                        </template>
                     </div>
                 </div>
                 <div class="addbookwindow-buttons">
+                    <div class="addbook-window-passed-radio-box">
+                        <div class="addbook-window-passed-radio-box-title">Prüfung</div>
+                        <RadioInput text="bestanden" color="green" @click="bookPassed = true" />
+                        <RadioInput text="nicht bestanden" color="red" @click="bookPassed = false" />
+                    </div>
                     <Button text="Abbrechen" @click="close(false)" />
+                    <Button text="Hinzufügen" @click="selectBook" />
                 </div>
             </div>
         </div>
@@ -39,40 +51,34 @@
 <script>
 import Button from "@/components/Button.vue"
 import SearchBar from "@/components/SearchBar.vue"
+import RadioInput from "@/components/RadioInput.vue"
 
 export default {
     data() {
         return {
             searchBook: '',
+            bookPassed: false,
+            selectedBook: undefined
         }
     },
 
     components: {
         Button,
         SearchBar,
+        RadioInput
     },
 
-    props: ['books', 'students'],
+    props: ['books', 'currentStudent'],
 
     methods: {
         close(result) {
             this.$emit("close", result);
         },
 
-        selectBook(bookid) {
-            this.$emit("selectBook", book);
+        selectBook() {
+            this.$emit("selectBook", [this.selectedBook.id, this.bookPassed]);
             console.log('bookid: ' + bookid)
         },
-    },
-    
-    computed: {
-        filteredBooksList() {
-            console.log(this.books)
-            var s = this.searchBook.toLowerCase();
-            return this.books.filter(book => {
-                return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
-            })
-        }
     }
 }
 </script>
@@ -100,11 +106,11 @@ export default {
     box-sizing: border-box;
     display: grid;
     grid-template-rows: 33px 40px 1fr 40px;
-    gap: 28px;
+    gap: 1.7em;
     background: white;
 }
 
-.addbookwindow-window .addbookwindow-title {
+.addbookwindow-window .addbook-window-title-title {
     font-size: 24px;
     font-style: normal;
     font-weight: 300;
@@ -116,8 +122,35 @@ export default {
 
 .addbookwindow-window .addbookwindow-buttons {
     display: flex;
+    align-items: center;
     flex-direction: row;
     justify-content: flex-end;
-    column-gap: 17px;
+    column-gap: 1em;
+}
+
+.addbook-window-passed-radio-box {
+    margin-right: auto;
+    display: flex;
+    flex-direction: row;
+    column-gap: 1em;
+}
+
+.addbook-window-title {
+    display: flex;
+    column-gap: 1em;
+}
+
+.addbook-window-title-title {
+    margin-right: auto;
+}
+
+.ui-table.books-list-add-unread .table-row {
+    grid-template-columns: 1fr 1fr 5em 3em;
+}
+
+.addbook-window-passed-radio-box-title {
+    font-size: 1em;
+    font-style: normal;
+    font-weight: 600;
 }
 </style>

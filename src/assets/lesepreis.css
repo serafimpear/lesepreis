@@ -250,6 +250,7 @@ div.student-information {
 
 div.student-leaderboard-section-footer button.add-student {
     width: 215px;
+    margin-left: auto;
 }
 
 div.readed-books-header {

@@ -13,7 +13,7 @@ button.ui-button {
     column-gap: 10px;
     background-color: white;
     line-height: 40px;
-    margin-left: auto;
+    /* margin-left: auto; */
     text-wrap: nowrap;
     cursor: pointer;
 }

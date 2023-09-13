@@ -4,9 +4,9 @@
             <div class="nav-element-logo">
                 <img src="@/assets/svgs/oberschulen-fallmerayer-pure-logo.svg" style="width: 2.3em;" class="oberschulen-fallmerayer-logo">
                 <span class="nav-element-description">
-                    <span style="display: block; font-size: 1em; line-height: 1em;">Oberschulen_Fallmerayer</span>
+                    <span style="display: block; font-size: 0.9em; line-height: 0.9em;overflow:hidden">Oberschulen Fallmerayer</span>
                     <span
-                        style="display: block; font-size: 1em; font-weight: 700; line-height: 1em;">Schulbibliothek</span>
+                        style="display: block; font-size: 0.9em; font-weight: 700; line-height: 1em;">Schulbibliothek</span>
                 </span>
             </div>
             <div class="nav-element-logo">
