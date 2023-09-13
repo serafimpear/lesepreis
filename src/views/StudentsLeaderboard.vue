@@ -199,9 +199,9 @@
         </div>
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
-        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :currentStudent=currentStudent
+        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :currentStudent=currentStudent
             :books=books @selectBook="addBookToStudent" />
-        <MultiplyWindow v-show="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
+        <MultiplyWindow v-if="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
             :books=books @multiplyBooks="multiplyBooks" />
     </main>
 </template>
@@ -315,7 +315,7 @@ export default {
                 points: 0,
                 readed_books: 0,
                 passed: false,
-                multiplied: false,
+                multiplied: [-1, -1],
                 books: [],
             },
                 this.showStudentInfo = true;
@@ -354,7 +354,7 @@ export default {
 
         addBookToStudent: function ([book, passed]) {
             this.readBookWindowVisible = false;
-            this.currentStudent.books.push({ id: book.id, date_added: Date.now(), passed: passed, was_multiplied: false });
+            this.currentStudent.books.push({ id: book.id, date_added: Date.now(), passed: passed});
             this.saveStudent();
         },
 
