@@ -7,7 +7,6 @@
                     <Button text="Nicht gelesen" />
                     <Button text="Gelesen" />
                 </div>
-                <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
                 <div class="books-list-add-unread ui-table">
                     <div class="table-row table-header-row">
                         <div class="table-cell">Titel
@@ -24,8 +23,10 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <template v-for="currentBook in books" >
-                            <div class="table-row" v-if="!currentStudent.books.some(book => book.id === currentBook.id)" @click="selectedBook = currentBook">
+                        <template v-for="currentBook in books">
+                            <div :class="{ 'table-row': true, 'highlighted': selectedBook.id == currentBook.id }"
+                                v-if="!currentStudent.books.some(book => book.id === currentBook.id)"
+                                @click="if (selectedBook.id == currentBook.id) { selectedBook = -1; } else { selectedBook = currentBook; }">
                                 <div class="table-cell">{{ currentBook.title }}</div>
                                 <div class="table-cell">{{ currentBook.author }}</div>
                                 <div class="table-cell">{{ currentBook.language }}</div>
@@ -37,11 +38,11 @@
                 <div class="addbookwindow-buttons">
                     <div class="addbook-window-passed-radio-box">
                         <div class="addbook-window-passed-radio-box-title">Prüfung</div>
-                        <RadioInput text="bestanden" color="green" @click="bookPassed = true" />
-                        <RadioInput text="nicht bestanden" color="red" @click="bookPassed = false" />
+                        <RadioInput inputid="radio_aw_1" text="bestanden" color="green" @click="bookPassed = true" />
+                        <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false" />
                     </div>
                     <Button text="Abbrechen" @click="close(false)" />
-                    <Button text="Hinzufügen" @click="selectBook" />
+                    <Button v-if="typeof bookPassed == 'boolean' && typeof selectedBook == 'object'" text="Hinzufügen" @click="selectBook" />
                 </div>
             </div>
         </div>
@@ -57,8 +58,9 @@ export default {
     data() {
         return {
             searchBook: '',
-            bookPassed: false,
-            selectedBook: undefined
+            bookPassed: undefined,
+            selectedBook: -1,
+            currentView: 'not_read_books'
         }
     },
 
@@ -71,13 +73,22 @@ export default {
     props: ['books', 'currentStudent'],
 
     methods: {
+        reset() {
+            this.bookPassed = undefined;
+            this.selectedBook = -1
+            document.getElementById("radio_aw_1").checked = false
+            document.getElementById("radio_aw_2").checked = false
+        },
+
         close(result) {
             this.$emit("close", result);
+            this.reset();
         },
 
         selectBook() {
             this.$emit("selectBook", [this.selectedBook.id, this.bookPassed]);
             console.log('bookid: ' + bookid)
+            this.reset();
         },
     }
 }
@@ -105,7 +116,7 @@ export default {
     padding: 2.5em;
     box-sizing: border-box;
     display: grid;
-    grid-template-rows: 33px 40px 1fr 40px;
+    grid-template-rows: 33px 1fr 40px;
     gap: 1.7em;
     background: white;
 }
@@ -152,5 +163,9 @@ export default {
     font-size: 1em;
     font-style: normal;
     font-weight: 600;
+}
+
+.addbookwindow-window .table-row.highlighted {
+    background: #7b98c7 !important;
 }
 </style>

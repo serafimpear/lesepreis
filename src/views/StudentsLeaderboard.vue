@@ -199,9 +199,9 @@
         </div>
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
-        <ReadBookWindow v-show="readBookWindowVisible" @close="readBookWindowVisible = false" :currentStudent=currentStudent
+        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :currentStudent=currentStudent
             :books=books @selectBook="addBookToStudent" />
-        <MultiplyWindow v-show="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
+        <MultiplyWindow v-if="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
             :books=books @multiplyBooks="multiplyBooks" />
     </main>
 </template>
@@ -285,7 +285,7 @@ export default {
             console.log('User selcted with id ' + this.currentStudent.uid);console.log(this.currentStudent);
         },
 
-        saveStudent: function () {
+        saveStudent: function (close = true) {
             this.currentStudent.name = this.currentStudent.name.trim();
             this.currentStudent.surname = this.currentStudent.surname.trim();
             this.currentStudent.class = this.currentStudent.class.trim();
@@ -300,8 +300,10 @@ export default {
             console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
 
-            this.currentStudent = undefined;
-            this.showStudentInfo = false;
+            if (close) {
+                this.currentStudent = undefined;
+                this.showStudentInfo = false;
+            }
             this.updateStudentsRemote();
         },
 
@@ -354,8 +356,8 @@ export default {
 
         addBookToStudent: function ([book, passed]) {
             this.readBookWindowVisible = false;
-            this.currentStudent.books.push({ id: book.id, date_added: Date.now(), passed: passed, was_multiplied: false });
-            this.saveStudent();
+            this.currentStudent.books.push({ id: book, date_added: Date.now(), passed: passed });
+            this.saveStudent(false);
         },
 
         multiplyBooks: function([ book1, book2 ]) {
