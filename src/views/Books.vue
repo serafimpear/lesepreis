@@ -5,19 +5,24 @@
             <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
             <div class="books-list ui-table">
                 <div class="table-row table-header-row">
-                    <div class="table-cell">Titel
+                    <div class="table-cell"
+                        @click="booksSortBy='title'; booksSortAscending=!booksSortAscending;">Titel
                         <SortIcon />
                     </div>
-                    <div class="table-cell">Autor:in
+                    <div class="table-cell"
+                        @click="booksSortBy='author'; booksSortAscending=!booksSortAscending;">Autor:in
                         <SortIcon />
                     </div>
-                    <div class="table-cell">Sprache
+                    <div class="table-cell"
+                        @click="booksSortBy='language'; booksSortAscending=!booksSortAscending;">Sprache
                         <SortIcon />
                     </div>
-                    <div class="table-cell">Lose
+                    <div class="table-cell"
+                        @click="booksSortBy='points'; booksSortAscending=!booksSortAscending;">Lose
                         <SortIcon />
                     </div>
-                    <div class="table-cell">ISBN
+                    <div class="table-cell"
+                        @click="booksSortBy='isbn'; booksSortAscending=!booksSortAscending;">ISBN
                         <SortIcon />
                     </div>
                 </div>
@@ -158,6 +163,8 @@ export default {
                 'en': 'Englisch',
                 'es': 'Spanisch',
             },
+            booksSortBy: 'title',
+            booksSortAscending: false,
         }
     },
 
@@ -318,6 +325,36 @@ export default {
             this.currentBook.title = result.title;
             this.currentBook.author = result.author;
             this.currentBook.language = result.language;
+        },
+        sortListBy: function (list, criterion, sortAscending) {
+            list.sort((a, b) => {
+                let elementA, elementB;
+                if (criterion === 'title') {
+                    elementA = a.title.toLowerCase();
+                    elementB = b.title.toLowerCase();
+                } else if (criterion === 'author') {
+                    elementA = a.author.toLowerCase();
+                    elementB = b.author.toLowerCase();
+                } else if (criterion === 'language') {
+                    elementA = a.language.toLowerCase();
+                    elementB = b.language.toLowerCase();
+                } else if (criterion === 'points') {
+                    elementA = a.points;
+                    elementB = b.points;
+                } else if (criterion === 'isbn') {
+                    elementA = a.isbn.toLowerCase();
+                    elementB = b.isbn.toLowerCase();
+                }
+
+
+                if (elementA < elementB) {
+                    return ((sortAscending) ? -1 : 1);
+                } else if (elementA > elementB) {
+                    return ((sortAscending) ? 1 : -1);
+                }
+                return 0;
+            });
+            return list;
         }
     },
 
@@ -329,9 +366,9 @@ export default {
     computed: {
         filteredBooksList() {
             var s = this.searchBook.toLowerCase();
-            return this.books.filter(book => {
+            return this.sortListBy(this.books.filter(book => {
                 return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
-            })
+            }), this.booksSortBy, this.booksSortAscending)
         }
     }
 }
