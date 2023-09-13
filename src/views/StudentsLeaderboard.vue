@@ -80,6 +80,7 @@
                     <div class="readed-books-header">
                         <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
                             :value=currentStudent.readed_books disabled="disabled" number="number" />
+                        <InputFieldTrueFalse text="Schüler zugelassen" :value="currentStudent.passed ? 'ja' : 'nein'" :img=currentStudent.passed />
                         <Button text="Verwalten" @click="readBookWindowVisible = true" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
