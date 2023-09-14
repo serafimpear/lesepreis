@@ -34,7 +34,7 @@ function loadFromJsonToSQLite() {
                     data.points,
                     data.readed_books,
                     data.passed ? 1 : 0,
-                    data.multiplied ? 1 : 0,
+                    data.multiplied_books ? 1 : 0,
                     JSON.stringify(data.books)
                 ])
         });
@@ -131,7 +131,7 @@ function createWindow() {
                         data.points,
                         data.readed_books,
                         data.passed ? 1 : 0,
-                        data.multiplied ? 1 : 0,
+                        data.multiplied_books ? 1 : 0,
                         JSON.stringify(data.books)
                     ])
             });
@@ -145,7 +145,7 @@ function createWindow() {
                         data.points,
                         data.readed_books,
                         data.passed ? 1 : 0,
-                        data.multiplied ? 1 : 0,
+                        data.multiplied_books ? 1 : 0,
                         JSON.stringify(data.books),
                         data.uid
                     ])

@@ -261,6 +261,7 @@ export default {
             multiplyWindowVisible: false,
             studentsSortBy: 'points',
             studentsSortAscending: false,
+            currentStudentBeforeEdit: undefined
         }
     },
 
@@ -282,12 +283,15 @@ export default {
         },
 
         selectStudent: function (student) {
-            this.currentStudent = this.deepClone(student);
-            this.showStudentInfo = true;
-            console.log('User selcted with id ' + this.currentStudent.uid); console.log(this.currentStudent);
+            this.checkIfStudentChangedAndAskIfSaveAndThenDoAndHopeThatItWorks(() => {
+                this.currentStudentBeforeEdit = this.deepClone(student);
+                this.currentStudent = this.deepClone(student);
+                this.showStudentInfo = true;
+            });
         },
 
         saveStudent: function (close = true) {
+            console.log('dddddd');
             this.currentStudent.name = this.currentStudent.name.trim();
             this.currentStudent.surname = this.currentStudent.surname.trim();
             this.currentStudent.class = this.currentStudent.class.trim();
@@ -296,10 +300,9 @@ export default {
                     type: 'alert',
                     subtitle: 'Student speichern',
                     content: `Bitte füllen Sie alle Felder aus vor dem Speichern!`,
-                });
-                return;
+                }, () => {}, () => {});
+                return false;
             }
-            console.log(this.currentStudent.name + ' saved');
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
 
             if (close) {
@@ -307,10 +310,10 @@ export default {
                 this.showStudentInfo = false;
             }
             this.updateStudentsRemote();
+            return true;
         },
 
         newStudent: function () {
-            console.log('open new student');
             this.currentStudent = {
                 uid: -1,
                 name: "",
@@ -322,6 +325,7 @@ export default {
                 multiplied: false,
                 books: [],
             },
+                this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
                 this.showStudentInfo = true;
         },
 
@@ -338,7 +342,6 @@ export default {
                 content: `Sind Sie sicher, dass sie den Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
                 okButton: 'Schüler löschen'
             }, () => {
-                console.log('delete student' + this.currentStudent);
                 ipcRenderer.send("deleteStudent", JSON.stringify(this.currentStudent));
 
                 this.updateStudentsRemote();
@@ -346,12 +349,10 @@ export default {
                 this.currentStudent = undefined;
                 this.showStudentInfo = false;
             }, () => {
-                console.log('student not deleted because modal false');
             });
         },
 
         closeStudent: function () {
-            console.log(this.currentStudent + ' closed');
             this.currentStudent = undefined;
             this.showStudentInfo = false;
         },
@@ -375,7 +376,6 @@ export default {
                 this.saveStudent(false);
             }, () => {
                 this.readBookWindowVisible = true;
-                console.log('book  not deleted from student because modal false');
             });
         },
 
@@ -386,7 +386,6 @@ export default {
         },
 
         multiplyBooks: function ([book1, book2]) {
-            console.log([book1, book2]);
             this.multiplyWindowVisible = false;
         },
 
@@ -420,7 +419,6 @@ export default {
 
         multiplyIfPossible: function () {
             let bookscount = 0;
-            console.log(this.currentStudent);
             if (this.currentStudent.books.length > 0) this.currentStudent.books.forEach((book) => {
                 if (book.passed) bookscount += 1;
             });
@@ -438,7 +436,36 @@ export default {
             } else {
                 this.multiplyWindowVisible = true;
             }
+        },
+
+
+        checkIfStudentChangedAndAskIfSaveAndThenDoAndHopeThatItWorks: function (_callback) {
+            if (typeof this.currentStudent === 'object') {
+                if (!this.isStudentEqual(this.currentStudentBeforeEdit, this.currentStudent)) {
+                    this.ask({
+                        type: 'warning',
+                        subtitle: 'Änderungen speichern',
+                        content: `Sie haben Informationen des Schülers “${this.currentStudent.name} ${this.currentStudent.surname}” geändert und nicht gespeichert. Möchten Sie diese Aktualisieren?`,
+                        okButton: 'Verwerfen',
+                        noButton: 'Speichern'
+                    }, () => {
+                        _callback();
+                    }, () => {
+                        if (this.saveStudent()) _callback();
+                    });
+                } else {
+                    _callback();
+                }
+            } else {
+                _callback();
+            }
+        },
+
+        isStudentEqual: function (student1, student2) {
+            let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.multiplied_books == student2.multiplied_books && student1.points == student2.points  && student1.passed == student2.passed  && student1.readed_books == student2.readed_books)
+            return isequal
         }
+
     },
 
     beforeMount() {

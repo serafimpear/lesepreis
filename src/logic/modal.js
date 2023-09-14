@@ -18,29 +18,29 @@ export const modalFunctions = {
                 this.modalReject = reject;
             });
         },
-        ask({ type = this.modalType, subtitle = this.modalSubtitle, content = this.modalContent, okButton = this.modalButtonTextOK}, functionYES, functionNO) {
+        ask({ type = 'alert', subtitle = "etwas löschen", content = "meow!", okButton = "Bestätigen", noButton = "Abbrechen"}, functionYES, functionNO) {
             switch (type) {
                 case 'warning':
                     this.modalTitle = 'Achtung!';
                     this.modalType = type;
                     this.modalSubtitle = subtitle;
                     this.modalButtonTextOK = okButton;
+                    this.modalButtonTextCancel = noButton;
                     break;
             
                 default:
                     // alert
                     this.modalTitle = subtitle;
                     this.modalSubtitle = '';
+                    this.modalButtonTextCancel = noButton;
                     this.modalButtonTextOK = false;
                     break;
             }
             this.modalContent = content
             this.openModal()
                 .then((result) => {
-                    console.log("YA!");
                     functionYES();
                 }).catch(err => {
-                    console.log("NA!");
                     functionNO();
                 })
         },

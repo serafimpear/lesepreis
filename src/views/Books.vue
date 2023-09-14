@@ -188,14 +188,12 @@ export default {
             this.currentBook = this.deepClone(book);
             this.bookResults = [];
             this.showBookInfo = true;
-            console.log('Book selcted ' + this.currentBook);
         },
 
         closeBook: function (book) {
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;
-            console.log('Book closed ' + this.currentBook);
         },
 
         saveBook: function () {
@@ -204,7 +202,6 @@ export default {
             this.currentBook.language = this.currentBook.language.trim();
             this.currentBook.isbn = this.currentBook.isbn.trim();
             this.currentBook.points = parseInt(this.currentBook.points);
-            console.log(this.currentBook.title + ' saved');
 
             ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
 
@@ -243,7 +240,6 @@ export default {
                 }, () => {
                     // cannot happen
                 }, () => {
-                    console.log('book not deleted because impossible');
                 });
                 return;
             }
@@ -254,7 +250,6 @@ export default {
                 content: `Sind Sie sicher, dass sie das Buch “${this.currentBook.title}” entfernen wollen?`,
                 okButton: 'Buch löschen'
             }, () => {
-                console.log(this.currentBook.title + ' deleted');
 
                 ipcRenderer.send("deleteBook", JSON.stringify(this.currentBook));
 
@@ -264,12 +259,10 @@ export default {
                 this.bookResults = [];
                 this.showBookInfo = false;
             }, () => {
-                console.log('book not deleted because modal false');
             });
         },
 
         newBook: function () {
-            console.log('open new book');
             this.bookResults = [];
             this.currentBook = {
                 id: -1,
@@ -355,7 +348,9 @@ export default {
                 return 0;
             });
             return list;
-        }
+        },
+
+        
     },
 
     beforeMount() {

@@ -4,8 +4,8 @@
             <div class="addbookwindow-window">
                 <div class="addbook-window-title">
                     <div class="addbook-window-title-title">Bücher verwalten</div>
-                    <Button text="Nicht gelesen" :tclass="{ 'diselected-button': currentView != 'not_read_books' }" @click="changeCurrentView('not_read_books')" />
-                    <Button text="Gelesen" :tclass="{ 'diselected-button': currentView != 'read_books' }" @click="changeCurrentView('read_books')" />
+                    <Button text="Nicht gelesen" :tclass="currentView != 'read_books' ? '' :'diselected-button'" @click="changeCurrentView('not_read_books')" />
+                    <Button text="Gelesen" :tclass="currentView != 'read_books' ? 'diselected-button' : ''" @click="changeCurrentView('read_books')" />
                 </div>
                 <div class="books-list-add-unread ui-table" v-if="currentView == 'not_read_books'">
                     <div class="table-row table-header-row">
