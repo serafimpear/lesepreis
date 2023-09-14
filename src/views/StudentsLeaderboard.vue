@@ -78,8 +78,14 @@
 
                 <div class="readed-books">
                     <div class="readed-books-header">
-                        <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
-                            :value=currentStudent.readed_books disabled="disabled" number="number" />
+
+
+                        <!-- <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
+                            :value=currentStudent.readed_books disabled="disabled" number="number" /> -->
+
+
+                        <InputFieldTwoValues text="Gelesene Bücher" :value1=currentStudent.readed_books :value2=currentStudent.failed_books />
+
                         <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed ? 'ja' : 'nein'"
                             :img=currentStudent.passed />
                         <Button text="Verwalten" @click="readBookWindowVisible = true" />
@@ -186,7 +192,7 @@
                 </div>
                 <div v-else class="multiplication-not-done">
                     <div class="multiplication-header">
-                        <InputFieldTrueFalse text="Multiplikation" value="noch nicht durchgeführt" img="false" />
+                        <InputFieldTrueFalse text="Multiplikation" value="nicht durchgeführt" img="false" />
                         <Button text="Bücher multiplizieren" @click="multiplyIfPossible()" />
                     </div>
                 </div>
@@ -231,6 +237,7 @@ import IconButton from "@/components/IconButton.vue"
 import Modal from "@/components/Modal.vue"
 import ReadBookWindow from "@/components/ReadBookWindow.vue"
 import MultiplyWindow from "@/components/MultiplyWindow.vue"
+import InputFieldTwoValues from "@/components/InputFieldTwoValues.vue"
 import { modalFunctions } from "@/logic/modal.js"
 //import { rollupVersion } from "vite"
 // ^ idk wer das importiert hat, aber es führt dazu, dass vite nicht builden kann (error)
@@ -247,7 +254,8 @@ export default {
         IconButton,
         Modal,
         ReadBookWindow,
-        MultiplyWindow
+        MultiplyWindow,
+        InputFieldTwoValues
     },
 
     data() {
@@ -466,7 +474,7 @@ export default {
                     this.ask({
                         type: 'warning',
                         subtitle: 'Änderungen speichern',
-                        content: `Sie haben Informationen des Schülers “${this.currentStudent.name} ${this.currentStudent.surname}” geändert und nicht gespeichert. Möchten Sie diese Aktualisieren?`,
+                        content: `Sie haben Informationen des Schülers “${this.currentStudent.name} ${this.currentStudent.surname}” geändert und nicht gespeichert. Möchten Sie diese aktualisieren?`,
                         okButton: 'Verwerfen',
                         noButton: 'Speichern'
                     }, () => {
