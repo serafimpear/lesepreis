@@ -5,24 +5,21 @@
             <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
             <div class="books-list ui-table">
                 <div class="table-row table-header-row">
-                    <div class="table-cell"
-                        @click="booksSortBy='title'; booksSortAscending=!booksSortAscending;">Titel
+                    <div class="table-cell" @click="booksSortBy = 'title'; booksSortAscending = !booksSortAscending;">Titel
                         <SortIcon />
                     </div>
-                    <div class="table-cell"
-                        @click="booksSortBy='author'; booksSortAscending=!booksSortAscending;">Autor:in
+                    <div class="table-cell" @click="booksSortBy = 'author'; booksSortAscending = !booksSortAscending;">
+                        Autor:in
                         <SortIcon />
                     </div>
-                    <div class="table-cell"
-                        @click="booksSortBy='language'; booksSortAscending=!booksSortAscending;">Sprache
+                    <div class="table-cell" @click="booksSortBy = 'language'; booksSortAscending = !booksSortAscending;">
+                        Sprache
                         <SortIcon />
                     </div>
-                    <div class="table-cell"
-                        @click="booksSortBy='points'; booksSortAscending=!booksSortAscending;">Lose
+                    <div class="table-cell" @click="booksSortBy = 'points'; booksSortAscending = !booksSortAscending;">Lose
                         <SortIcon />
                     </div>
-                    <div class="table-cell"
-                        @click="booksSortBy='isbn'; booksSortAscending=!booksSortAscending;">ISBN
+                    <div class="table-cell" @click="booksSortBy = 'isbn'; booksSortAscending = !booksSortAscending;">ISBN
                         <SortIcon />
                     </div>
                 </div>
@@ -165,6 +162,7 @@ export default {
             },
             booksSortBy: 'title',
             booksSortAscending: false,
+            currentBookBeforeEdit: undefined
         }
     },
 
@@ -185,9 +183,12 @@ export default {
         },
 
         selectBook: function (book) {
-            this.currentBook = this.deepClone(book);
-            this.bookResults = [];
-            this.showBookInfo = true;
+            this.checkIfBookChangedAndAskIfSaveAndThenDoAndHopeThatItWorks(() => {
+                this.currentBookBeforeEdit = this.deepClone(book);
+                this.currentBook = this.deepClone(book);
+                this.bookResults = [];
+                this.showBookInfo = true;
+            });
         },
 
         closeBook: function (book) {
@@ -196,21 +197,30 @@ export default {
             this.showBookInfo = false;
         },
 
-        saveBook: function () {
+        saveBook: function (close = true) {
             this.currentBook.title = this.currentBook.title.trim();
             this.currentBook.author = this.currentBook.author.trim();
             this.currentBook.language = this.currentBook.language.trim();
             this.currentBook.isbn = this.currentBook.isbn.trim();
             this.currentBook.points = parseInt(this.currentBook.points);
+            if (this.currentBook.title == "" || this.currentBook.author == "" || this.currentBook.language == "" || this.currentBook.points == 0) {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Buch speichern',
+                    content: `Bitte füllen Sie alle Felder aus vor dem Speichern!`,
+                }, () => { }, () => { });
+                return false;
+            }
 
             ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
 
-            this.currentBook = undefined;
-            this.bookResults = [];
-            this.showBookInfo = false;
-
+            if (close) {
+                this.currentBook = undefined;
+                this.bookResults = [];
+                this.showBookInfo = false;
+            }
             this.updateBooksRemote();
-
+            return true;
         },
 
         deleteBook: function () {
@@ -275,7 +285,7 @@ export default {
             };
             this.showBookInfo = true;
             this.isNew = true;
-
+            this.currentBookBeforeEdit = this.deepClone(this.currentBook);
         },
         searchBookWEB: function () {
             this.bookResults = [];
@@ -350,7 +360,32 @@ export default {
             return list;
         },
 
-        
+        checkIfBookChangedAndAskIfSaveAndThenDoAndHopeThatItWorks: function (_callback) {
+            if (typeof this.currentBook === 'object') {
+                if (!this.isBookEqual(this.currentBookBeforeEdit, this.currentBook)) {
+                    this.ask({
+                        type: 'warning',
+                        subtitle: 'Änderungen speichern',
+                        content: `Sie haben Informationen des Buchs “${this.currentBook.title}” geändert und nicht gespeichert. Möchten Sie diese aktualisieren?`,
+                        okButton: 'Verwerfen',
+                        noButton: 'Speichern'
+                    }, () => {
+                        _callback();
+                    }, () => {
+                        if (this.saveBook()) _callback();
+                    });
+                } else {
+                    _callback();
+                }
+            } else {
+                _callback();
+            }
+        },
+
+        isBookEqual: function (book1, book2) {
+            let isequal = (book1.title == book2.title && book1.author == book2.author && book1.language == book2.language && book1.points == book2.points && book1.isbn == book2.isbn)
+            return isequal
+        }
     },
 
     beforeMount() {
