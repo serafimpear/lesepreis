@@ -6,59 +6,18 @@ const { studentFile, bookFile } = require('./src/assets/data.js');
 const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
-const students_database = new sqlite3.Database(userDataPath + '/students_database.db');
-const books_database = new sqlite3.Database(userDataPath + '/books_database.db');
-const reset_database = new sqlite3.Database(userDataPath + '/reset_database.db');
+const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
 
-students_database.serialize(() => {
-    students_database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER,passed BOOLEAN,multiplied BOOLEAN,books TEXT)");
-});
-books_database.serialize(() => {
-    books_database.run("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY,title TEXT,author TEXT,language TEXT,foreign_language BOOLEAN,points INTEGER,isbn TEXT)");
-});
-reset_database.serialize(() => {
-    reset_database.run("CREATE TABLE IF NOT EXISTS reset (id INTEGER PRIMARY KEY,timestamp INTEGER,message TEXT,command TEXT, database TEXT)");
+database.serialize(() => {
+    database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER, failed_books INTEGER,passed BOOLEAN,multiplied_book_1 INTEGER, multiplied_book_2 INTEGER,books TEXT)");
+    database.run("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY,title TEXT,author TEXT,language TEXT,foreign_language BOOLEAN,points INTEGER,isbn TEXT)");
+    database.run("CREATE TABLE IF NOT EXISTS reset (id INTEGER PRIMARY KEY,timestamp INTEGER,message TEXT,command TEXT)");
 });
 
 const ipc = ipcMain
-function loadFromJsonToSQLite() {
-    num = studentFile.get('amountOfStudents');
-    for (let i = 0; i < 0; i++) {
-        data = studentFile.get(i);
-        students_database.serialize(() => {
-            students_database.run('INSERT INTO students (name, surname, class, points, readed_books, passed, multiplied, books) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    data.name,
-                    data.surname,
-                    data.class,
-                    data.points,
-                    data.readed_books,
-                    data.passed ? 1 : 0,
-                    data.multiplied_books ? 1 : 0,
-                    JSON.stringify(data.books)
-                ])
-        });
-    }
-    num = bookFile.get('amountOfBooks');
-    for (let i = 0; i < 0; i++) {
-        data = bookFile.get(i);
-        books_database.serialize(() => {
-            books_database.run('INSERT INTO books (title,author,language, foreign_language, points, isbn) VALUES (?, ?, ?, ?, ?, ?)',
-                [
-                    data.title,
-                    data.author,
-                    data.language,
-                    data.foreign_language,
-                    data.points,
-                    data.isbn
-                ])
-        });
-    }
-}
 
 function createWindow() {
-    // loadFromJsonToSQLite(); // run once to load data from json to the database!
-    const { screen } = require('electron'); 
+    const { screen } = require('electron');
     var dimensions = screen.getPrimaryDisplay().size;
     const isSmallScreen = false;
     if (dimensions.width < 1700 || dimensions.height < 800) { const isSmallScreen = true; console.log('small'); } else { console.log('big'); }
@@ -100,20 +59,25 @@ function createWindow() {
     ipc.on('minimizeApp', () => {
         win.minimize()
     })
-    
+
     ipc.on('devTools', () => {
         win.webContents.openDevTools();
     })
 
     ipc.on('getStudents', () => {
         var students = [];
-        students_database.all('SELECT * FROM students', [], (err, rows) => {
+        database.all('SELECT * FROM students', [], (err, rows) => {
             if (err) {
                 throw err;
             }
             rows.forEach(row => {
                 booksParsed = JSON.parse(row.books);
                 row.books = booksParsed;
+                if (row.multiplied_book_1 == -1 || row.multiplied_book_2 == -1) {
+                    row.multiplied_books = [];
+                } else {
+                    row.multiplied_books = [row.multiplied_book_1, row.multiplied_book_2];
+                }
                 students.push(row);
             });
             win.webContents.send('students', students);
@@ -121,31 +85,41 @@ function createWindow() {
     })
     ipc.on("addStudent", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
+        let mul1 = -1;
+        let mul2 = -1;
+        if (data.multiplied_books.length != 0) {
+            mul1 = data.multiplied_books[0];
+            mul2 = data.multiplied_books[1];
+        }
         if (data.uid == -1) {
-            students_database.serialize(() => {
-                students_database.run('INSERT INTO students (name, surname, class, points, readed_books, passed, multiplied, books) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            database.serialize(() => {
+                database.run('INSERT INTO students (name, surname, class, points, readed_books, failed_books, passed, multiplied_book_1, multiplied_book_2, books) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                     [
                         data.name,
                         data.surname,
                         data.class,
                         data.points,
                         data.readed_books,
+                        data.failed_books,
                         data.passed ? 1 : 0,
-                        data.multiplied_books ? 1 : 0,
+                        mul1,
+                        mul2,
                         JSON.stringify(data.books)
                     ])
             });
         } else {
-            students_database.serialize(() => {
-                students_database.run(`UPDATE students SET name = ?, surname = ?, class = ?, points = ?, readed_books = ?, passed = ?, multiplied = ?, books = ? WHERE uid = ?`,
+            database.serialize(() => {
+                database.run(`UPDATE students SET name = ?, surname = ?, class = ?, points = ?, readed_books = ?, failed_books = ?, passed = ?, multiplied_book_1 = ?, multiplied_book_2 = ?, books = ? WHERE uid = ?`,
                     [
                         data.name,
                         data.surname,
                         data.class,
                         data.points,
                         data.readed_books,
+                        data.failed_books,
                         data.passed ? 1 : 0,
-                        data.multiplied_books ? 1 : 0,
+                        mul1,
+                        mul2,
                         JSON.stringify(data.books),
                         data.uid
                     ])
@@ -155,8 +129,8 @@ function createWindow() {
     })
     ipc.on("deleteStudent", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
-        students_database.serialize(() => {
-            students_database.run(`DELETE FROM students WHERE uid = ?`,
+        database.serialize(() => {
+            database.run(`DELETE FROM students WHERE uid = ?`,
                 [
                     data.uid
                 ])
@@ -166,7 +140,7 @@ function createWindow() {
 
     ipc.on('getBooks', () => {
         const books = [];
-        books_database.all('SELECT * FROM books', [], (err, rows) => {
+        database.all('SELECT * FROM books', [], (err, rows) => {
             // console.log(rows);
             if (err) {
                 throw err;
@@ -183,8 +157,8 @@ function createWindow() {
 
         data = JSON.parse(dataReceived);
         if (data.id == -1) {
-            books_database.serialize(() => {
-                books_database.run('INSERT INTO books (title,author,language, foreign_language, points, isbn) VALUES (?, ?, ?, ?, ?, ?)',
+            database.serialize(() => {
+                database.run('INSERT INTO books (title,author,language, foreign_language, points, isbn) VALUES (?, ?, ?, ?, ?, ?)',
                     [
                         data.title,
                         data.author,
@@ -195,8 +169,8 @@ function createWindow() {
                     ])
             });
         } else {
-            books_database.serialize(() => {
-                books_database.run(`UPDATE books SET title = ?, author = ?, language = ?, foreign_language = ?, points = ?, isbn = ? WHERE id = ?`,
+            database.serialize(() => {
+                database.run(`UPDATE books SET title = ?, author = ?, language = ?, foreign_language = ?, points = ?, isbn = ? WHERE id = ?`,
                     [
                         data.title,
                         data.author,
@@ -211,8 +185,8 @@ function createWindow() {
     })
     ipc.on("deleteBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
-        books_database.serialize(() => {
-            books_database.run(`DELETE FROM books WHERE id = ?`,
+        database.serialize(() => {
+            database.run(`DELETE FROM books WHERE id = ?`,
                 [
                     data.id
                 ])
@@ -223,21 +197,10 @@ function createWindow() {
         // right now it's a list of all the reset steps
         data = JSON.parse(dataReceived);
         for (let i = 0; i < data.length; i++) {
-            if (data[i].database == "books") {
-                books_database.serialize(() => {
-                    books_database.run(data[i].command)
-                });
-                reset_database.serialize(() => {
-                    reset_database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id])
-                })
-            } else if (data[i].database == "students") {
-                students_database.serialize(() => {
-                    students_database.run(data[i].command)
-                });
-                reset_database.serialize(() => {
-                    reset_database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id])
-                })
-            }
+            database.serialize(() => {
+                database.run(data[i].command)
+                database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id])
+            });
         }
     })
 

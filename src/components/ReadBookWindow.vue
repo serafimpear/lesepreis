@@ -156,19 +156,16 @@ export default {
 
         selectBook() {
             this.$emit("selectBook", [this.selectedBook.id, this.bookPassed]);
-            console.log('bookid: ' + bookid)
             this.reset();
         },
 
         updateBook() {
             this.$emit("updateBook", [this.selectedBook.id, this.bookPassed]);
-            console.log('bookid: ' + bookid)
             this.reset();
         },
 
         removeBook() {
             this.$emit("removeBook", this.selectedBook.id);
-            console.log('bookid: ' + bookid)
             this.reset();
         },
 

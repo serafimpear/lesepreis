@@ -291,7 +291,6 @@ export default {
         },
 
         saveStudent: function (close = true) {
-            console.log('dddddd');
             this.currentStudent.name = this.currentStudent.name.trim();
             this.currentStudent.surname = this.currentStudent.surname.trim();
             this.currentStudent.class = this.currentStudent.class.trim();
@@ -300,9 +299,30 @@ export default {
                     type: 'alert',
                     subtitle: 'Student speichern',
                     content: `Bitte füllen Sie alle Felder aus vor dem Speichern!`,
-                }, () => {}, () => {});
+                }, () => { }, () => { });
                 return false;
             }
+            let sum = 0;
+            let passedCounter = 0;
+            let failedCounter = 0;
+            this.currentStudent.books.forEach(student_book => {
+                let book_content = this.books.find(book => book.id == student_book.id);
+                if (student_book.passed) {
+                    sum += book_content.points;
+                    passedCounter++;
+                } else {
+                    failedCounter++;
+                }
+            })
+            if (this.currentStudent.multiplied_books.length != 0) {
+                let book1 = this.books.find(book => book.id == this.currentStudent.multiplied_books[0].id);
+                let book2 = this.books.find(book => book.id == this.currentStudent.multiplied_books[1].id);
+                sum += book1.points * book2.points - book1.points - book2.points;
+            }
+            this.currentStudent.failed_books = failedCounter;
+            this.currentStudent.readed_books = passedCounter;
+            this.currentStudent.passed = readed_books > 2;
+            this.currentStudent.points = sum;
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
 
             if (close) {
@@ -321,12 +341,13 @@ export default {
                 class: "",
                 points: 0,
                 readed_books: 0,
+                failed_books: 0,
                 passed: false,
-                multiplied: false,
+                multiplied_books: [],
                 books: [],
             },
                 this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
-                this.showStudentInfo = true;
+            this.showStudentInfo = true;
         },
 
         deleteStudent: function () {
@@ -462,7 +483,7 @@ export default {
         },
 
         isStudentEqual: function (student1, student2) {
-            let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.multiplied_books == student2.multiplied_books && student1.points == student2.points  && student1.passed == student2.passed  && student1.readed_books == student2.readed_books)
+            let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.points == student2.points && student1.passed == student2.passed && student1.readed_books == student2.readed_books)
             return isequal
         }
 
