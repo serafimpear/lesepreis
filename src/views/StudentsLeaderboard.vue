@@ -329,7 +329,7 @@ export default {
             }
             this.currentStudent.failed_books = failedCounter;
             this.currentStudent.readed_books = passedCounter;
-            this.currentStudent.passed = readed_books > 2;
+            this.currentStudent.passed = passedCounter > 2;
             this.currentStudent.points = sum;
             ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
 
