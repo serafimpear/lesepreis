@@ -9,7 +9,7 @@ const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
 
 database.serialize(() => {
-    database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER, failed_books INTEGER,passed BOOLEAN,multiplied_book_1 INTEGER, multiplied_book_2 INTEGER,books TEXT)");
+    database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER, failed_books INTEGER,passed BOOLEAN,multiplied_book_1 INTEGER, multiplied_book_2 INTEGER,books TEXT,date_multiplied INTEGER)");
     database.run("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY,title TEXT,author TEXT,language TEXT,foreign_language BOOLEAN,points INTEGER,isbn TEXT)");
     database.run("CREATE TABLE IF NOT EXISTS reset (id INTEGER PRIMARY KEY,timestamp INTEGER,message TEXT,command TEXT)");
 });
@@ -93,23 +93,7 @@ function createWindow() {
         }
         if (data.uid == -1) {
             database.serialize(() => {
-                database.run('INSERT INTO students (name, surname, class, points, readed_books, failed_books, passed, multiplied_book_1, multiplied_book_2, books) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                    [
-                        data.name,
-                        data.surname,
-                        data.class,
-                        data.points,
-                        data.readed_books,
-                        data.failed_books,
-                        data.passed ? 1 : 0,
-                        mul1,
-                        mul2,
-                        JSON.stringify(data.books)
-                    ])
-            });
-        } else {
-            database.serialize(() => {
-                database.run(`UPDATE students SET name = ?, surname = ?, class = ?, points = ?, readed_books = ?, failed_books = ?, passed = ?, multiplied_book_1 = ?, multiplied_book_2 = ?, books = ? WHERE uid = ?`,
+                database.run('INSERT INTO students (name, surname, class, points, readed_books, failed_books, passed, multiplied_book_1, multiplied_book_2, books, date_multiplied) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                     [
                         data.name,
                         data.surname,
@@ -121,6 +105,24 @@ function createWindow() {
                         mul1,
                         mul2,
                         JSON.stringify(data.books),
+                        data.date_multiplied
+                    ])
+            });
+        } else {
+            database.serialize(() => {
+                database.run(`UPDATE students SET name = ?, surname = ?, class = ?, points = ?, readed_books = ?, failed_books = ?, passed = ?, multiplied_book_1 = ?, multiplied_book_2 = ?, books = ?, date_multiplied = ? WHERE uid = ?`,
+                    [
+                        data.name,
+                        data.surname,
+                        data.class,
+                        data.points,
+                        data.readed_books,
+                        data.failed_books,
+                        data.passed ? 1 : 0,
+                        mul1,
+                        mul2,
+                        JSON.stringify(data.books),
+                        data.date_multiplied,
                         data.uid
                     ])
             });

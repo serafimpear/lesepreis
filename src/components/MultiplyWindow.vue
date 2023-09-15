@@ -39,7 +39,7 @@
                     </div>
                     <Button text="Abbrechen" @click="close(false)" />
                     <Button v-if="selectedBooks.length == 2" text="Multiplizieren"
-                        @click="this.$emit('multiplyBooks', [book1, book2]);" />
+                        @click="this.$emit('multiplyBooks', selectedBooks);" />
                 </div>
             </div>
         </div>
@@ -54,8 +54,6 @@ export default {
     data() {
         return {
             searchBook: '',
-            book1: undefined,
-            book2: undefined,
             selectedBooks: [],
             multiplicationPoints: 0
         }
@@ -73,13 +71,19 @@ export default {
             this.$emit("close", result);
         },
 
-        selectBook: function (book) {
-            if (!this.selectedBooks.includes(book.id)) {
-                // if it is possible to select (if not (e.g. 2nd book is german), do not highlight it):
-                this.selectedBooks.push(book.id);
+        selectBook: function (cbook) {
+            if (!this.selectedBooks.includes(cbook.id)) {
+
+                if (this.selectedBooks.length < 2) {
+                    let book_content = this.books.find(book_c => book_c.id == cbook.id);
+                    if (this.selectedBooks.length == 0 || ((book_content.language.toUpperCase() == "DEUTSCH") !== ((this.books.find(book => book.id == this.selectedBooks[0])).language.toUpperCase() == "DEUTSCH"))) {
+                        this.selectedBooks.push(cbook.id);
+                    }
+                    // if it is possible to select (if not (e.g. 2nd book is german), do not highlight it):
+                }
             } else {
                 // if already selected, remove the highlight
-                this.selectedBooks.splice(this.selectedBooks.indexOf(book.id), 1);
+                this.selectedBooks.splice(this.selectedBooks.indexOf(cbook.id), 1);
             }
             if (this.selectedBooks.length == 2) {
                 // calculate points
