@@ -84,11 +84,12 @@
                             :value=currentStudent.readed_books disabled="disabled" number="number" /> -->
 
 
-                        <InputFieldTwoValues text="Gelesene Bücher" :value1=currentStudent.readed_books :value2=currentStudent.failed_books />
+                        <InputFieldTwoValues text="Gelesene Bücher" :value1=currentStudent.readed_books
+                            :value2=currentStudent.failed_books />
 
                         <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed ? 'ja' : 'nein'"
                             :img=currentStudent.passed />
-                        <Button text="Verwalten" @click="readBookWindowVisible = true" />
+                        <Button text="Verwalten" @click="showReadBookWindow()" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
                         <div class="table-row table-header-row">
@@ -140,14 +141,16 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="currentStudent.multiplied" class="multiplication">
+                <div v-if="currentStudent.multiplied_books.length == 2" class="multiplication">
                     <div class="multiplication-header">
                         <InputFieldTrueFalse text="Multiplikation" value="durchgeführt" img="true" />
-                        <InputField text="Punkte" :value=currentStudent.multiplied_points disabled="disabled"
-                            number="number" />
-                        <InputField text="Datum" variable=""
+                        <InputField text="Punkte"
+                            :value="books.find(book => book.id === currentStudent.multiplied_books[0]).points * books.find(book => book.id === currentStudent.multiplied_books[1]).points"
+                            disabled="disabled" number="number" />
+                        <InputField text="Datum"
                             :value="`${new Date(currentStudent.date_multiplied).toLocaleDateString('de-DE')}`"
                             disabled="disabled" />
+                        <Button text="Löschen" @click="deleteMultiplication" />
                     </div>
                     <div class="multiplied-books ui-table">
                         <div class="table-row table-header-row">
@@ -323,8 +326,9 @@ export default {
                 }
             })
             if (this.currentStudent.multiplied_books.length != 0) {
-                let book1 = this.books.find(book => book.id == this.currentStudent.multiplied_books[0].id);
-                let book2 = this.books.find(book => book.id == this.currentStudent.multiplied_books[1].id);
+                let book1 = this.books.find(book => book.id == this.currentStudent.multiplied_books[0]);
+                let book2 = this.books.find(book => book.id == this.currentStudent.multiplied_books[1]);
+                console.log(this.currentStudent.multiplied_books[0]);
                 sum += book1.points * book2.points - book1.points - book2.points;
             }
             this.currentStudent.failed_books = failedCounter;
@@ -352,6 +356,7 @@ export default {
                 failed_books: 0,
                 passed: false,
                 multiplied_books: [],
+                date_multiplied: 0,
                 books: [],
             },
                 this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
@@ -416,6 +421,15 @@ export default {
 
         multiplyBooks: function ([book1, book2]) {
             this.multiplyWindowVisible = false;
+            this.currentStudent.multiplied_books[0] = book1;
+            this.currentStudent.multiplied_books[1] = book2;
+            this.currentStudent.date_multiplied = Date.now();
+            this.saveStudent(false);
+        },
+
+        deleteMultiplication: function () {
+            this.currentStudent.multiplied_books = [];
+            this.saveStudent(false);
         },
 
         sortListBy: function (list, criterion, sortAscending) {
@@ -493,6 +507,22 @@ export default {
         isStudentEqual: function (student1, student2) {
             let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.points == student2.points && student1.passed == student2.passed && student1.readed_books == student2.readed_books)
             return isequal
+        },
+        showReadBookWindow: function () {
+            if (this.currentStudent.uid == -1) {
+                this.ask({
+                    type: 'warning',
+                    subtitle: 'Bücher verwalten',
+                    content: `Sie können nicht die Bücher verwalten solange Sie den Schüler nicht gespeichert haben. Wollen Sie den Schüler speichern?`,
+                    okButton: 'Abbrechen',
+                    noButton: 'Schüler speichern',
+                }, () => {
+                }, () => {
+                    this.saveStudent(false);
+                });
+            } else {
+                this.readBookWindowVisible = true;
+            }
         }
 
     },
