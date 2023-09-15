@@ -1,6 +1,9 @@
 module.exports = {
+  "name": "Lesepreis Verwaltung",
   "author": "Serafim Thaler, David Mairhofer",
   "description": "Eine App, basiert auf vue.js und electron.js für die Verwaltung vom Lesepreis in den Oberschulen Fallmerayer",
+  "exe": "lesepreis_verwaltung.exe",
+  "iconUrl": "",
   packagerConfig: {
     asar: false,
   },
