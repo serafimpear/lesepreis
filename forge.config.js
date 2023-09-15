@@ -1,6 +1,8 @@
 module.exports = {
+  "author": "Serafim Thaler, David Mairhofer",
+  "description": "Eine App, basiert auf vue.js und electron.js für die Verwaltung vom Lesepreis in den Oberschulen Fallmerayer",
   packagerConfig: {
-    asar: true,
+    asar: false,
   },
   rebuildConfig: {},
   makers: [

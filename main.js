@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
 const electron = require('electron');
+if (require('electron-squirrel-startup')) app.quit();
 const path = require('path')
 const Store = require('./src/assets/Store');
 const { studentFile, bookFile } = require('./src/assets/data.js');
