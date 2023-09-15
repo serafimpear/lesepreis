@@ -11,7 +11,7 @@
         "electron:start": "electron .",
         "start": "electron-forge start ",
         "package": "electron-forge package --config=forge.config.js",
-        "make": "electron-forge make --verbose --config=forge.config.js",
+        "make": "electron-forge make --verbose --config=forge.config.js --platform darwin",
         "build:start": "vite build && electron ."
     },
     "devDependencies": {
