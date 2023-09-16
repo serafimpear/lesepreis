@@ -13,7 +13,7 @@ module.exports = {
         iconUrl: "https://raw.githubusercontent.com/serafimpear/lesepreis/SQLite-Test/lesepreis-logo.ico",
         owners: "serafim thaler",
         setupIcon: path.resolve(__dirname, 'lesepreis-logo.ico'),
-        loadingGif: "loading-animation-1.gif",
+        loadingGif: "loading-animation.gif",
       },
     },
     {
