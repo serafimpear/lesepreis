@@ -64,7 +64,7 @@ export default {
         return {
             showHistoryPopup: false,
             version: process.env.VITE_APP_VERSION,
-            isDev: true
+            isDev: isDev
         }
     }
 }
