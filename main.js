@@ -5,6 +5,21 @@ const path = require('path')
 const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
+const gotTheLock = app.requestSingleInstanceLock() // dont allow 2 lesepreis windows
+
+let myWindow = null
+if (!gotTheLock) {
+    app.quit()
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (myWindow) {
+            if (myWindow.isMinimized()) myWindow.restore()
+            myWindow.focus()
+        }
+    })
+}
+
 const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
 
 database.serialize(() => {
