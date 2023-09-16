@@ -1,7 +1,7 @@
 <template>
     <div id="titleBarContainer">
         <div id="titleBar">
-            <div v-on:mouseover="showHistoryPopup = true;" v-on:mouseleave="showHistoryPopup = false;">
+            <!-- <div v-on:mouseover="showHistoryPopup = true;" v-on:mouseleave="showHistoryPopup = false;">
                 <button id="returnButton">
                     <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="29" height="29" rx="9" fill="#3F3F3F" />
@@ -11,17 +11,17 @@
                     </svg>
                 </button>
                 <HistoryPopup v-if="showHistoryPopup == true" />
-            </div>
+            </div> -->
             <div id="app-title-draggable-bar">
-                <div id="app-title">Lesepreis Verwaltung</div>
+                <div id="app-title">Lesepreis Verwaltung {{ version }}</div>
             </div>
-            <button id="devToolsButton">
+            <!-- <button id="devToolsButton">
                 <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="29" height="29" rx="9" fill="#3F3F3F" />
                     <path d="M19 10L23 15L19 20" stroke="#D9D9D9" stroke-width="2" stroke-linecap="round" />
                     <path d="M11 10L7 15L11 20" stroke="#D9D9D9" stroke-width="2" stroke-linecap="round" />
                 </svg>
-            </button>
+            </button> -->
             <button id="minimizeButton">
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="0.5" y="0.5" width="29" height="29" rx="9" fill="#3F3F3F" />
@@ -62,9 +62,12 @@ export default {
     data() {
         return {
             showHistoryPopup: false,
+            version: process.env.VITE_APP_VERSION,
         }
     }
 }
+
+
 </script>
 
 <style>
@@ -122,7 +125,7 @@ div#app-title {
     user-select: none;
     text-align: center;
     position: fixed;
-    left: calc(50% - 95px);
+    left: calc(50% - 110px);
 }
 
 div#titleBar button {

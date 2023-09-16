@@ -49,7 +49,7 @@ div#root {
 nav.left-panel-navigation {
     display: grid;
     filter: drop-shadow(0 0 40px #ddd);
-    grid-template-columns: 100px 50px;
+    grid-template-columns: 100px 0;
 }
 
 nav.left-panel-navigation,

@@ -1,39 +1,41 @@
 {
-    "name": "lesepreis-app",
-    "version": "1.0.0",
-    "private": true,
-    "main": "main.js",
-    "config.forge": "forge.config.js",
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview",
-        "electron:start": "electron .",
-        "start": "electron-forge start ",
-        "package": "electron-forge package --config=forge.config.js",
-        "make": "electron-forge make --verbose --config=forge.config.js --platform darwin",
-        "build:start": "vite build && electron ."
-    },
-    "devDependencies": {
-        "@electron-forge/cli": "^6.4.2",
-        "@electron-forge/maker-deb": "^6.4.2",
-        "@electron-forge/maker-rpm": "^6.4.1",
-        "@electron-forge/maker-squirrel": "^6.4.2",
-        "@electron-forge/maker-zip": "^6.4.2",
-        "@electron-forge/plugin-auto-unpack-natives": "^6.4.1",
-        "@vitejs/plugin-vue": "^4.2.3",
-        "electron": "^26.0.0",
-        "vite": "^4.3.9"
-    },
-    "dependencies": {
-        "@electron/rebuild": "^3.3.0",
-        "axios": "^1.5.0",
-        "electron-dialog": "^2.0.0",
-        "electron-squirrel-startup": "^1.0.0",
-        "sqlite3": "^5.1.6",
-        "update-electron-app": "^2.0.1",
-        "vite-require": "^0.2.3",
-        "vue": "^3.3.4",
-        "vue-router": "^4.2.2"
-    }
+  "name": "lesepreis-app",
+  "productName": "Lesepreis Verwaltung",
+  "version": "1.0.0",
+  "author": "Serafim Thaler, David Mairhofer, Elias Walter Ebner",
+  "description": "Eine App, basiert auf vue.js und electron.js für die Verwaltung vom Lesepreis in den Oberschulen Fallmerayer",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:start": "electron .",
+    "build:start": "vite build && electron .",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.4.2",
+    "@electron-forge/maker-deb": "^6.4.2",
+    "@electron-forge/maker-rpm": "^6.4.2",
+    "@electron-forge/maker-squirrel": "^6.4.2",
+    "@electron-forge/maker-zip": "^6.4.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "electron": "^26.0.0",
+    "vite": "^4.3.9"
+  },
+  "dependencies": {
+    "@electron/rebuild": "^3.3.0",
+    "axios": "^1.5.0",
+    "electron-dialog": "^2.0.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "sqlite3": "^5.1.6",
+    "update-electron-app": "^2.0.1",
+    "vite-require": "^0.2.3",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.2"
+  }
 }

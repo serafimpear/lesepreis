@@ -12,8 +12,8 @@
             <div class="nav-element-logo">
                 <img src="@/assets/svgs/lesepreis-logo.png" class="lesepreis-logo" height="52">
                 <span class="nav-element-description">
-                    <span style="display: block; font-size: 1.2em; line-height: 1.2em;">Verwaltung</span>
-                    <span style="display: block; font-size: 1.2em; font-weight: 600; line-height: 1.2em;">Lesepreis</span>
+                    <span style="display: block; font-size: 1.2em; line-height: 1.2em;">Lesepreis</span>
+                    <span style="display: block; font-size: 1.2em; font-weight: 600; line-height: 1.2em;">Verwaltung</span>
                 </span>
             </div>
             <nav class="app-navigation-list">
@@ -42,9 +42,9 @@
                 <span class="nav-element-description">Zum Startbildschirm</span>
             </div-->
         </div>
-        <div class="left-panel-navigation-slider">
+        <!-- <div class="left-panel-navigation-slider">
             <img src="@/assets/svgs/icon-slider-left.svg">
-        </div>
+        </div> -->
     </nav>
 </template>
 

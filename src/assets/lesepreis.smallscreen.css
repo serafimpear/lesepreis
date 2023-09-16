@@ -32,7 +32,7 @@
     }
 
     body nav.left-panel-navigation {
-        grid-template-columns: 5em 3em;
+        grid-template-columns: 5em 0;
     }
 
     body nav.left-panel-navigation:hover, body nav.left-panel-navigation:active {

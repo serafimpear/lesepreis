@@ -2,8 +2,6 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const electron = require('electron');
 if (require('electron-squirrel-startup')) app.quit();
 const path = require('path')
-const Store = require('./src/assets/Store');
-const { studentFile, bookFile } = require('./src/assets/data.js');
 const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
@@ -23,16 +21,27 @@ function createWindow() {
     const isSmallScreen = false;
     if (dimensions.width < 1700 || dimensions.height < 800) { const isSmallScreen = true; console.log('small'); } else { console.log('big'); }
 
+    var splash = new BrowserWindow({
+        width: 600,
+        height: 374,
+        transparent: true,
+        frame: false,
+        alwaysOnTop: true
+    });
+
+    splash.loadFile('welcome.html');
+    splash.center();
+
     const win = new BrowserWindow({
         show: false,
-        minWidth: 1090,
+        minWidth: 1080,
         minHeight: 650,
         width: 700,
         height: 400,
         frame: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            zoomFactor: isSmallScreen ? 0.75 : 1.0, // if screen is small, use 75% scale level for the app
+            zoomFactor: isSmallScreen ? 0.7 : 1.0, // if screen is small, use 75% scale level for the app
             // bug: the zoomFactor is cached:
             // https://github.com/electron/electron/issues/10572
             nodeIntegration: true,
@@ -40,10 +49,15 @@ function createWindow() {
         }
     });
 
-    win.maximize();
     win.removeMenu(); // remove menu bar at top (file - edit etc...)
-    win.show();
+
     win.loadFile('dist/index.html');
+
+    setTimeout(function () {
+        splash.close();
+        win.show();
+        win.maximize();
+    }, 5000);
 
     ipc.on('closeApp', () => {
         win.close()
@@ -227,4 +241,4 @@ app.on('window-all-closed', () => {
 
 require('update-electron-app')({
     repo: 'serafimpear/lesepreis'
-  })
+})
