@@ -24,19 +24,19 @@ Sobald eine neue Version da ist, wird das Programm Sie darüber benachrichtigen 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur)
 
 ## Project Setup
-
+Zuerst müssen alle Dependencies installiert werden:
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Compile VUE.JS + run ELECTRON (in dev mode)
 
 ```sh
-npm run dev
+npm run build:start
 ```
 
-### Compile and Minify for Production
+### Create Desktop Installer (production)
 
 ```sh
-npm run build
+npm run make
 ```
