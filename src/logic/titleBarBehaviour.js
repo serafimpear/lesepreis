@@ -1,5 +1,7 @@
 const { ipcRenderer }  = require('electron')
 const ipc = ipcRenderer
+const isDev = require('electron-is-dev')
+
 console.log('s')
 
 document.getElementById('closeButton').addEventListener('click', () => {
@@ -17,7 +19,7 @@ document.getElementById('minimizeButton').addEventListener('click', () => {
     console.log('d')
 })
 
-document.getElementById('devToolsButton').addEventListener('click', () => {
+if (isDev) document.getElementById('devToolsButton').addEventListener('click', () => {
     ipc.send('devTools')
     console.log('d')
 })

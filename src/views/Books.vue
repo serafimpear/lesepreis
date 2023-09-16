@@ -55,7 +55,7 @@
                         <InputField class="language-input" v-model="currentBook.language" text="Sprache" variable=""
                             :value=currentBook.language />
                         <InputField class="points-input" v-model="currentBook.points" text="Lose" variable=""
-                            number="number" :value=currentBook.points />
+                            number="positivnumber" :value=currentBook.points />
                     </div>
                     <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
                         v-model="currentBook.isbn" @input="searchBookWEB" />
