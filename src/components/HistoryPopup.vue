@@ -5,7 +5,7 @@
                 <div class="table-data">
                     <div class="table-row" v-for="(action, index) in actions" :key="index"
                         :class="{ 'highlight': isHovered(index) }" @mouseover="setHovered(index)" @mouseout="setHovered(-1)"
-                        @click="undo(action)">
+                        @click="undo(actions.splice(0, index + 1))">
                         <div class="table-cell">
                             {{ action.message }}
                         </div>
@@ -39,15 +39,13 @@ export default {
 
     methods: {
         updateResetHistoryRemote: function () {
-            ipcRenderer.send("getResetHistory");
-            ipcRenderer.on("resetHistory", (event, dataReceived) => {
-                this.actions = dataReceived.reverse();
-            })
+            this.actions = ipcRenderer.sendSync("getResetHistory");
         },
 
-        undo: (action) => {
-            ipcRenderer.send("reset", JSON.stringify([action]));
-            updateResetHistoryRemote();
+        undo: function(actionsToRevert) {
+            ipcRenderer.send("reset", JSON.stringify(actionsToRevert));
+            this.updateResetHistoryRemote();
+            this.$root.$emit('updateDataRemote');
         },
 
         isHovered(index) {

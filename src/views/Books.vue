@@ -171,11 +171,11 @@ export default {
 
         updateBooksRemote: function () {
             this.books = ipcRenderer.sendSync("getBooks");
-            
+
         },
         updateStudentsRemote: function () {
             this.students = ipcRenderer.sendSync("getStudents");
-            
+
         },
 
         selectBook: function (book) {
@@ -386,6 +386,13 @@ export default {
     beforeMount() {
         this.updateStudentsRemote();
         this.updateBooksRemote();
+    },
+
+    mounted() {
+        var that = this;
+        ipcRenderer.on("updateDataRemote", function () {
+            that.updateBooksRemote();
+        });
     },
 
     computed: {
