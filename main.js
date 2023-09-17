@@ -143,6 +143,7 @@ function createWindow() {
                         `Schüler ${data.name} ${data.surname} hinzugefügt`,
                         `DELETE FROM students WHERE name = \"${data.name}\" AND surname = \"${data.surname}\" AND class = \"${data.class}\" AND points = ${data.points} AND readed_books = ${data.readed_books} AND failed_books = ${data.failed_books} AND passed = ${data.passed} AND multiplied_book_1 = ${mul1} AND multiplied_book_2 = ${mul2} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${data.date_multiplied}`
                     ])
+                event.returnValue = "done1";
             });
         } else {
             database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
@@ -176,7 +177,7 @@ function createWindow() {
                         data.date_multiplied,
                         data.uid
                     ])
-
+                event.returnValue = "done2";
             });
         }
 
@@ -197,17 +198,18 @@ function createWindow() {
                         ])
                 });
             });
+
+            database.serialize(() => {
+                database.run(`DELETE FROM students WHERE uid = ?`,
+                    [
+                        data.uid
+                    ])
+                event.returnValue = 'done3';
+            });
         });
-        database.serialize(() => {
-            database.run(`DELETE FROM students WHERE uid = ?`,
-                [
-                    data.uid
-                ])
-        });
-        event.returnValue = 'wtf';
     })
 
-    ipc.on('getBooks', () => {
+    ipc.on('getBooks', (event, args) => {
         const books = [];
         database.all('SELECT * FROM books', [], (err, rows) => {
             // console.log(rows);
@@ -218,7 +220,7 @@ function createWindow() {
                 books.push(row);
                 //console.log("students ", students, students.push(row));
             });
-            win.webContents.send('books', books);
+            event.returnValue = books;
         });
 
     })
@@ -236,6 +238,7 @@ function createWindow() {
                         data.points,
                         data.isbn
                     ])
+                event.returnValue = "done4";
             });
         } else {
             database.serialize(() => {
@@ -249,6 +252,7 @@ function createWindow() {
                         data.isbn,
                         data.id
                     ])
+                event.returnValue = "done5";
             });
         }
     })
@@ -259,10 +263,11 @@ function createWindow() {
                 [
                     data.id
                 ])
+            event.returnValue = "done6";
         });
     })
     ipc.on("getResetHistory", (event, dataReceived) => {
-        
+
         const resetHistory = [];
         database.all('SELECT * FROM reset', [], (err, rows) => {
             if (err) {

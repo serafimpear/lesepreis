@@ -280,10 +280,7 @@ export default {
         deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
 
         updateBooksRemote: function () {
-            ipcRenderer.send("getBooks");
-            ipcRenderer.on("books", (event, dataReceived) => {
-                this.books = dataReceived;
-            })
+            this.books = ipcRenderer.sendSync("getBooks");
         },
 
         updateStudentsRemote: function () {
@@ -332,7 +329,7 @@ export default {
             this.currentStudent.readed_books = passedCounter;
             this.currentStudent.passed = passedCounter > 2;
             this.currentStudent.points = sum;
-            ipcRenderer.send("addStudent", JSON.stringify(this.currentStudent));
+            ipcRenderer.sendSync("addStudent", JSON.stringify(this.currentStudent));
 
             if (close) {
                 this.currentStudent = undefined;
@@ -373,7 +370,7 @@ export default {
                 content: `Sind Sie sicher, dass sie den Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
                 okButton: 'Schüler löschen'
             }, () => {
-                
+
                 console.log(ipcRenderer.sendSync("deleteStudent", JSON.stringify(this.currentStudent)));
                 this.updateStudentsRemote();
 
