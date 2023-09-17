@@ -141,7 +141,7 @@ function createWindow() {
                     [
                         Date.now(),
                         `Schüler ${data.name} ${data.surname} hinzugefügt`,
-                        `DELETE FROM students WHERE name = \"${data.name}\", surname = \"${data.surname}\", class = \"${data.class}\", points = ${data.points}, readed_books = ${data.readed_books}, failed_books = ${data.failed_books}, passed = ${data.passed}, multiplied_book_1 = ${mul1}, multiplied_books_2 = ${mul2}, books = \"${JSON.stringify(data.books)}\", date_multiplied = ${data.date_multiplied}`
+                        `DELETE FROM students WHERE name = \"${data.name}\" AND surname = \"${data.surname}\" AND class = \"${data.class}\" AND points = ${data.points} AND readed_books = ${data.readed_books} AND failed_books = ${data.failed_books} AND passed = ${data.passed} AND multiplied_book_1 = ${mul1} AND multiplied_book_2 = ${mul2} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${data.date_multiplied}`
                     ])
             });
         } else {
@@ -155,7 +155,7 @@ function createWindow() {
                             [
                                 Date.now(),
                                 `Schüler ${row.name} ${row.surname} gespeichert`,
-                                `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_2}, books = \"${row.books}\", date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+                                `UPDATE students SET name = \"${row.name}\" AND surname = \"${row.surname}\" AND class = \"${row.class}\" AND points = ${row.points} AND readed_books = ${row.readed_books} AND failed_books = ${row.failed_books} AND passed = ${row.passed} AND multiplied_book_1 = ${row.multiplied_book_1} AND multiplied_book_2 = ${row.multiplied_book_2} AND books = \"${row.books}\" AND date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
                             ])
                     });
                 });
@@ -193,7 +193,7 @@ function createWindow() {
                         [
                             Date.now(),
                             `Schüler ${row.name} ${row.surname} gelöscht`,
-                            `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 ${row.multiplied_book_1}, books = \"${row.books}\", date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+                            `UPDATE students SET name = \"${row.name}\" AND surname = \"${row.surname}\" AND class = \"${row.class}\" AND points = ${row.points} AND readed_books = ${row.readed_books} AND failed_books = ${row.failed_books} AND passed = ${row.passed} AND multiplied_book_1 ${row.multiplied_book_1} AND books = \"${row.books}\" AND date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
                         ])
                 });
             });
