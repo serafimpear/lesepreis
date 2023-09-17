@@ -170,16 +170,12 @@ export default {
         deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
 
         updateBooksRemote: function () {
-            ipcRenderer.send("getBooks");
-            ipcRenderer.on("books", (event, dataReceived) => {
-                this.books = dataReceived;
-            })
+            this.books = ipcRenderer.sendSync("getBooks");
+            
         },
         updateStudentsRemote: function () {
-            ipcRenderer.send("getStudents");
-            ipcRenderer.on("students", (event, dataReceived) => {
-                this.students = dataReceived;
-            })
+            this.students = ipcRenderer.sendSync("getStudents");
+            
         },
 
         selectBook: function (book) {
@@ -212,7 +208,7 @@ export default {
                 return false;
             }
 
-            ipcRenderer.send("addBook", JSON.stringify(this.currentBook));
+            ipcRenderer.sendSync("addBook", JSON.stringify(this.currentBook));
 
             if (close) {
                 this.currentBook = undefined;
@@ -261,7 +257,7 @@ export default {
                 okButton: 'Buch löschen'
             }, () => {
 
-                ipcRenderer.send("deleteBook", JSON.stringify(this.currentBook));
+                ipcRenderer.sendSync("deleteBook", JSON.stringify(this.currentBook));
 
                 this.updateBooksRemote();
                 this.updateStudentsRemote();
@@ -279,7 +275,6 @@ export default {
                 title: "",
                 author: "",
                 language: "",
-                foreign_language: false,
                 points: 0,
                 isbn: "",
             };

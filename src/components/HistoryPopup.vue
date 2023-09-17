@@ -41,14 +41,13 @@ export default {
         updateResetHistoryRemote: function () {
             ipcRenderer.send("getResetHistory");
             ipcRenderer.on("resetHistory", (event, dataReceived) => {
-                this.actions = dataReceived;
+                this.actions = dataReceived.reverse();
             })
         },
 
         undo: (action) => {
             ipcRenderer.send("reset", JSON.stringify([action]));
-
-            console.log('undo action ' + action.message);
+            updateResetHistoryRemote();
         },
 
         isHovered(index) {
