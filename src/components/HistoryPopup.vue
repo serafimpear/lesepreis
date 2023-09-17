@@ -7,10 +7,10 @@
                         :class="{ 'highlight': isHovered(index) }" @mouseover="setHovered(index)" @mouseout="setHovered(-1)"
                         @click="undo(action)">
                         <div class="table-cell">
-                            {{ action.text }}
+                            {{ action.message }}
                         </div>
                         <div class="table-cell time-of-change">
-                            {{ action.time }}
+                            {{ `${new Date(action.timestamp).toLocaleDateString('de-DE')}` }}
                         </div>
                     </div>
                 </div>
@@ -26,39 +26,29 @@
 </template>
 
 <script>
+const { ipcRenderer } = require('electron')
+
 export default {
     data() {
         return {
-            actions: [
-                {
-                    'text': 'Buch Goete “Faust” zu den gelesenen Büchern (nicht bestanden) von ‘David Mairhofer’ hinzugefügt',
-                    'time': '09:48'
-                },
-                {
-                    'text': 'Buch Franz Kafka “Das Urteil” zu den gelesenen Büchern (bestanden) von ‘David Mairhofer’ hinzugefügt',
-                    'time': '09:45'
-                },
-                {
-                    'text': 'Name von Schüler ‘Wolfgang Mairhofer’ auf ‘David Mairhofer’ geändert ',
-                    'time': '09:39'
-                },
-                {
-                    'text': 'Schüler ‘Wolfgang Mairhofer’ hinzugefügt',
-                    'time': '09:34'
-                },
-                {
-                    'text': 'Buch Goethe “Faust” hinzugefügt',
-                    'time': '09:29'
-                },
-            ],
+            actions: [],
 
             hoveredIndex: -1,
         }
     },
 
     methods: {
+        updateResetHistoryRemote: function () {
+            ipcRenderer.send("getResetHistory");
+            ipcRenderer.on("resetHistory", (event, dataReceived) => {
+                this.actions = dataReceived;
+            })
+        },
+
         undo: (action) => {
-            console.log('undo action ' + action);
+            ipcRenderer.send("reset", JSON.stringify([action]));
+
+            console.log('undo action ' + action.message);
         },
 
         isHovered(index) {
@@ -67,7 +57,10 @@ export default {
         setHovered(index) {
             this.hoveredIndex = index;
         },
-    }
+    },
+    beforeMount() {
+        this.updateResetHistoryRemote();
+    },
 }
 </script>
 

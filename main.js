@@ -131,14 +131,35 @@ function createWindow() {
                         data.points,
                         data.readed_books,
                         data.failed_books,
-                        data.passed ? 1 : 0,
+                        data.passed,
                         mul1,
                         mul2,
                         JSON.stringify(data.books),
                         data.date_multiplied
                     ])
+                database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
+                    [
+                        Date.now(),
+                        `Schüler ${data.name} ${data.surname} hinzugefügt`,
+                        `DELETE FROM students WHERE name = \"${data.name}\", surname = \"${data.surname}\", class = \"${data.class}\", points = ${data.points}, readed_books = ${data.readed_books}, failed_books = ${data.failed_books}, passed = ${data.passed}, multiplied_book_1 = ${mul1}, multiplied_books_2 = ${mul2}, books = \"${JSON.stringify(data.books)}\", date_multiplied = ${data.date_multiplied}`
+                    ])
             });
         } else {
+            database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                rows.forEach(row => {
+                    database.serialize(() => {
+                        database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
+                            [
+                                Date.now(),
+                                `Schüler ${row.name} ${row.surname} gespeichert`,
+                                `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_2}, books = \"${row.books}\", date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+                            ])
+                    });
+                });
+            });
             database.serialize(() => {
                 database.run(`UPDATE students SET name = ?, surname = ?, class = ?, points = ?, readed_books = ?, failed_books = ?, passed = ?, multiplied_book_1 = ?, multiplied_book_2 = ?, books = ?, date_multiplied = ? WHERE uid = ?`,
                     [
@@ -148,19 +169,35 @@ function createWindow() {
                         data.points,
                         data.readed_books,
                         data.failed_books,
-                        data.passed ? 1 : 0,
+                        data.passed,
                         mul1,
                         mul2,
                         JSON.stringify(data.books),
                         data.date_multiplied,
                         data.uid
                     ])
+
             });
         }
 
     })
     ipc.on("deleteStudent", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
+        database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            rows.forEach(row => {
+                database.serialize(() => {
+                    database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
+                        [
+                            Date.now(),
+                            `Schüler ${row.name} ${row.surname} gelöscht`,
+                            `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 ${row.multiplied_book_1}, books = \"${row.books}\", date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+                        ])
+                });
+            });
+        });
         database.serialize(() => {
             database.run(`DELETE FROM students WHERE uid = ?`,
                 [
@@ -222,6 +259,20 @@ function createWindow() {
                 [
                     data.id
                 ])
+        });
+    })
+    ipc.on("getResetHistory", (event, dataReceived) => {
+        
+        const resetHistory = [];
+        database.all('SELECT * FROM reset', [], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            rows.forEach(row => {
+                resetHistory.push(row);
+            });
+            console.log(resetHistory);
+            win.webContents.send('resetHistory', resetHistory);
         });
     })
     ipc.on("reset", (event, dataReceived) => {
