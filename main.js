@@ -94,7 +94,7 @@ function createWindow() {
         win.webContents.openDevTools();
     })
 
-    ipc.on('getStudents', () => {
+    ipc.on('getStudents', (event, args) => {
         var students = [];
         database.all('SELECT * FROM students', [], (err, rows) => {
             if (err) {
@@ -110,7 +110,7 @@ function createWindow() {
                 }
                 students.push(row);
             });
-            win.webContents.send('students', students);
+            event.returnValue = students;
         });
     })
     ipc.on("addStudent", (event, dataReceived) => {
@@ -204,7 +204,7 @@ function createWindow() {
                     data.uid
                 ])
         });
-
+        event.returnValue = 'wtf';
     })
 
     ipc.on('getBooks', () => {

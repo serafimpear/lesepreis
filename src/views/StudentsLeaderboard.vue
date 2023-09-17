@@ -287,10 +287,7 @@ export default {
         },
 
         updateStudentsRemote: function () {
-            ipcRenderer.send("getStudents");
-            ipcRenderer.on("students", (event, dataReceived) => {
-                this.students = dataReceived;
-            })
+            this.students = ipcRenderer.sendSync("getStudents");
         },
 
         selectStudent: function (student) {
@@ -376,8 +373,8 @@ export default {
                 content: `Sind Sie sicher, dass sie den Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
                 okButton: 'Schüler löschen'
             }, () => {
-                ipcRenderer.send("deleteStudent", JSON.stringify(this.currentStudent));
-
+                
+                console.log(ipcRenderer.sendSync("deleteStudent", JSON.stringify(this.currentStudent)));
                 this.updateStudentsRemote();
 
                 this.currentStudent = undefined;
