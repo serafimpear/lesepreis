@@ -127,7 +127,7 @@ div#app-title {
     user-select: none;
     text-align: center;
     position: fixed;
-    left: calc(50% - 110px);
+    left: calc(50% - 115px);
 }
 
 div#titleBar button {

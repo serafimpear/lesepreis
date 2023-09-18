@@ -1,7 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const electron = require('electron');
 if (require('electron-squirrel-startup')) app.quit();
-const path = require('path')
+const path = require('path');
+const { throwError } = require('rxjs');
 const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
@@ -21,6 +22,9 @@ if (!gotTheLock) {
 }
 
 const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
+database.on('trace', (sql) => {
+    console.log('Query:', sql);
+  });
 
 database.serialize(() => {
     database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER, failed_books INTEGER,passed BOOLEAN,multiplied_book_1 INTEGER, multiplied_book_2 INTEGER,books TEXT,date_multiplied INTEGER)");
@@ -137,12 +141,68 @@ function createWindow() {
                         JSON.stringify(data.books),
                         data.date_multiplied
                     ])
-                database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
+                // database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
+                //     [
+                //         Date.now(),
+                //         `Schüler ${data.name} ${data.surname} hinzugefügt`,
+                //         //`DELETE FROM students WHERE name = \"${data.name}\" AND surname = \"${data.surname}\" AND class = \"${data.class}\" AND points = ${data.points} AND readed_books = ${data.readed_books} AND failed_books = ${data.failed_books} AND passed = ${data.passed} AND multiplied_book_1 = ${mul1} AND multiplied_book_2 = ${mul2} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${data.date_multiplied}`
+                //         `DELETE FROM students WHERE name = ? AND surname = ? AND class = ? AND points = ? AND readed_books = ? AND failed_books = ? AND passed = ? AND multiplied_book_1 = ? AND multiplied_book_2 = ? AND books = ? AND date_multiplied = ?`,
+                //         [
+                //             data.name,
+                //             data.surname,
+                //             data.class,
+                //             data.points,
+                //             data.readed_books,
+                //             data.failed_books,
+                //             data.passed,
+                //             mul1,
+                //             mul2,
+                //             JSON.stringify(data.books),
+                //             data.date_multiplied
+                //         ]
+                //     ])
+
+
+                console.log(`DELETE FROM students WHERE name = \"${data.name.replace(/"/g, '\\\"')}\" AND surname = \"${data.surname.replace(/"/g, '\\\"')}\" AND class = \"${data.class.replace(/"/g, '\\\"')}\" AND points = ${JSON.stringify(data.points)} AND readed_books = ${JSON.stringify(data.readed_books)} AND failed_books = ${JSON.stringify(data.failed_books)} AND passed = ${JSON.stringify(data.passed)} AND multiplied_book_1 = ${JSON.stringify(mul1)} AND multiplied_book_2 = ${JSON.stringify(mul2)} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${JSON.stringify(data.date_multiplied)}`)
+
+
+                try {
+                    database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)'
                     [
                         Date.now(),
-                        `Schüler ${data.name} ${data.surname} hinzugefügt`,
-                        `DELETE FROM students WHERE name = \"${data.name}\" AND surname = \"${data.surname}\" AND class = \"${data.class}\" AND points = ${data.points} AND readed_books = ${data.readed_books} AND failed_books = ${data.failed_books} AND passed = ${data.passed} AND multiplied_book_1 = ${mul1} AND multiplied_book_2 = ${mul2} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${data.date_multiplied}`
+                        `Schüler ${JSON.stringify(data.name)} ${JSON.stringify(data.surname)} hinzugefügt`,
+                        `DELETE FROM students WHERE name = ${JSON.stringify(data.name)} AND surname = \"${JSON.stringify(data.surname)}\" AND class = \"${JSON.stringify(data.class)}\" AND points = ${JSON.stringify(data.points)} AND readed_books = ${JSON.stringify(data.readed_books)} AND failed_books = ${JSON.stringify(data.failed_books)} AND passed = ${JSON.stringify(data.passed)} AND multiplied_book_1 = ${JSON.stringify(mul1)} AND multiplied_book_2 = ${JSON.stringify(mul2)} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${JSON.stringify(data.date_multiplied)}`
                     ])
+                } catch (e) {
+                    throw (e);
+                }
+
+                // try {
+                //     database.run(`INSERT INTO reset (timestamp,message,command) VALUES (${Date.now()}, 'Schüler' ? + ? 'hinzugefügt', DELETE FROM students WHERE name = ? AND surname = ? AND class = ? AND points = ? AND readed_books = ? AND failed_books = ? AND passed = ? AND multiplied_book_1 = ? AND multiplied_book_2 = ? AND books = ? AND date_multiplied = ?)`,
+                //     [
+                //         data.name, 
+                //         data.surname,
+                //         data.name,
+                //         data.surname,
+                //         data.class,
+                //         data.points,
+                //         data.readed_books,
+                //         data.failed_books,
+                //         data.passed,
+                //         mul1,
+                //         mul2,
+                //         JSON.stringify(data.books),
+                //         data.date_multiplied,
+                //     ])
+                // } catch (e) {
+                //     console.log(e);
+                //     throw (e);
+                // }
+
+
+
+
+
                 event.returnValue = "done1";
             });
         } else {

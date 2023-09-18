@@ -31,7 +31,7 @@
                                     src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler NICHT qualifiziert"><img
                                     src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
-                            <div v-if="student.multiplied" class="table-cell" title="Schüler hat multipliziert"><img
+                            <div v-if="currentStudent.multiplied_books.length == 2" class="table-cell" title="Schüler hat multipliziert"><img
                                     src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler hat noch NICHT multipliziert"><img
                                     src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
@@ -323,7 +323,7 @@ export default {
                 let book1 = this.books.find(book => book.id == this.currentStudent.multiplied_books[0]);
                 let book2 = this.books.find(book => book.id == this.currentStudent.multiplied_books[1]);
                 console.log(this.currentStudent.multiplied_books[0]);
-                sum += book1.points * book2.points - book1.points - book2.points;
+                sum += book1.points * book2.points;
             }
             this.currentStudent.failed_books = failedCounter;
             this.currentStudent.readed_books = passedCounter;
