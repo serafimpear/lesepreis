@@ -2,7 +2,6 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const electron = require('electron');
 if (require('electron-squirrel-startup')) app.quit();
 const path = require('path');
-const { throwError } = require('rxjs');
 const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
@@ -24,7 +23,7 @@ if (!gotTheLock) {
 const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
 database.on('trace', (sql) => {
     console.log('Query:', sql);
-  });
+});
 
 database.serialize(() => {
     database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER, failed_books INTEGER,passed BOOLEAN,multiplied_book_1 INTEGER, multiplied_book_2 INTEGER,books TEXT,date_multiplied INTEGER)");
@@ -127,7 +126,7 @@ function createWindow() {
         }
         if (data.uid == -1) {
             database.serialize(() => {
-                database.run('INSERT INTO students (name, surname, class, points, readed_books, failed_books, passed, multiplied_book_1, multiplied_book_2, books, date_multiplied) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                database.run(`INSERT INTO students (name, surname, class, points, readed_books, failed_books, passed, multiplied_book_1, multiplied_book_2, books, date_multiplied) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         data.name,
                         data.surname,
@@ -141,67 +140,14 @@ function createWindow() {
                         JSON.stringify(data.books),
                         data.date_multiplied
                     ])
-                // database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
-                //     [
-                //         Date.now(),
-                //         `Schüler ${data.name} ${data.surname} hinzugefügt`,
-                //         //`DELETE FROM students WHERE name = \"${data.name}\" AND surname = \"${data.surname}\" AND class = \"${data.class}\" AND points = ${data.points} AND readed_books = ${data.readed_books} AND failed_books = ${data.failed_books} AND passed = ${data.passed} AND multiplied_book_1 = ${mul1} AND multiplied_book_2 = ${mul2} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${data.date_multiplied}`
-                //         `DELETE FROM students WHERE name = ? AND surname = ? AND class = ? AND points = ? AND readed_books = ? AND failed_books = ? AND passed = ? AND multiplied_book_1 = ? AND multiplied_book_2 = ? AND books = ? AND date_multiplied = ?`,
-                //         [
-                //             data.name,
-                //             data.surname,
-                //             data.class,
-                //             data.points,
-                //             data.readed_books,
-                //             data.failed_books,
-                //             data.passed,
-                //             mul1,
-                //             mul2,
-                //             JSON.stringify(data.books),
-                //             data.date_multiplied
-                //         ]
-                //     ])
 
-
-                console.log(`DELETE FROM students WHERE name = \"${data.name.replace(/"/g, '\\\"')}\" AND surname = \"${data.surname.replace(/"/g, '\\\"')}\" AND class = \"${data.class.replace(/"/g, '\\\"')}\" AND points = ${JSON.stringify(data.points)} AND readed_books = ${JSON.stringify(data.readed_books)} AND failed_books = ${JSON.stringify(data.failed_books)} AND passed = ${JSON.stringify(data.passed)} AND multiplied_book_1 = ${JSON.stringify(mul1)} AND multiplied_book_2 = ${JSON.stringify(mul2)} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${JSON.stringify(data.date_multiplied)}`)
-
-
-                try {
-                    database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)'
+                
+                    database.run('INSERT INTO reset (timestamp, message, command) VALUES (?, ?, ?)',
                     [
                         Date.now(),
-                        `Schüler ${JSON.stringify(data.name)} ${JSON.stringify(data.surname)} hinzugefügt`,
-                        `DELETE FROM students WHERE name = ${JSON.stringify(data.name)} AND surname = \"${JSON.stringify(data.surname)}\" AND class = \"${JSON.stringify(data.class)}\" AND points = ${JSON.stringify(data.points)} AND readed_books = ${JSON.stringify(data.readed_books)} AND failed_books = ${JSON.stringify(data.failed_books)} AND passed = ${JSON.stringify(data.passed)} AND multiplied_book_1 = ${JSON.stringify(mul1)} AND multiplied_book_2 = ${JSON.stringify(mul2)} AND books = \"${JSON.stringify(data.books)}\" AND date_multiplied = ${JSON.stringify(data.date_multiplied)}`
+                        `Schüler \"${data.name} ${data.surname}\" hinzugefügt`,
+                        `DELETE FROM students WHERE name = \"${data.name}\" AND surname = \"${data.surname}\" AND class = \"${data.class}\" AND points = ${data.points} AND readed_books = ${data.readed_books} AND failed_books = ${data.failed_books} AND passed = ${data.passed} AND multiplied_book_1 = ${mul1} AND multiplied_book_2 = ${mul2} AND books = \'${JSON.stringify(data.books)}\' AND date_multiplied = ${data.date_multiplied}`
                     ])
-                } catch (e) {
-                    throw (e);
-                }
-
-                // try {
-                //     database.run(`INSERT INTO reset (timestamp,message,command) VALUES (${Date.now()}, 'Schüler' ? + ? 'hinzugefügt', DELETE FROM students WHERE name = ? AND surname = ? AND class = ? AND points = ? AND readed_books = ? AND failed_books = ? AND passed = ? AND multiplied_book_1 = ? AND multiplied_book_2 = ? AND books = ? AND date_multiplied = ?)`,
-                //     [
-                //         data.name, 
-                //         data.surname,
-                //         data.name,
-                //         data.surname,
-                //         data.class,
-                //         data.points,
-                //         data.readed_books,
-                //         data.failed_books,
-                //         data.passed,
-                //         mul1,
-                //         mul2,
-                //         JSON.stringify(data.books),
-                //         data.date_multiplied,
-                //     ])
-                // } catch (e) {
-                //     console.log(e);
-                //     throw (e);
-                // }
-
-
-
-
 
                 event.returnValue = "done1";
             });
@@ -215,8 +161,8 @@ function createWindow() {
                         database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
                             [
                                 Date.now(),
-                                `Schüler ${row.name} ${row.surname} gespeichert`,
-                                `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_2}, books = \"${row.books}\", date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+                                `Schüler ${data.name} ${data.surname} gespeichert`,
+                                `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_2}, books = \'${JSON.stringify(row.books)}\', date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
                             ])
                     });
                 });
@@ -254,8 +200,9 @@ function createWindow() {
                     database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)',
                         [
                             Date.now(),
-                            `Schüler ${row.name} ${row.surname} gelöscht`,
-                            `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_1}, books = \"${row.books}\", date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+                            `Schüler "${data.name} ${data.surname}" gelöscht`,
+                            // `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_1}, books = '${JSON.stringify(row.books)}', date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+                            `INSERT INTO students (uid, name, surname, class, points, readed_books, failed_books, passed, multiplied_book_1, multiplied_book_2, books, date_multiplied) VALUES (${row.uid}, \"${row.name}\", \"${row.surname}\", \"${row.class}\", ${row.points}, ${row.readed_books}, ${row.failed_books}, ${row.passed}, ${row.multiplied_book_1}, ${row.multiplied_book_1}, \'${JSON.stringify(row.books)}\', ${row.date_multiplied})`,
                         ])
                 });
             });
@@ -350,7 +297,8 @@ function createWindow() {
                         [
                             Date.now(),
                             `Buch ${row.title} von ${row.author} gelöscht`,
-                            `UPDATE books SET title = \"${row.title}\", author = \"${row.author}\", language = \"${row.language}\", points = ${row.points}, isbn = \"${row.isbn}\" WHERE id = ${row.id}`
+                            // `UPDATE books SET title = \"${row.title}\", author = \"${row.author}\", language = \"${row.language}\", points = ${row.points}, isbn = \"${row.isbn}\" WHERE id = ${row.id}`
+                            `INSERT INTO books (id, title, author, language, points, isbn) VALUES (${row.id}, \"${row.title}\", \"${row.author}\", \"${row.language}\", ${row.points}, \"${row.isbn}\")`
                         ])
                 });
             });
@@ -382,6 +330,7 @@ function createWindow() {
         data = JSON.parse(dataReceived);
         for (let i = 0; i < data.length; i++) {
             database.serialize(() => {
+                console.log("\nTO RESET DO: " + data[i].command + "\n");
                 database.run(data[i].command)
                 database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id])
             });

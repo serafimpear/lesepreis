@@ -3,8 +3,8 @@
         <div class="input-field-text">{{ text }}</div>
         <div :class="`input-field-field ui-styled  ${number}`">
             <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-if="number == 'positivnumber'" type="number" placeholder="..." min="0" oninput="validity.valid||(value='');" :name="`${variable}`" :value="`${value}`">
-            <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-else-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`">
-            <input :tabindex=tabindex :disabled="disabled" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`">
+            <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-else-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`" oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
+            <input :tabindex=tabindex :disabled="disabled" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`" oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
         </div>
     </div>
 </template>

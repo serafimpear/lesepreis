@@ -31,7 +31,7 @@
                                     src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler NICHT qualifiziert"><img
                                     src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
-                            <div v-if="currentStudent.multiplied_books.length == 2" class="table-cell" title="Schüler hat multipliziert"><img
+                            <div v-if="student.multiplied_books.length == 2" class="table-cell" title="Schüler hat multipliziert"><img
                                     src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler hat noch NICHT multipliziert"><img
                                     src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
@@ -296,9 +296,9 @@ export default {
         },
 
         saveStudent: function (close = true) {
-            this.currentStudent.name = this.currentStudent.name.trim();
-            this.currentStudent.surname = this.currentStudent.surname.trim();
-            this.currentStudent.class = this.currentStudent.class.trim();
+            this.currentStudent.name = this.currentStudent.name.replace(/['"`]/g, '').trim();
+            this.currentStudent.surname = this.currentStudent.surname.replace(/['"`]/g, '').trim();
+            this.currentStudent.class = this.currentStudent.class.replace(/['"`]/g, '').trim();
             if (this.currentStudent.name == "" || this.currentStudent.surname == "" || this.currentStudent.class == "") {
                 this.ask({
                     type: 'alert',

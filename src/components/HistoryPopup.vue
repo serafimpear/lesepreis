@@ -42,10 +42,13 @@ export default {
             this.actions = ipcRenderer.sendSync("getResetHistory");
         },
 
-        undo: function(actionsToRevert) {
+        undo: function (actionsToRevert) {
             ipcRenderer.send("reset", JSON.stringify(actionsToRevert));
-            this.updateResetHistoryRemote();
-            this.$root.$emit('updateDataRemote');
+            var that = this;
+            ipcRenderer.on("updateDataRemote", function () {
+                that.updateResetHistoryRemote();
+                that.$root.$emit('updateDataRemote');
+            });
         },
 
         isHovered(index) {
