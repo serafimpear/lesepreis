@@ -20,6 +20,8 @@ if (!gotTheLock) {
     })
 }
 
+// signed test
+
 const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
 database.on('trace', (sql) => {
     console.log('Query:', sql);
