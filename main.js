@@ -20,7 +20,7 @@ if (!gotTheLock) {
     })
 }
 
-// signed test
+// signed test 2
 
 const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
 database.on('trace', (sql) => {
@@ -118,6 +118,27 @@ function createWindow() {
             event.returnValue = students;
         });
     })
+    
+    ipc.on('getStudentsSorted', (event, args) => {
+        var students = [];
+        database.all(`SELECT * FROM students ORDER BY points DESC LIMIT ${args.num}`, [], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            rows.forEach(row => {
+                booksParsed = JSON.parse(row.books);
+                row.books = booksParsed;
+                if (row.multiplied_book_1 == -1 || row.multiplied_book_2 == -1) {
+                    row.multiplied_books = [];
+                } else {
+                    row.multiplied_books = [row.multiplied_book_1, row.multiplied_book_2];
+                }
+                students.push(row);
+            });
+            event.returnValue = students;
+        });
+    })
+    
     ipc.on("addStudent", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
         let mul1 = -1;

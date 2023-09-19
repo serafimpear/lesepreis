@@ -19,8 +19,8 @@
             <nav class="app-navigation-list">
                 <NavElement to="/students-leaderboard" text="Rangliste"><img src="@/assets/svgs/icon-people-group.svg"> </NavElement>
                 <NavElement to="/books" text="Bücher"><img src="@/assets/svgs/icon-books.svg"> </NavElement>
-                <!--NavElement to="/manage" text="Verwalten"><img src="@/assets/svgs/circle-dummy-icon.svg"> </NavElement>
-                <NavElement to="/settings" text="Einstellungen"><img src="@/assets/svgs/icon-settings.svg"> </NavElement-->
+                <NavElement to="/manage" text="Verwalten"><img src="@/assets/svgs/circle-dummy-icon.svg"> </NavElement>
+                <!--NavElement to="/settings" text="Einstellungen"><img src="@/assets/svgs/icon-settings.svg"> </NavElement-->
             </nav>
             <div class="ps">
                 <!--erstellt von<br style="font-size: 1em;">

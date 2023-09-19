@@ -285,6 +285,7 @@ export default {
 
         updateStudentsRemote() {
             this.students = ipcRenderer.sendSync("getStudents");
+            console.log(this.students);
         },
 
         selectStudent: function (student) {
