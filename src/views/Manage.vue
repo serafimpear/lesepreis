@@ -15,13 +15,18 @@
         methods: {
             downloadPdf: function() {
                 let users = [];
+                let sum = 0;
+                this.students.forEach(student => {
+                    sum += student.points;
+                });
                 for(let i = 0; i < Math.min(50, this.students.length); i++) {
+                    this.students[i].rank = i;
                     users.push(this.students[i]);
                 }
 
                 const html = fs.readFileSync('src/assets/pdfExport/pdfExport.html', 'utf-8');
                 var options = {
-                    format: "A3",
+                    format: "A4",
                     orientation: "portrait",
                     border: "10mm",               
                 };
@@ -29,6 +34,7 @@
                     html: html,
                     data: {
                         users: users,
+                        sum: sum,
                     },
                     path: './output.pdf',
                     type: '',

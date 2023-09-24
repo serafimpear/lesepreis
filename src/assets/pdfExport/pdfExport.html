@@ -10,12 +10,6 @@
     <table>
         <tr class="header">
             <th>
-                Qualifiziert
-            </th>
-            <th>
-                Multipliziert
-            </th>
-            <th>
                 Name
             </th>
             <th>
@@ -24,17 +18,27 @@
             <th>
                 Lose
             </th>
+            <th>
+                Qualifiziert
+            </th>
+            <th>
+                Multipliziert
+            </th>
         </tr>
         {{#each users}}
-        <tr class="student">
+        <tr class="student" 
+            {{#ifCond this.rank '===' 0}}
+                style="background-color: rgba(0, 150, 0, 0.3);"                        
+            {{/ifCond}}
+            {{#ifCond this.rank '===' 1}}
+                style="background-color: rgba(0, 150, 0, 0.3);"                        
+            {{/ifCond}}
+            {{#ifCond this.rank '===' 2}}
+                style="background-color: rgba(0, 150, 0, 0.3);"                        
+            {{/ifCond}}
+        >
             <th>
-                {{this.qualified}}
-            </th>
-            <th>
-                {{this.multiplied}}
-            </th>
-            <th>
-                {{this.name}}
+                {{this.name}} {{this.surname}}
             </th>
             <th>
                 {{this.class}}
@@ -42,19 +46,33 @@
             <th>
                 {{this.points}}
             </th>
+            <th>
+                {{#ifCond this.passed '===' 1}}
+                Ja
+                {{/ifCond}}
+                {{#ifCond this.passed '===' 0}}
+                Nein
+                {{/ifCond}}
+            </th>
+            <th>
+                {{#ifCond this.multiplied_books.length '===' 2}}
+                Ja
+                {{/ifCond}}
+                {{#ifCond this.multiplied_books.length '===' 0}}
+                Nein
+                {{/ifCond}}
+            </th>
         </tr>
         {{/each}}
         <tr class="footer">
             <th>
                 Summe Lose:
             </th>
-            <th></th><th></th>
+            <th></th>
             <th>
                 {{sum}}
             </th>
-            <th>
-                * = multipliziert
-            </th>
+        <th></th><th></th>
         </tr>
     </table>
     <style>
@@ -67,8 +85,12 @@
             padding: 5px;
         }
         
-        .footer th:nth-child(4) {
+        .footer th:nth-child(3) {
             border: 1px solid black;
+        }
+        
+        .student tr:nth-child(-n+3) {
+            background-color: rgba(0, 150, 0, 0.3);
         }
         
         table {
