@@ -26,17 +26,7 @@
             </th>
         </tr>
         {{#each users}}
-        <tr class="student" 
-            {{#ifCond this.rank '===' 0}}
-                style="background-color: rgba(0, 150, 0, 0.3);"                        
-            {{/ifCond}}
-            {{#ifCond this.rank '===' 1}}
-                style="background-color: rgba(0, 150, 0, 0.3);"                        
-            {{/ifCond}}
-            {{#ifCond this.rank '===' 2}}
-                style="background-color: rgba(0, 150, 0, 0.3);"                        
-            {{/ifCond}}
-        >
+        <tr class="student">
             <th>
                 {{this.name}} {{this.surname}}
             </th>
@@ -48,18 +38,28 @@
             </th>
             <th>
                 {{#ifCond this.passed '===' 1}}
-                Ja
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.25 17.5L10.4831 20.6748C10.9118 20.9963 11.5177 20.9228 11.857 20.5081L22.5 7.5" stroke="#008A06" stroke-width="2" stroke-linecap="round"/>
+                </svg>
                 {{/ifCond}}
                 {{#ifCond this.passed '===' 0}}
-                Nein
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.5 7.5L7.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
                 {{/ifCond}}
             </th>
             <th>
                 {{#ifCond this.multiplied_books.length '===' 2}}
-                Ja
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.25 17.5L10.4831 20.6748C10.9118 20.9963 11.5177 20.9228 11.857 20.5081L22.5 7.5" stroke="#008A06" stroke-width="2" stroke-linecap="round"/>
+                </svg>
                 {{/ifCond}}
                 {{#ifCond this.multiplied_books.length '===' 0}}
-                Nein
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.5 7.5L7.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
                 {{/ifCond}}
             </th>
         </tr>
@@ -77,24 +77,69 @@
     </table>
     <style>
         * {
-            font-size: 20px;
+            font-size: 12px;
         }
+
+        .student {
+            height: 2.2em;
+        }
+        
+        tr.header, tr.footer {
+            height: 2.4em;
+        }
+        
+        tr.header > th, tr.footer > th {
+            padding-top: 9px;
+        }
+        
+        tr:nth-child(odd) {
+            background-color: rgba(50, 50, 50, 0.1)
+        }
+
         .header th, .student th {
-            border: 1px solid black;
             margin: 0;
-            padding: 5px;
+            font-weight: lighter;
         }
         
-        .footer th:nth-child(3) {
-            border: 1px solid black;
+        tr > th:nth-child(1) {
+            text-align: left;
         }
         
+        th {
+            padding: 5px 15px;
+        }
+        
+        .header th {
+            font-weight: bold;
+        }
+        
+        .footer th {
+            padding-top: 5px;
+        }
+        
+        svg {
+            vertical-align: middle;
+            height: 1.4em;
+        }
+        
+        tr:nth-child(1) {
+            border-bottom: 1px solid black;
+        }
+        
+        tr:nth-child(4) {
+            border-bottom: 1px solid black;
+        }
+
         .student tr:nth-child(-n+3) {
-            background-color: rgba(0, 150, 0, 0.3);
+            background-color: rgba(0, 150, 0, 0.1);
         }
         
         table {
             border-collapse: collapse;
+            width: 95%;
+            margin: auto;
+            border-radius: 10px;
+            overflow: hidden;
         }
     </style>
 </body>

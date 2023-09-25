@@ -77,7 +77,7 @@ function createWindow() {
         splash.close();
         win.show();
         win.maximize();
-    }, 5000);
+    }, 500);
 
     ipc.on('closeApp', () => {
         win.close()

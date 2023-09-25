@@ -1,11 +1,16 @@
-<template>manage</template>
+<template>
+    <Button style="margin: 10px" text="mongoDB" @click="downloadPdf" />
+</template>
 
 <script>
     const pdf = require('pdf-creator-node');
     const fs = require('fs');
     const { ipcRenderer } = require('electron')
+    import Button from '@/components/Button.vue'
 
     export default {
+        components: { Button },
+
         data() {
             return {
                 students: ipcRenderer.sendSync('getStudentsSorted', { num: 50 }),
@@ -28,7 +33,7 @@
                 var options = {
                     format: "A4",
                     orientation: "portrait",
-                    border: "10mm",               
+                    border: "5mm",               
                 };
                 const doc = {
                     html: html,
@@ -36,7 +41,7 @@
                         users: users,
                         sum: sum,
                     },
-                    path: './output.pdf',
+                    path: 'output.pdf',
                     type: '',
                 }
                 pdf
@@ -49,10 +54,6 @@
                     });
             }
         },
-
-        mounted: function mounted() {
-            this.downloadPdf();
-        }
     }
 
     
