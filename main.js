@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron')
 const electron = require('electron');
 if (require('electron-squirrel-startup')) app.quit();
 const path = require('path');
@@ -368,7 +368,7 @@ function createWindow() {
     ipc.on("openSaveDialog", (event, dataReceived) => {
         dialog.showSaveDialog({
             title: dataReceived.title,
-            buttonLabel: dataReceived.title,
+            defaultPath: path.join(app.getPath('documents'), dataReceived.name),
             filters: [
                 { name: 'PDF Files', extensions: ['pdf'] },
                 { name: 'All Files', extensions: ['*'] },
@@ -378,6 +378,10 @@ function createWindow() {
         }).catch((err) => {
             event.returnValue = false;
         });
+    });
+
+    ipc.on("openFile", (event, dataReceived) => {
+        shell.openPath(dataReceived);
     });
 }
 

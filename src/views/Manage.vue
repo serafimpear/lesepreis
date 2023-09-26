@@ -1,12 +1,12 @@
 
 <template>
     <div>
-        <p>Rangliste der Schüler</p>
+        <h3>Rangliste der Schüler</h3>
         <Button style="margin: 25px" text="Herunterladen"
-            @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')})`))" />
+            @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
     </div>
     <div>
-        <p>Rangliste der Bücher</p>
+        <h3>Rangliste der Bücher</h3>
         <Button style="margin: 25px" text="Herunterladen"
             @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
     </div>
@@ -22,9 +22,10 @@ const { ipcRenderer } = require('electron')
 import Button from '@/components/Button.vue'
 import Modal from "@/components/Modal.vue"
 import { modalFunctions } from "@/logic/modal.js"
+import pdfTemplate from '@/assets/pdfExport/pdfExport.js'
 
 export default {
-    mixins: [modalFunctions],
+    mixins: [modalFunctions, pdfTemplate],
 
     components: {
         Button, Modal
@@ -49,14 +50,13 @@ export default {
                 users.push(this.students[i]);
             }
 
-            const html = fs.readFileSync('src/assets/pdfExport/pdfExport.html', 'utf-8');
             var options = {
                 format: "A4",
                 orientation: "portrait",
                 border: "5mm",
             };
             const doc = {
-                html: html,
+                html: this.pdfTemplate, // <-- changed, now with 'import'
                 data: {
                     users: users,
                     sum: sum,
@@ -66,12 +66,11 @@ export default {
                 path: pathToSave,
                 type: '',
             }
-            pdf.create(doc, options)
-                .then((res) => {
-                    console.log('saved');
-                }).catch((error) => {
-                    throw (error);
-                });
+            pdf.create(doc, options).then((res) => {
+                ipcRenderer.send("openFile", pathToSave);
+            }).catch((error) => {
+                 throw (error);
+            });
         },
 
         createBooksLeaderboard: function (pathToSave) {
@@ -101,4 +100,8 @@ export default {
 
 </script>
 
-<style></style>
+<style scoped>
+    div {
+        margin: 30px;
+    }
+</style>
