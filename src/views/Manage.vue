@@ -1,5 +1,10 @@
 <template>
-    <Button style="margin: 10px" text="mongoDB" @click="downloadPdf" />
+    <div>
+        <p class="user-prompt">
+            Klicken sie auf den folgenden Knopf, um die Rangliste der Schüler in PDF-Format herunterzuladen:
+        </p>
+        <Button style="margin: 25px" text="PDF Download" @click="downloadPdf" />
+    </div>
 </template>
 
 <script>
@@ -13,7 +18,7 @@
 
         data() {
             return {
-                students: ipcRenderer.sendSync('getStudentsSorted', { num: 50 }),
+                students: ipcRenderer.sendSync('getStudentsSorted'),
             }
         },
 
@@ -24,7 +29,7 @@
                 this.students.forEach(student => {
                     sum += student.points;
                 });
-                for(let i = 0; i < Math.min(50, this.students.length); i++) {
+                for(let i = 0; i < Math.min(25, this.students.length); i++) {
                     this.students[i].rank = i;
                     users.push(this.students[i]);
                 }
@@ -40,6 +45,7 @@
                     data: {
                         users: users,
                         sum: sum,
+                        date: (new Date()).toLocaleDateString('de-DE'),
                     },
                     path: 'output.pdf',
                     type: '',
@@ -60,4 +66,8 @@
 
 </script>
 
-<style scoped></style>
+<style>
+    .user-prompt {
+        margin: 25px;
+    }
+</style>

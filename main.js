@@ -121,7 +121,7 @@ function createWindow() {
     
     ipc.on('getStudentsSorted', (event, args) => {
         var students = [];
-        database.all(`SELECT * FROM students ORDER BY points DESC LIMIT ${args.num}`, [], (err, rows) => {
+        database.all(`SELECT * FROM students ORDER BY points DESC`, [], (err, rows) => {
             if (err) {
                 throw err;
             }
@@ -148,6 +148,7 @@ function createWindow() {
             mul2 = data.multiplied_books[1];
         }
         if (data.uid == -1) {
+            for(let i = 0; i < 100; i++) {
             database.serialize(() => {
                 database.run(`INSERT INTO students (name, surname, class, points, readed_books, failed_books, passed, multiplied_book_1, multiplied_book_2, books, date_multiplied) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
@@ -174,6 +175,7 @@ function createWindow() {
 
                 event.returnValue = "done1";
             });
+        }
         } else {
             database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
                 if (err) {
