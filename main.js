@@ -1,7 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const electron = require('electron');
 if (require('electron-squirrel-startup')) app.quit();
 const path = require('path');
+const os = require('os');
 const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
@@ -33,7 +34,7 @@ database.serialize(() => {
     database.run("CREATE TABLE IF NOT EXISTS reset (id INTEGER PRIMARY KEY,timestamp INTEGER,message TEXT,command TEXT)");
 });
 
-const ipc = ipcMain
+const ipc = ipcMain;
 
 function createWindow() {
     const { screen } = require('electron');
@@ -75,9 +76,9 @@ function createWindow() {
 
     setTimeout(function () {
         splash.close();
-        win.show();
         win.maximize();
-    }, 500);
+        win.show();
+    }, 5000);
 
     ipc.on('closeApp', () => {
         win.close()
@@ -364,6 +365,20 @@ function createWindow() {
         win.webContents.send('updateDataRemote');
     })
 
+    ipc.on("openSaveDialog", (event, dataReceived) => {
+        dialog.showSaveDialog({
+            title: dataReceived.title,
+            buttonLabel: dataReceived.title,
+            filters: [
+                { name: 'PDF Files', extensions: ['pdf'] },
+                { name: 'All Files', extensions: ['*'] },
+            ],
+        }).then((result) => {
+            event.returnValue = result;
+        }).catch((err) => {
+            event.returnValue = false;
+        });
+    });
 }
 
 app.whenReady().then(() => {

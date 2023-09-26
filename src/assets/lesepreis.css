@@ -55,14 +55,16 @@ nav.left-panel-navigation {
 nav.left-panel-navigation,
 nav.left-panel-navigation * {
     transition-property: width, grid-template-columns, display, margin-left, padding;
-    transition-duration: 0.7s;
     transition-timing-function: ease-in;
-    transition-delay: 0.2s;
+    transition-duration: 0.5s;
+    /* transition-duration: 0.7s; <-- due to an overflow of hate-speeches from Elias and Manuel this was changed */
+    /* transition-delay: 0.2s; <-- due to an overflow of hate-speeches from Elias and Manuel this was removed */
 }
 
 nav.left-panel-navigation:hover,
 nav.left-panel-navigation:active {
-    grid-template-columns: 350px 50px;
+    /* grid-template-columns: 350px 50px; */
+    grid-template-columns: 350px 0;
 }
 
 div.left-panel-navigation-container {
