@@ -156,6 +156,7 @@ export default { data() { return { pdfTemplate : `
         
         h1.heading img {
             height: 40px;
+            width: auto;
         }
         
         h2.heading {
