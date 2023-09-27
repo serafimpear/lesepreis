@@ -28,13 +28,13 @@
                     <div class="table-data">
                         <div class="table-row" v-for="student in filteredStudentsList" @click="selectStudent(student)">
                             <div v-if="student.passed" class="table-cell" title="Schüler qualifiziert"><img
-                                    src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
+                                    src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler NICHT qualifiziert"><img
-                                    src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
+                                    src="@/assets/svgs/icon-no-red.svg" class="table-icon"></div>
                             <div v-if="student.multiplied_books.length == 2" class="table-cell" title="Schüler hat multipliziert"><img
-                                    src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
+                                    src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler hat noch NICHT multipliziert"><img
-                                    src="@/assets/svgs/icon-no.svg" class="table-icon"></div>
+                                    src="@/assets/svgs/icon-no-red.svg" class="table-icon"></div>
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.name }}</div>
                             </div>

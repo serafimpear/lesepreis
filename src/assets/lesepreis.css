@@ -200,10 +200,14 @@ div.ui-table div.table-row.table-header-row {
 }
 
 div.ui-table div.table-row div.table-cell {
-    display: flex;
+    /* display: flex;
     align-items: center;
-    column-gap: 3px;
+    column-gap: 3px; */
     overflow: hidden;
+}
+
+div.ui-table div.table-row div.table-cell img.sort-icon-image {
+    vertical-align: middle;
 }
 
 div.ui-table div.table-row div.table-cell div.table-cell-centered-content {
@@ -315,7 +319,24 @@ div.student-information-section div.content div.student-header-title {
     width: 100%;
 }
 
-div.student-information-section div.content div.student-header-title button {
+div.book-header-title button {
+    margin-left: unset;
+}
+
+
+div.book-header-title button {
+    margin-top: 22px;
+}
+
+div.book-header-title {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1em;
+    height: 100%;
+    width: 100%;
+}
+
+div.book-header-title button {
     margin-left: unset;
 }
 

@@ -46,15 +46,23 @@
         <div class="book-information-section">
             <div v-if="showBookInfo == true" class="content">
                 <div class="book-header-title">
-                    <h1>Buch</h1>
+                    <h1>Bücher</h1>
+                    <Button type="delete" text="Löschen" color="red" @click="deleteBook()" />
+                    <Button type="yes" text="Speichern" color="green" @click="saveBook()" />
                     <IconButton @click="closeBook()" type="no" />
                 </div>
                 <div class="book-information">
-                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn v-model="currentBook.isbn" @input="searchBookWEB" />
-                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable="" :value=currentBook.author />
-                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.title />
-                    <InputField type="language-selector" class="language-input" v-model="currentBook.language" text="Sprache&nbsp;" variable="" :value=currentBook.language />
-                    <InputField class="points-input" v-model="currentBook.points" text="Lose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" number="positivnumber" :value=currentBook.points />
+                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
+                        v-model="currentBook.isbn" @input="searchBookWEB" />
+                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable=""
+                        :value=currentBook.author />
+                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                        variable="" :value=currentBook.title />
+                    <InputField type="language-selector" class="language-input" v-model="currentBook.language"
+                        text="Sprache&nbsp;" variable="" :value=currentBook.language />
+                    <InputField class="points-input" v-model="currentBook.points"
+                        text="Lose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" number="positivnumber"
+                        :value=currentBook.points />
                     <div>
                         <div class="book-search-status">
                             <span v-if="isLoading">Suche nach Informationen...
@@ -80,10 +88,10 @@
                         <div class="book-result-language">{{ result.language }}</div>
                     </div>
                 </div>
-                <div class="delete-save-bar">
+                <!-- <div class="delete-save-bar">
                     <Button type="delete" text="Löschen" color="red" @click="deleteBook()" />
                     <Button type="yes" text="Speichern" color="green" @click="saveBook()" />
-                </div>
+                </div> -->
             </div>
             <div v-else id="no_book_selected">Klicken Sie auf ein Buch,<br>
                 um seine Informationen zu bearbeiten</div>

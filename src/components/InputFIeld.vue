@@ -9,21 +9,6 @@
                 v-else-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`"
                 :value="`${value}`"
                 oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
-            <template v-else-if="type == 'language-selector'">
-                <input list="language-selector" :tabindex=tabindex :disabled="disabled" :value="modelValue"
-                    @input="$emit('update:modelValue', $event.target.value)" type="text" placeholder="..."
-                    :name="`${variable}`"
-                    oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
-                <datalist id="language-selector">
-                    <option value="Deutsch" />
-                    <option value="Italienisch" />
-                    <option value="Französisch" />
-                    <option value="Russisch" />
-                    <option value="Englisch" />
-                    <option value="Ladinisch" />
-                    <option value="Latein" />
-                </datalist>
-            </template>
             <input :tabindex=tabindex :disabled="disabled" :value="modelValue"
                 @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..."
                 :name="`${variable}`"
@@ -34,8 +19,42 @@
 
 <script>
 export default {
-    props: ['text', 'variable', 'disabled', 'number', 'value', 'tabindex', 'type'],
-    emits: ['update:modelValue']
+    data() {
+        return {
+            languages: [
+                'Deutsch',
+                'Italienisch',
+                'Englisch',
+                'Französisch',
+                'Russisch',
+                'Ladinisch',
+                'Spanisch',
+                'Latein',
+            ]
+        }
+    },
+
+    props: [
+        'text', 'variable', 'disabled', 'number', 'value', 'tabindex', 'type'
+    ],
+
+    emits: [
+        'update:modelValue'
+    ],
+
+    methods: {
+        search(event) {
+            setTimeout(() => {
+                if (!event.query.trim().length) {
+                    this.languages = [...this.languages];
+                } else {
+                    this.languages = this.languages.filter((language) => {
+                        return language.toLowerCase().startsWith(event.query.toLowerCase());
+                    });
+                }
+            }, 250);
+        }
+    }
 }
 </script>
 
@@ -78,5 +97,4 @@ div.input-field-field:hover {
 div.input-field-field:has(input:focus) {
     background: #F5F5F5;
     border-width: 2px;
-}
-</style>
+}</style>

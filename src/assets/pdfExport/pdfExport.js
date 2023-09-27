@@ -84,6 +84,7 @@ export default { data() { return { pdfTemplate : `
     <style>
         * {
             font-size: 3mm;
+            font-family: Roboto;
         }
 
         .student {
