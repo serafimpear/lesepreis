@@ -52,9 +52,9 @@
                 <div class="book-information">
                     <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn v-model="currentBook.isbn" @input="searchBookWEB" />
                     <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable="" :value=currentBook.author />
-                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.title />
-                    <InputField class="language-input" v-model="currentBook.language" text="Sprache&nbsp;" variable="" :value=currentBook.language />
-                    <InputField class="points-input" v-model="currentBook.points" text="Lose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" number="positivnumber" :value=currentBook.points />
+                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.title />
+                    <InputField type="language-selector" class="language-input" v-model="currentBook.language" text="Sprache&nbsp;" variable="" :value=currentBook.language />
+                    <InputField class="points-input" v-model="currentBook.points" text="Lose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" number="positivnumber" :value=currentBook.points />
                     <div>
                         <div class="book-search-status">
                             <span v-if="isLoading">Suche nach Informationen...

@@ -2,16 +2,39 @@
     <div :class="`input-field ${disabled}`">
         <div class="input-field-text">{{ text }}</div>
         <div :class="`input-field-field ui-styled  ${number}`">
-            <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-if="number == 'positivnumber'" type="number" placeholder="..." min="0" oninput="validity.valid||(value='');" :name="`${variable}`" :value="`${value}`">
-            <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)" v-else-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`" :value="`${value}`" oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
-            <input :tabindex=tabindex :disabled="disabled" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..." :name="`${variable}`" oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
+            <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)"
+                v-if="number == 'positivnumber'" type="number" placeholder="..." min="0"
+                oninput="validity.valid||(value='');" :name="`${variable}`" :value="`${value}`">
+            <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)"
+                v-else-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`"
+                :value="`${value}`"
+                oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
+            <template v-else-if="type == 'language-selector'">
+                <input list="language-selector" :tabindex=tabindex :disabled="disabled" :value="modelValue"
+                    @input="$emit('update:modelValue', $event.target.value)" type="text" placeholder="..."
+                    :name="`${variable}`"
+                    oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
+                <datalist id="language-selector">
+                    <option value="Deutsch" />
+                    <option value="Italienisch" />
+                    <option value="Französisch" />
+                    <option value="Russisch" />
+                    <option value="Englisch" />
+                    <option value="Ladinisch" />
+                    <option value="Latein" />
+                </datalist>
+            </template>
+            <input :tabindex=tabindex :disabled="disabled" :value="modelValue"
+                @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..."
+                :name="`${variable}`"
+                oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['text', 'variable', 'disabled', 'number', 'value', 'tabindex'],
+    props: ['text', 'variable', 'disabled', 'number', 'value', 'tabindex', 'type'],
     emits: ['update:modelValue']
 }
 </script>
