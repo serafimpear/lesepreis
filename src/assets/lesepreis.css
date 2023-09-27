@@ -232,6 +232,21 @@ main h1 {
     margin-right: auto;
 }
 
+div.books-section-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+div.books-section-header h1 {
+    font-size: 33px;
+    margin: auto auto 0 0;
+}
+
+div.books-section-header button {
+    margin: auto 0 0 0;
+}
+
 div.student-information {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -250,8 +265,7 @@ div.student-information {
     font-size: 18px;
 }
 
-div.student-leaderboard-section-footer button.add-student {
-    width: 215px;
+button.add-student, button.add-book {
     margin-left: auto;
 }
 
@@ -316,11 +330,11 @@ div.readed-books {
 
 div.book-information {
     display: grid;
-    grid-template-rows: 40px 40px 40px 40px 22px;
+    grid-template-rows: 2.2em 2.2em 2.2em 2.2em 2.2em 1.2em;
     gap: 8px;
 }
 
-div.book-information .book-language-points {
+/* div.book-information .book-language-points {
     display: grid;
     grid-template-columns: 1fr 8em;
     gap: 18px;
@@ -336,6 +350,10 @@ div.book-information .book-language-points .points-input {
 
 div.book-information .book-language-points .points-input .input-field-field.number {
     width: unset;
+}*/
+
+div.book-information .points-input .input-field-field.number {
+    width: unset;
 }
 
 div.book-information-section {
@@ -347,7 +365,7 @@ div.book-information-section div.content {
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-rows: 4em 15.5em 1fr 40px;
+    grid-template-rows: 4em 18.5em 1fr 40px;
     gap: 20px;
 }
 

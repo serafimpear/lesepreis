@@ -52,7 +52,7 @@
                 </div>
             </div>
             <div class="student-leaderboard-section-footer">
-                <Button tabindex="2" type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
+                <Button class="add-student" tabindex="2" type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
             </div>
         </div>
         <div class="vertical-line"></div>

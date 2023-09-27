@@ -1,7 +1,10 @@
 <template>
     <main id="main-books">
         <div class="books-list-section">
-            <h1>Bücher</h1>
+            <div class="books-section-header">
+                <h1>Bücher</h1>
+                <Button class="add-book" type="add" text="Buch hinzuf&uuml;gen" @click="newBook()" />
+            </div>
             <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
             <div class="books-list ui-table">
                 <div class="table-row table-header-row">
@@ -34,7 +37,7 @@
                 </div>
             </div>
             <div class="books-list-section-footer">
-                <Button type="add" text="Buch hinzuf&uuml;gen" @click="newBook()" />
+                <!-- <Button class="add-book" type="add" text="Buch hinzuf&uuml;gen" @click="newBook()" /> -->
             </div>
         </div>
 
@@ -47,18 +50,11 @@
                     <IconButton @click="closeBook()" type="no" />
                 </div>
                 <div class="book-information">
-                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                        variable="" :value=currentBook.title />
-                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable=""
-                        :value=currentBook.author />
-                    <div class="book-language-points">
-                        <InputField class="language-input" v-model="currentBook.language" text="Sprache" variable=""
-                            :value=currentBook.language />
-                        <InputField class="points-input" v-model="currentBook.points" text="Lose" variable=""
-                            number="positivnumber" :value=currentBook.points />
-                    </div>
-                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
-                        v-model="currentBook.isbn" @input="searchBookWEB" />
+                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn v-model="currentBook.isbn" @input="searchBookWEB" />
+                    <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable="" :value=currentBook.author />
+                    <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.title />
+                    <InputField class="language-input" v-model="currentBook.language" text="Sprache&nbsp;" variable="" :value=currentBook.language />
+                    <InputField class="points-input" v-model="currentBook.points" text="Lose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" number="positivnumber" :value=currentBook.points />
                     <div>
                         <div class="book-search-status">
                             <span v-if="isLoading">Suche nach Informationen...
