@@ -330,7 +330,7 @@ div.readed-books {
 
 div.book-information {
     display: grid;
-    grid-template-rows: 2.2em 2.2em 2.2em 2.2em 2.2em 1.2em;
+    grid-template-rows: 40px 40px 40px 40px 40px 22px;
     gap: 8px;
 }
 
