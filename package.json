@@ -36,6 +36,7 @@
     "lazy-load-list": "^1.2.3",
     "pdf-creator-node": "^2.3.5",
     "primevue": "^3.35.0",
+    "puppeteer": "^21.3.5",
     "sqlite3": "^5.1.6",
     "update-electron-app": "^2.0.1",
     "vite-require": "^0.2.3"

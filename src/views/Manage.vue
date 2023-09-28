@@ -2,11 +2,15 @@
     <main>
         <div class="manage-section">
             <h1>Daten verwalten</h1>
-            <div data-v-173b8ca7="" style="font-size: 16px; font-style: normal; font-weight: 300;">Hier können Sie Daten vom
-                Programm verwalten, z.B. PDF-Ranglisten exportieren</div>
+            <div style="font-size: 16px; font-style: normal; font-weight: 300;">Hier können Sie Daten vom
+                Programm verwalten, z.B. Ranglisten exportieren</div><br>
+            <div class="ui-infobox">
+                <div style="font-size: 16px;"><b>Hinweis:</b> die Rangliste wird als HTML-Datei gespeichert.<br>
+                <b>In Zukunft wird diese Funktion durch einen PDF-Export ersetzt</b></div>
+            </div>
             <div class="text-button">
-                <div>Rangliste der Schüler (Top 25)</div>
-                <Button text="Herunterladen"
+                <div>HTML-Rangliste der Schüler (Top 25)</div>
+                <Button text="Speichern"
                     @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
             </div>
             <!-- <div>
@@ -21,13 +25,13 @@
 </template>
 
 <script>
-const pdf = require('pdf-creator-node');
-const fs = require('fs');
 const { ipcRenderer } = require('electron')
+const fs = require('fs');
 import Button from '@/components/Button.vue'
 import Modal from "@/components/Modal.vue"
 import { modalFunctions } from "@/logic/modal.js"
 import pdfTemplate from '@/assets/pdfExport/pdfExport.js'
+var Handlebars = require("handlebars");
 
 export default {
     mixins: [modalFunctions, pdfTemplate],
@@ -43,6 +47,78 @@ export default {
     },
 
     methods: {
+        compilePDF: function (document, options, pathToSave) {
+            Handlebars.registerHelper("ifCond", function (v1, operator, v2, options) {
+                switch (operator) {
+                    case "==":
+                        return v1 == v2 ? options.fn(this) : options.inverse(this);
+                    case "===":
+                        return v1 === v2 ? options.fn(this) : options.inverse(this);
+                    case "!=":
+                        return v1 != v2 ? options.fn(this) : options.inverse(this);
+                    case "!==":
+                        return v1 !== v2 ? options.fn(this) : options.inverse(this);
+                    case "<":
+                        return v1 < v2 ? options.fn(this) : options.inverse(this);
+                    case "<=":
+                        return v1 <= v2 ? options.fn(this) : options.inverse(this);
+                    case ">":
+                        return v1 > v2 ? options.fn(this) : options.inverse(this);
+                    case ">=":
+                        return v1 >= v2 ? options.fn(this) : options.inverse(this);
+                    case "&&":
+                        return v1 && v2 ? options.fn(this) : options.inverse(this);
+                    case "||":
+                        return v1 || v2 ? options.fn(this) : options.inverse(this);
+                    default:
+                        return options.inverse(this);
+                }
+            });
+
+            return new Promise((resolve, reject) => {
+                if (!document || !document.html || !document.data) {
+                    reject(new Error("Some, or all, options are missing."));
+                }
+                // Compiles a template
+                var html = Handlebars.compile(document.html)(document.data);
+
+                fs.writeFile(pathToSave, html, (err) => {
+                    if (err) {
+                        console.error('Error saving HTML file:', err);
+                    } else {
+                        console.log('HTML file saved successfully!');
+                    }
+                });
+
+                return;
+                (async () => {
+                    const browser = await puppeteer.launch();
+                    const page = await browser.newPage();
+                    await page.setContent(html, { waitUntil: 'domcontentloaded' });
+                    // await page.addStyleTag({content: '.body{background: red}'})
+                    await page.addStyleTag({
+                        content: `body {
+                            background: red !important;
+                        }`,
+                    });
+                    console.log(page);
+                    await page.emulateMediaType('screen');
+                    await page.pdf({
+                        path: pathToSave,
+                        format: 'A4',
+                        margin: {
+                            top: "20px",
+                            left: "20px",
+                            right: "20px",
+                            bottom: "20px"
+                        }
+                    });
+                    await browser.close();
+                })();
+            });
+
+        },
+
         createStudentsLeaderboard: function (pathToSave) {
             if (!pathToSave) return;
             let users = [];
@@ -68,14 +144,11 @@ export default {
                     date: (new Date()).toLocaleDateString('de-DE'),
                     year: "2023/24"
                 },
-                path: pathToSave,
                 type: '',
             }
-            pdf.create(doc, options).then((res) => {
+            if (this.compilePDF(doc, options, pathToSave)) {
                 ipcRenderer.send("openFile", pathToSave);
-            }).catch((error) => {
-                throw (error);
-            });
+            }
         },
 
         createBooksLeaderboard: function (pathToSave) {
@@ -109,7 +182,6 @@ export default {
     flex-direction: row;
     align-items: center;
     column-gap: 1em;
-    margin: 2em 0;
+    margin: 1em 0;
     font-size: 18px;
-}
-</style>
+}</style>

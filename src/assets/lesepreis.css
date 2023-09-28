@@ -13,6 +13,10 @@
     white-space: nowrap;
 }
 
+b {
+    font-weight: bold !important;
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -269,7 +273,19 @@ div.student-information {
     font-size: 18px;
 }
 
-button.add-student, button.add-book {
+.ui-infobox {
+    border-radius: 20px;
+    border: 2px solid #093c78;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 1em;
+    font-size: 18px;
+    background: #e5e9ff;
+}
+
+button.add-student,
+button.add-book {
     margin-left: auto;
 }
 

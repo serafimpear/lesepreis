@@ -370,7 +370,7 @@ function createWindow() {
             title: dataReceived.title,
             defaultPath: path.join(app.getPath('documents'), dataReceived.name),
             filters: [
-                { name: 'PDF Files', extensions: ['pdf'] },
+                { name: 'HTML Files', extensions: ['html'] },
                 { name: 'All Files', extensions: ['*'] },
             ],
         }).then((result) => {
