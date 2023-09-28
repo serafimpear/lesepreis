@@ -132,7 +132,8 @@ export default {
             }
 
             var options = {
-                format: "A4",
+                width: "210mm",
+                height: "297mm",
                 orientation: "portrait",
                 border: "5mm",
             };
