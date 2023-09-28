@@ -83,7 +83,8 @@ export default { data() { return { pdfTemplate : `
 
     <style>
         * {
-            font-size: 11px;
+            font-size: 3mm;
+            font-family: Roboto;
         }
 
         .student {
@@ -95,7 +96,7 @@ export default { data() { return { pdfTemplate : `
         }
         
         tr.header > th, tr.footer > th {
-            padding-top: 9px;
+            padding-top: 2.5mm;
         }
         
         tr:nth-child(odd) {
@@ -112,7 +113,7 @@ export default { data() { return { pdfTemplate : `
         }
         
         th {
-            padding: 5px 15px;
+            padding: 1.4mm 4.2mm;
         }
         
         .header th {
@@ -120,12 +121,12 @@ export default { data() { return { pdfTemplate : `
         }
         
         .footer th {
-            padding-top: 5px;
+            padding-top: 1.4mm;
         }
         
         svg {
             vertical-align: middle;
-            height: 1.4em;
+            height: 8mm;
         }
         
         tr:nth-child(1) {
@@ -144,14 +145,14 @@ export default { data() { return { pdfTemplate : `
             border-collapse: collapse;
             width: 95%;
             margin: auto;
-            border-radius: 10px;
+            border-radius: 2.7mm;
             overflow: hidden;
         }
         
         .heading {
             text-align: center;
             width: 100%;
-            margin: 7px auto;
+            margin: 1.9mm auto;
         }
         
         h1.heading img {
@@ -160,7 +161,7 @@ export default { data() { return { pdfTemplate : `
         }
         
         h2.heading {
-            font-size: 15px;
+            font-size: 4.1mm;
             font-weight: lighter;
         }
         
@@ -169,7 +170,7 @@ export default { data() { return { pdfTemplate : `
             width: 100%;
             margin: 0 auto;
             padding: 0;
-            bottom: 10px;
+            bottom: 2.7mm;
             text-align: center;
         }
         

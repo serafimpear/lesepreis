@@ -1,16 +1,21 @@
-
 <template>
-    <div>
-        <h3>Rangliste der Schüler</h3>
-        <Button style="margin: 25px" text="Herunterladen"
-            @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
-    </div>
-    <div>
-        <h3>Rangliste der Bücher</h3>
-        <Button style="margin: 25px" text="Herunterladen"
-            @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
-    </div>
-
+    <main>
+        <div class="manage-section">
+            <h1>Daten verwalten</h1>
+            <div data-v-173b8ca7="" style="font-size: 16px; font-style: normal; font-weight: 300;">Hier können Sie Daten vom
+                Programm verwalten, z.B. PDF-Ranglisten exportieren</div>
+            <div class="text-button">
+                <div>Rangliste der Schüler (Top 25)</div>
+                <Button text="Herunterladen"
+                    @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
+            </div>
+            <!-- <div>
+            <h3>Rangliste der Bücher</h3>
+            <Button style="margin: 25px" text="Herunterladen"
+                @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
+        </div> -->
+        </div>
+    </main>
     <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
         :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
 </template>
@@ -70,7 +75,7 @@ export default {
             pdf.create(doc, options).then((res) => {
                 ipcRenderer.send("openFile", pathToSave);
             }).catch((error) => {
-                 throw (error);
+                throw (error);
             });
         },
 
@@ -97,12 +102,15 @@ export default {
     },
 }
 
-
-
 </script>
 
-<style scoped>
-    div {
-        margin: 30px;
-    }
+<style>
+.text-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 1em;
+    margin: 2em 0;
+    font-size: 18px;
+}
 </style>
