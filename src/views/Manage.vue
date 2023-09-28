@@ -1,9 +1,9 @@
 <template>
     <main>
         <div class="manage-section">
-            <h1>Daten verwalten</h1>
-            <div style="font-size: 16px; font-style: normal; font-weight: 300;">Hier können Sie Daten vom
-                Programm verwalten, z.B. Ranglisten exportieren</div><br>
+            <h1>Daten exportieren</h1>
+            <!-- <div style="font-size: 16px; font-style: normal; font-weight: 300;">Hier können Sie Daten vom
+                Programm verwalten, z.B. Ranglisten exportieren</div><br> -->
             <div class="ui-infobox">
                 <div style="font-size: 16px;"><b>Hinweis:</b> die Rangliste wird als HTML-Datei gespeichert.<br>
                 <b>In Zukunft wird diese Funktion durch einen PDF-Export ersetzt</b></div>
@@ -18,6 +18,9 @@
             <Button style="margin: 25px" text="Herunterladen"
                 @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
         </div> -->
+        </div>
+        <div class="statistics-section">
+            <h1>Statistik</h1>
         </div>
     </main>
     <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
