@@ -7,23 +7,24 @@
                     <Button text="Nicht gelesen" :tclass="currentView != 'read_books' ? '' :'diselected-button'" @click="changeCurrentView('not_read_books')" />
                     <Button text="Gelesen" :tclass="currentView != 'read_books' ? 'diselected-button' : ''" @click="changeCurrentView('read_books')" />
                 </div>
+                <SearchBar v-model="searchBookFromNotRead" tabindex="1" placeholder="Suche Schüler..." />
                 <div class="books-list-add-unread ui-table" v-if="currentView == 'not_read_books'">
                     <div class="table-row table-header-row">
                         <div class="table-cell">Titel
-                            <SortIcon />
+                            <SortIcon @click="booksSortBy = 'title'" />
                         </div>
                         <div class="table-cell">Autor:in
-                            <SortIcon />
+                            <SortIcon @click="booksSortBy = 'autor'" />
                         </div>
                         <div class="table-cell">Sprache
-                            <SortIcon />
+                            <SortIcon @click="booksSortBy = 'language'" />
                         </div>
                         <div class="table-cell">Lose
-                            <SortIcon />
+                            <SortIcon @click="booksSortBy = 'points'" />
                         </div>
                     </div>
                     <div class="table-data">
-                        <template v-for="currentBook in books">
+                        <template v-for="currentBook in filteredBooksFromNotRead">
                             <div :class="{ 'table-row': true, 'highlighted': selectedBook.id == currentBook.id }"
                                 v-if="!currentStudent.books.some(book => book.id === currentBook.id)"
                                 @click="if (selectedBook.id == currentBook.id) { selectedBook = -1; } else { selectedBook = currentBook; } bookPassed = undefined ">
@@ -127,7 +128,8 @@ export default {
             searchBook: '',
             bookPassed: undefined,
             selectedBook: -1,
-            currentView: 'not_read_books'
+            currentView: 'not_read_books',
+            searchBookFromNotRead: ''
         }
     },
 
@@ -172,6 +174,47 @@ export default {
         changeCurrentView (view) {
             this.currentView = view;
             this.reset();
+        },
+
+        sortListBy: function (list, criterion, sortAscending) {
+            list.sort((a, b) => {
+                let elementA, elementB;
+                if (criterion === 'title') {
+                    elementA = a.title.toLowerCase();
+                    elementB = b.title.toLowerCase();
+                } else if (criterion === 'author') {
+                    elementA = a.author.toLowerCase();
+                    elementB = b.author.toLowerCase();
+                } else if (criterion === 'language') {
+                    elementA = a.language.toLowerCase();
+                    elementB = b.language.toLowerCase();
+                } else if (criterion === 'points') {
+                    elementA = a.points;
+                    elementB = b.points;
+                } else if (criterion === 'isbn') {
+                    elementA = a.isbn.toLowerCase();
+                    elementB = b.isbn.toLowerCase();
+                }
+
+
+                if (elementA < elementB) {
+                    return ((sortAscending) ? -1 : 1);
+                } else if (elementA > elementB) {
+                    return ((sortAscending) ? 1 : -1);
+                }
+                return 0;
+            });
+            return list;
+        }
+    },
+
+    computed: {
+        filteredBooksFromNotRead() {
+            var s = this.searchBookFromNotRead.toLowerCase();
+            
+            return this.sortListBy(this.books.filter(book => {
+                return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
+            }), this.booksSortBy, this.booksSortAscending)
         }
     }
 }
@@ -199,7 +242,7 @@ export default {
     padding: 2.5em;
     box-sizing: border-box;
     display: grid;
-    grid-template-rows: 33px 1fr 40px;
+    grid-template-rows: 33px 2.5em 1fr 40px;
     gap: 1.7em;
     background: white;
 }

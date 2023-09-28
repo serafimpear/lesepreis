@@ -199,8 +199,11 @@ div.multiplied-books div.table-row {
 }
 
 div.ui-table div.table-row.table-header-row {
-    font-weight: 600;
     background: #F5F5F5 !important;
+}
+
+div.ui-table div.table-row.table-header-row div.table-cell {
+    font-weight: bold !important;
 }
 
 div.ui-table div.table-row div.table-cell {
@@ -507,7 +510,7 @@ div.delete-save-bar button {
 }
 
 div.books-list div.table-row {
-    grid-template-columns: 1fr 1fr 5em 3em 10em;
+    grid-template-columns: 1fr 1fr 5em 3.3em 10em;
     text-overflow: ellipsis;
     white-space: nowrap;
 }

@@ -3,7 +3,7 @@
         <div class="input-field-text">{{ text }}</div>
         <div class="input-field-field ui-styled multiplication-boolean-show">
             {{ value }}&nbsp;
-            <img src="@/assets/svgs/icon-yes.svg" class="inline-icon" v-if="img == 'true'">
+            <img src="@/assets/svgs/icon-yes.svg" class="inline-icon" v-if="img == true">
             <img src="@/assets/svgs/icon-no.svg" class="inline-icon" v-else>
         </div>
     </div>
