@@ -18,6 +18,9 @@ Sobald eine neue Version da ist, wird das Programm Sie darüber benachrichtigen 
 ## Änderungsverlauf [Release 1.1.0]
 ![image](https://github.com/serafimpear/lesepreis/assets/67895914/5b5fdab8-5225-483d-b50b-c6c5904670f8)
 
+## Export der Rabgliste zum Drucken [Release 1.2.0]
+![image](https://github.com/serafimpear/lesepreis/assets/67895914/8030dc51-ba55-4a1b-ab1d-20538efd6008)
+
 
 ## Recommended IDE Setup
 
