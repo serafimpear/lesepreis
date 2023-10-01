@@ -548,3 +548,7 @@ div.books-list div.table-row {
         transform: scale(1);
     }
 }
+
+.indented {
+    padding-left: 1em;
+}

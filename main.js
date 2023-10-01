@@ -8,6 +8,18 @@ const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
 const gotTheLock = app.requestSingleInstanceLock() // dont allow 2 lesepreis windows
 
+async function getLastInsertRowId(database) {
+    return new Promise((resolve, reject) => {
+        database.get("SELECT last_insert_rowid() as id", function (err, row) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row['id']);
+            }
+        });
+    });
+}
+
 let myWindow = null
 if (!gotTheLock) {
     app.quit()
@@ -45,9 +57,9 @@ function createWindow() {
     var splash = new BrowserWindow({
         width: 600,
         height: 374,
+        resizable: false,
         transparent: true,
-        frame: false,
-        alwaysOnTop: true
+        frame: false
     });
 
     splash.loadFile('welcome.html');
@@ -119,7 +131,7 @@ function createWindow() {
             event.returnValue = students;
         });
     })
-    
+
     ipc.on('getStudentsSorted', (event, args) => {
         var students = [];
         database.all(`SELECT * FROM students ORDER BY points DESC`, [], (err, rows) => {
@@ -139,8 +151,9 @@ function createWindow() {
             event.returnValue = students;
         });
     })
-    
+
     ipc.on("addStudent", (event, dataReceived) => {
+        let lastInsertId;
         data = JSON.parse(dataReceived);
         let mul1 = -1;
         let mul2 = -1;
@@ -163,19 +176,35 @@ function createWindow() {
                         mul2,
                         JSON.stringify(data.books),
                         data.date_multiplied
-                    ])
+                    ],
+                    (err) => {
+                        if (err) {
+                            console.error(err.message);
+                        } else {
+                            (async () => {
+                                try {
+                                    const lastInsertRowId = await getLastInsertRowId(database);
+                                    event.returnValue = lastInsertRowId;
+                                } catch (error) {
+                                    console.error('Error:', error);
+                                }
+                            })();
 
-                
-                    database.run('INSERT INTO reset (timestamp, message, command) VALUES (?, ?, ?)',
+                        }
+                    }
+                )
+
+
+                database.run('INSERT INTO reset (timestamp, message, command) VALUES (?, ?, ?)',
                     [
                         Date.now(),
                         `Schüler \"${data.name} ${data.surname}\" hinzugefügt`,
                         `DELETE FROM students WHERE name = \"${data.name}\" AND surname = \"${data.surname}\" AND class = \"${data.class}\" AND points = ${data.points} AND readed_books = ${data.readed_books} AND failed_books = ${data.failed_books} AND passed = ${data.passed} AND multiplied_book_1 = ${mul1} AND multiplied_book_2 = ${mul2} AND books = '[${JSON.stringify(data.books).slice(0, -1).slice(1)}]' AND date_multiplied = ${data.date_multiplied}`
                     ])
 
-                event.returnValue = "done1";
+                
             });
-        
+
         } else {
             database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
                 if (err) {
@@ -245,13 +274,11 @@ function createWindow() {
     ipc.on('getBooks', (event, args) => {
         const books = [];
         database.all('SELECT * FROM books', [], (err, rows) => {
-            // console.log(rows);
             if (err) {
                 throw err;
             }
             rows.forEach(row => {
                 books.push(row);
-                //console.log("students ", students, students.push(row));
             });
             event.returnValue = books;
         });

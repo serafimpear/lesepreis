@@ -6,7 +6,8 @@
                 Programm verwalten, z.B. Ranglisten exportieren</div><br> -->
             <div class="ui-infobox">
                 <div style="font-size: 16px;"><b>Hinweis:</b> die Rangliste wird als HTML-Datei gespeichert.<br>
-                <b>In Zukunft wird diese Funktion durch einen PDF-Export ersetzt</b></div>
+                    <b>In Zukunft wird diese Funktion durch einen PDF-Export ersetzt</b>
+                </div>
             </div>
             <div class="text-button">
                 <div>HTML-Rangliste der Schüler (Top 25)</div>
@@ -19,8 +20,34 @@
                 @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
         </div> -->
         </div>
-        <div class="statistics-section">
+        <div>&nbsp;</div>
+        <div class="statistics-section" v-if="isDev">
             <h1>Statistik</h1>
+            <div class="statistics-block">
+                <b>Insgesamt Schüler:</b> {{ 1 }}
+                <p class="indented">
+                    Qualifiziert: {{ 1 }} <br>
+                    Multipliziert: {{ 1 }}
+                </p>
+
+                <b>Insgesamt Bücher:</b> {{ 1 }}
+                <p class="indented">
+                    Deutsche: {{ 1 }} <br>
+                    Italienische: {{ 1 }} <br>
+                    Englische: {{ 1 }} <br>
+                    Französische: {{ 1 }} <br>
+                    Russische: {{ 1 }}
+                </p>
+                <p class="indented">
+                    <b>Gelesen:</b> {{ 1 }}
+                </p>
+
+                <b>Insgesamt haben Teilnehmer:</b>
+                <p class="indented">
+                    {{ 1 }} Mal Bücher gelesen<br>
+                    {{ 1 }} Mal multipliziert
+                </p>
+            </div>
         </div>
     </main>
     <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
@@ -35,6 +62,7 @@ import Modal from "@/components/Modal.vue"
 import { modalFunctions } from "@/logic/modal.js"
 import pdfTemplate from '@/assets/pdfExport/pdfExport.js'
 var Handlebars = require("handlebars");
+const isDev = require('electron-is-dev')
 
 export default {
     mixins: [modalFunctions, pdfTemplate],
@@ -46,6 +74,7 @@ export default {
     data() {
         return {
             students: ipcRenderer.sendSync('getStudentsSorted'),
+            isDev: isDev
         }
     },
 
@@ -188,4 +217,9 @@ export default {
     column-gap: 1em;
     margin: 1em 0;
     font-size: 18px;
-}</style>
+}
+
+.statistics-block {
+    font-size: 18px;
+}
+</style>

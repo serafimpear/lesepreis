@@ -31,8 +31,9 @@
                                     src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler NICHT qualifiziert"><img
                                     src="@/assets/svgs/icon-no-red.svg" class="table-icon"></div>
-                            <div v-if="student.multiplied_books.length == 2" class="table-cell" title="Schüler hat multipliziert"><img
-                                    src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
+                            <div v-if="student.multiplied_books.length == 2" class="table-cell"
+                                title="Schüler hat multipliziert"><img src="@/assets/svgs/icon-yes-green.svg"
+                                    class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler hat noch NICHT multipliziert"><img
                                     src="@/assets/svgs/icon-no-red.svg" class="table-icon"></div>
                             <div class="table-cell">
@@ -52,7 +53,8 @@
                 </div>
             </div>
             <div class="student-leaderboard-section-footer">
-                <Button class="add-student" tabindex="2" type="add" text="Sch&uuml;ler hinzuf&uuml;gen" @click="newStudent()" />
+                <Button class="add-student" tabindex="2" type="add" text="Sch&uuml;ler hinzuf&uuml;gen"
+                    @click="newStudent()" />
             </div>
         </div>
         <div class="vertical-line"></div>
@@ -286,6 +288,7 @@ export default {
         updateStudentsRemote() {
             this.students = ipcRenderer.sendSync("getStudents");
             console.log(this.students);
+            return true;
         },
 
         selectStudent: function (student) {
@@ -320,23 +323,36 @@ export default {
                     failedCounter++;
                 }
             })
+
             if (this.currentStudent.multiplied_books.length != 0) {
                 let book1 = this.books.find(book => book.id == this.currentStudent.multiplied_books[0]);
                 let book2 = this.books.find(book => book.id == this.currentStudent.multiplied_books[1]);
                 console.log(this.currentStudent.multiplied_books[0]);
                 sum += book1.points * book2.points;
             }
+
             this.currentStudent.failed_books = failedCounter;
             this.currentStudent.readed_books = passedCounter;
             this.currentStudent.passed = passedCounter > 2;
             this.currentStudent.points = sum;
-            ipcRenderer.sendSync("addStudent", JSON.stringify(this.currentStudent));
+
+            var csuid = ipcRenderer.sendSync("addStudent", JSON.stringify(this.currentStudent));
+
+            if (this.updateStudentsRemote() == true) {
+                if (this.currentStudent.uid == -1) {
+                    console.log(csuid);
+                    this.currentStudent = this.deepClone(this.students.find(student => student.uid === csuid));
+                    console.log(this.students.find(student => student.uid === csuid));
+                    this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
+                }
+            }
+            console.log(this.currentStudent);
 
             if (close) {
                 this.currentStudent = undefined;
                 this.showStudentInfo = false;
             }
-            this.updateStudentsRemote();
+
             return true;
         },
 
@@ -508,10 +524,11 @@ export default {
                 this.ask({
                     type: 'warning',
                     subtitle: 'Bücher verwalten',
-                    content: `Sie können nicht die Bücher verwalten solange Sie den Schüler nicht gespeichert haben. Wollen Sie den Schüler speichern?`,
+                    content: `Sie können nicht die Bücher verwalten, solange Sie den Schüler nicht gespeichert haben. Wollen Sie den Schüler speichern?`,
                     okButton: 'Abbrechen',
                     noButton: 'Schüler speichern',
                 }, () => {
+
                 }, () => {
                     this.saveStudent(false);
                 });
@@ -527,9 +544,9 @@ export default {
         this.updateStudentsRemote();
     },
 
-    mounted: function mounted () {
+    mounted: function mounted() {
         var that = this;
-        ipcRenderer.on("updateDataRemote", function() {
+        ipcRenderer.on("updateDataRemote", function () {
             that.updateStudentsRemote();
         });
     },

@@ -3,7 +3,7 @@
         <div class="books-list-section">
             <div class="books-section-header">
                 <h1>Bücher</h1>
-                <Button class="add-book" type="add" text="Buch hinzuf&uuml;gen" @click="newBook()" />
+                <Button class="add-book" type="add" text="Buch hinzuf&uuml;gen" @click="newBook()" tabindex="17" />
             </div>
             <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
             <div class="books-list ui-table">
@@ -48,21 +48,21 @@
                 <div class="book-header-title">
                     <h1>Bücher</h1>
                     <Button type="delete" text="Löschen" color="red" @click="deleteBook()" />
-                    <Button type="yes" text="Speichern" color="green" @click="saveBook()" />
+                    <Button type="yes" text="Speichern" color="green" @click="saveBook()" tabindex="6" />
                     <IconButton @click="closeBook()" type="no" />
                 </div>
                 <div class="book-information">
                     <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
-                        v-model="currentBook.isbn" @input="searchBookWEB" />
+                        v-model="currentBook.isbn" @input="searchBookWEB" tabindex="1" />
                     <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable=""
-                        :value=currentBook.author />
+                        :value=currentBook.author tabindex="2" />
                     <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                        variable="" :value=currentBook.title />
+                        variable="" :value=currentBook.title tabindex="3" />
                     <InputField type="language-selector" class="language-input" v-model="currentBook.language"
-                        text="Sprache&nbsp;" variable="" :value=currentBook.language />
+                        text="Sprache&nbsp;" variable="" :value=currentBook.language tabindex="4" />
                     <InputField class="points-input" v-model="currentBook.points"
                         text="Lose&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" number="positivnumber"
-                        :value=currentBook.points />
+                        :value=currentBook.points tabindex="5" />
                     <div>
                         <div class="book-search-status">
                             <span v-if="isLoading">Suche nach Informationen...
