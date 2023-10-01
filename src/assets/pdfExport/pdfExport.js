@@ -175,7 +175,7 @@ export default { data() { return { pdfTemplate : `
             text-align: center;
         }
         
-        body, html {
+
             height: 297mm;
             position: relative;
             width: 213mm;

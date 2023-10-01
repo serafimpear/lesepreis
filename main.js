@@ -133,7 +133,7 @@ function createWindow() {
     })
 
     ipc.on('getStudentsSorted', (event, args) => {
-        var students = [];
+        let students = [];
         database.all(`SELECT * FROM students ORDER BY points DESC`, [], (err, rows) => {
             if (err) {
                 throw err;
@@ -151,6 +151,7 @@ function createWindow() {
             event.returnValue = students;
         });
     })
+
 
     ipc.on("addStudent", (event, dataReceived) => {
         let lastInsertId;

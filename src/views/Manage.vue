@@ -24,10 +24,9 @@
         <div class="statistics-section" v-if="isDev">
             <h1>Statistik</h1>
             <div class="statistics-block">
-                <b>Insgesamt Schüler:</b> {{ 1 }}
+                <b>Insgesamt Schüler:</b> {{ this.statistics.totalStudents }}
                 <p class="indented">
-                    Qualifiziert: {{ 1 }} <br>
-                    Multipliziert: {{ 1 }}
+                    Qualifiziert: {{ this.statistics.qualifiedStudents }} <br>
                 </p>
 
                 <b>Insgesamt Bücher:</b> {{ 1 }}
@@ -44,8 +43,8 @@
 
                 <b>Insgesamt haben Teilnehmer:</b>
                 <p class="indented">
-                    {{ 1 }} Mal Bücher gelesen<br>
-                    {{ 1 }} Mal multipliziert
+                    {{ this.statistics.readBooks }} Mal Bücher gelesen<br>
+                    {{ this.statistics.multiplied }} Mal multipliziert
                 </p>
             </div>
         </div>
@@ -74,11 +73,13 @@ export default {
     data() {
         return {
             students: ipcRenderer.sendSync('getStudentsSorted'),
-            isDev: isDev
+            isDev: isDev,
+            statistics: {},
         }
     },
 
     methods: {
+
         compilePDF: function (document, options, pathToSave) {
             Handlebars.registerHelper("ifCond", function (v1, operator, v2, options) {
                 switch (operator) {
@@ -205,6 +206,24 @@ export default {
             }
         }
     },
+    mounted: function() {
+        this.statistics = {
+            totalStudents: 0,
+            qualifiedStudents: 0,
+            multiplied: 0,
+            readBooks: 0,
+        }
+        this.students.forEach((student) => {
+            this.statistics.totalStudents++;
+            if(student.multiplied_books.length == 2) {
+                this.statistics.multiplied++;
+            }
+            if(student.books.length >= 3) {
+                this.statistics.qualifiedStudents++;
+            }
+            this.statistics.readBooks += student.books.length;
+        });
+    }
 }
 
 </script>
