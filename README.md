@@ -29,6 +29,9 @@ Sobald eine neue Version da ist, wird das Programm Sie darüber benachrichtigen 
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur)
 
+## Design:
+[figma.com/file/GlxglaUjnA06rRPgWDoYMT](https://www.figma.com/file/GlxglaUjnA06rRPgWDoYMT/Untitled?type=design&node-id=0%3A1&mode=design&t=rq3YeKIz7A5pXClq-1)
+
 ## Project Setup
 Zuerst müssen alle Dependencies installiert werden:
 ```sh
