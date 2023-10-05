@@ -29,17 +29,17 @@
                     Qualifiziert: {{ this.statistics.qualifiedStudents }} <br>
                 </p>
 
-                <b>Insgesamt Bücher:</b> {{ 1 }}
+                <b>Insgesamt Bücher:</b> {{ this.statistics.books }}
                 <p class="indented">
-                    Deutsche: {{ 1 }} <br>
-                    Italienische: {{ 1 }} <br>
-                    Englische: {{ 1 }} <br>
-                    Französische: {{ 1 }} <br>
-                    Russische: {{ 1 }}
+                    Deutsche: {{ this.statistics.germanBooks }} <br>
+                    Italienische: {{ this.statistics.italianBooks }} <br>
+                    Englische: {{ this.statistics.englishBooks }} <br>
+                    Französische: {{ this.statistics.frenchBooks }} <br>
+                    Russische: {{ this.statistics.russianBooks }}
                 </p>
-                <p class="indented">
+                <!--p class="indented">
                     <b>Gelesen:</b> {{ 1 }}
-                </p>
+                </p-->
 
                 <b>Insgesamt haben Teilnehmer:</b>
                 <p class="indented">
@@ -73,6 +73,7 @@ export default {
     data() {
         return {
             students: ipcRenderer.sendSync('getStudentsSorted'),
+            books: ipcRenderer.sendSync('getBooks'),
             isDev: isDev,
             statistics: {},
         }
@@ -207,11 +208,19 @@ export default {
         }
     },
     mounted: function() {
+        console.log(this.books);
+        console.log(this.students);
         this.statistics = {
             totalStudents: 0,
             qualifiedStudents: 0,
             multiplied: 0,
             readBooks: 0,
+            books: 0,
+            germanBooks: 0,
+            englishBooks: 0,
+            russianBooks: 0,
+            frenchBooks: 0,
+            italianBooks: 0,
         }
         this.students.forEach((student) => {
             this.statistics.totalStudents++;
@@ -222,6 +231,21 @@ export default {
                 this.statistics.qualifiedStudents++;
             }
             this.statistics.readBooks += student.books.length;
+        });
+
+        this.books.forEach(book => {
+            this.statistics.books++;
+            if(book.language.toLowerCase() === 'deutsch') {
+                this.statistics.germanBooks++;
+            } else if(book.language.toLowerCase() === 'englisch') {
+                this.statistics.englishBooks++;
+            } else if(book.language.toLowerCase() === 'russisch') {
+                this.statistics.russianBooks++;
+            } else if(book.language.toLowerCase() === 'französisch') {
+                this.statistics.frenchBooks++;
+            } else if(book.language.toLowerCase() === 'italienisch') {
+                this.statistics.italianBooks++;
+            }
         });
     }
 }
