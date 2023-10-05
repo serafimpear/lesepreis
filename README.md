@@ -1,6 +1,6 @@
 # lesepreis-app
 
-Eine Web-App, basiert auf vue.js für die Verwaltung vom Lesepreis in den Oberschulen Fallmerayer
+Eine App, basiert auf electron.js & vue.js für die Verwaltung vom Lesepreis in den Oberschulen J.Ph.Fallmerayer
 > ![image](https://github.com/serafimpear/lesepreis/assets/67895914/b809901f-52e3-4474-8db1-5f460b56c689)
 
 # Update: Release!
