@@ -154,7 +154,6 @@ function createWindow() {
 
 
     ipc.on("addStudent", (event, dataReceived) => {
-        let lastInsertId;
         data = JSON.parse(dataReceived);
         let mul1 = -1;
         let mul2 = -1;
@@ -374,6 +373,7 @@ function createWindow() {
             rows.forEach(row => {
                 resetHistory.push(row);
             });
+            console.log(resetHistory)
             event.returnValue = resetHistory;
         });
     })
