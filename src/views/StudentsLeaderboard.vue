@@ -68,11 +68,11 @@
                 </div>
 
                 <div class="student-information">
-                    <InputField tabindex="3" v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;"
+                    <InputField tabindex="3" v-model="currentStudent.surname" text="Nachname&nbsp;&nbsp;&nbsp;"
                         :value=currentStudent.name />
                     <InputField tabindex="5" v-model="currentStudent.class" text="Klasse" number="number"
                         :value=currentStudent.class @keyup.enter="saveStudent()" />
-                    <InputField tabindex="4" v-model="currentStudent.surname" text="Nachname"
+                    <InputField tabindex="4" v-model="currentStudent.name" text="Vorname"
                         :value=currentStudent.surname />
                     <InputField v-model="currentStudent.points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled"
                         number="number" :value=currentStudent.points />
