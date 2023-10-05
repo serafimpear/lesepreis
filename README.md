@@ -12,7 +12,10 @@ Sobald eine neue Version da ist, wird das Programm Sie darüber benachrichtigen 
 ## Benutzerfreundliches UI
 ![image](https://github.com/serafimpear/lesepreis/assets/67895914/5552b688-c918-4cad-afca-0da3bb9fad83)
 
-## Automatische Suche nach ISBN
+## Einfaches Verwalten von gelesenen Büchern
+![image](https://github.com/serafimpear/lesepreis/assets/67895914/df0409ad-b311-42ae-8bb1-e1c84b85e449)
+
+## Automatische Suche von Büchern nach ISBN
 ![image](https://github.com/serafimpear/lesepreis/assets/67895914/0b1307d0-b4de-4b15-b468-9e9a1a06bd58)
 
 ## Änderungsverlauf [Release 1.1.0]
