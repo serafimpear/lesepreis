@@ -21,7 +21,7 @@
         </div> -->
         </div>
         <div>&nbsp;</div>
-        <div class="statistics-section" v-if="isDev">
+        <div class="statistics-section">
             <h1>Statistik</h1>
             <div class="statistics-block">
                 <b>Insgesamt Schüler:</b> {{ this.statistics.totalStudents }}
