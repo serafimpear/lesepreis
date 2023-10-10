@@ -28,7 +28,7 @@
                         <template v-for="currentBook in filteredBooksFromNotRead">
                             <div :class="{ 'table-row': true, 'highlighted': selectedBook.id == currentBook.id }"
                                 v-if="!currentStudent.books.some(book => book.id === currentBook.id)"
-                                @click="if (selectedBook.id == currentBook.id) { selectedBook = -1; } else { selectedBook = currentBook; } bookPassed = undefined ">
+                                @click="if (selectedBook.id == currentBook.id) { selectedBook = -1; } else { selectedBook = currentBook; } bookPassed = undefined" >
                                 <div class="table-cell">{{ currentBook.title }}</div>
                                 <div class="table-cell">{{ currentBook.author }}</div>
                                 <div class="table-cell">{{ currentBook.language }}</div>
@@ -104,7 +104,7 @@
                         <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false"
                             :checked="selectedBook.passed == false" />
                     </div>
-                    <InputField class="addbook-window-date-picker" type="date" v-if="typeof selectedBook == 'object' && currentView == 'not_read_books'" v-model="date_added" text="Datum" :value=date_added />
+                    <DateInputField class="addbook-window-date-picker" v-if="typeof selectedBook == 'object' && currentView == 'not_read_books'" v-model="date_added" text="Datum" />
                     <!-- <Button text="Abbrechen" @click="close(false)" /> -->
                     <Button
                         v-if="(typeof bookPassed == 'boolean' && typeof selectedBook == 'object') && currentView == 'not_read_books'"
@@ -125,6 +125,7 @@ import SearchBar from "@/components/SearchBar.vue"
 import RadioInput from "@/components/RadioInput.vue"
 import InputField from "@/components/InputField.vue"
 import IconButton from "@/components/IconButton.vue"
+import DateInputField from "@/components/DateInputField.vue"
 
 export default {
     data() {
@@ -143,7 +144,8 @@ export default {
         SearchBar,
         RadioInput,
         InputField,
-        IconButton
+        IconButton,
+        DateInputField
     },
 
     props: ['books', 'currentStudent'],

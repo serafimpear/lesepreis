@@ -326,7 +326,7 @@ export default {
             if (this.currentStudent.multiplied_books.length != 0) {
                 let book1 = this.books.find(book => book.id == this.currentStudent.multiplied_books[0]);
                 let book2 = this.books.find(book => book.id == this.currentStudent.multiplied_books[1]);
-                console.log(this.currentStudent.multiplied_books[0]);
+                // console.log(this.currentStudent.multiplied_books[0]);
                 sum += book1.points * book2.points;
             }
 
@@ -339,13 +339,13 @@ export default {
 
             if (this.updateStudentsRemote() == true) {
                 if (this.currentStudent.uid == -1) {
-                    console.log(csuid);
+                    // console.log(csuid);
                     this.currentStudent = this.deepClone(this.students.find(student => student.uid === csuid));
-                    console.log(this.students.find(student => student.uid === csuid));
+                    // console.log(this.students.find(student => student.uid === csuid));
                     this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
                 }
             }
-            console.log(this.currentStudent);
+            // console.log(this.currentStudent);
 
             if (close) {
                 this.currentStudent = undefined;
