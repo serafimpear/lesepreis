@@ -12,7 +12,7 @@
             <div class="text-button">
                 <div>HTML-Rangliste der Schüler (Top 25)</div>
                 <Button text="Speichern"
-                    @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
+                    @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`), 25)" />
             </div>
             <!-- <div>
             <h3>Rangliste der Bücher</h3>
@@ -76,6 +76,7 @@ export default {
             books: ipcRenderer.sendSync('getBooks'),
             isDev: isDev,
             statistics: {},
+            version: process.env.VITE_APP_VERSION
         }
     },
 
@@ -153,14 +154,14 @@ export default {
 
         },
 
-        createStudentsLeaderboard: function (pathToSave) {
+        createStudentsLeaderboard: function (pathToSave, count) {
             if (!pathToSave) return;
             let users = [];
             let sum = 0;
             this.students.forEach(student => {
                 sum += student.points;
             });
-            for (let i = 0; i < Math.min(25, this.students.length); i++) {
+            for (let i = 0; i < Math.min(count, this.students.length); i++) {
                 this.students[i].rank = i;
                 users.push(this.students[i]);
             }
@@ -177,7 +178,8 @@ export default {
                     users: users,
                     sum: sum,
                     date: (new Date()).toLocaleDateString('de-DE'),
-                    year: "2023/24"
+                    year: "2023/24",
+                    version: "v" + this.version
                 },
                 type: '',
             }
