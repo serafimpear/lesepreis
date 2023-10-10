@@ -6,6 +6,7 @@
                     <div class="addbook-window-title-title">Bücher verwalten</div>
                     <Button text="Nicht gelesen" :tclass="currentView != 'read_books' ? '' :'diselected-button'" @click="changeCurrentView('not_read_books')" />
                     <Button text="Gelesen" :tclass="currentView != 'read_books' ? 'diselected-button' : ''" @click="changeCurrentView('read_books')" />
+                    <IconButton @click="close(false)" type="no" />
                 </div>
                 <SearchBar v-model="searchBookFromNotRead" tabindex="1" placeholder="Buch suchen..." />
                 <div class="books-list-add-unread ui-table" v-if="currentView == 'not_read_books'">
@@ -103,12 +104,13 @@
                         <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false"
                             :checked="selectedBook.passed == false" />
                     </div>
-                    <Button text="Abbrechen" @click="close(false)" />
+                    <InputField class="addbook-window-date-picker" type="date" v-if="typeof selectedBook == 'object' && currentView == 'not_read_books'" v-model="date_added" text="Datum" :value=date_added />
+                    <!-- <Button text="Abbrechen" @click="close(false)" /> -->
                     <Button
                         v-if="(typeof bookPassed == 'boolean' && typeof selectedBook == 'object') && currentView == 'not_read_books'"
                         text="Hinzufügen" @click="selectBook" color="green" />
                     <Button v-if="typeof selectedBook == 'object' && currentView == 'read_books'" text="Entfernen"
-                        @click="removeBook" color="red" />
+                        @click="removeBook" color="red" tclass="remove-button" />
                     <Button v-if="(typeof selectedBook == 'object' && currentView == 'read_books') && ((selectedBook.passed != bookPassed) && typeof bookPassed == 'boolean')"
                         text="Änderungen speichern" @click="updateBook" color="green" />
                 </div>
@@ -121,6 +123,8 @@
 import Button from "@/components/Button.vue"
 import SearchBar from "@/components/SearchBar.vue"
 import RadioInput from "@/components/RadioInput.vue"
+import InputField from "@/components/InputField.vue"
+import IconButton from "@/components/IconButton.vue"
 
 export default {
     data() {
@@ -129,14 +133,17 @@ export default {
             bookPassed: undefined,
             selectedBook: -1,
             currentView: 'not_read_books',
-            searchBookFromNotRead: ''
+            searchBookFromNotRead: '',
+            date_added: Date.now()
         }
     },
 
     components: {
         Button,
         SearchBar,
-        RadioInput
+        RadioInput,
+        InputField,
+        IconButton
     },
 
     props: ['books', 'currentStudent'],
@@ -157,12 +164,12 @@ export default {
         },
 
         selectBook() {
-            this.$emit("selectBook", [this.selectedBook.id, this.bookPassed]);
+            this.$emit("selectBook", [this.selectedBook.id, this.bookPassed, this.date_added]);
             this.reset();
         },
 
         updateBook() {
-            this.$emit("updateBook", [this.selectedBook.id, this.bookPassed]);
+            this.$emit("updateBook", [this.selectedBook.id, this.bookPassed, this.date_added]);
             this.reset();
         },
 
@@ -266,7 +273,6 @@ export default {
 }
 
 .addbook-window-passed-radio-box {
-    margin-right: auto;
     display: flex;
     flex-direction: row;
     column-gap: 1em;
@@ -301,5 +307,14 @@ export default {
 
 button.diselected-button {
     border: none;
+}
+
+.addbook-window-date-picker {
+    margin-right: auto;
+    width: 10em;
+}
+
+button.remove-button {
+    margin-left: auto !important;
 }
 </style>

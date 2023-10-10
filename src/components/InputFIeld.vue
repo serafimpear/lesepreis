@@ -5,10 +5,15 @@
             <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)"
                 v-if="number == 'positivnumber'" type="number" placeholder="..." min="0"
                 oninput="validity.valid||(value='');" :name="`${variable}`" :value="`${value}`">
+
+            <input :tabindex=tabindex :disabled="disabled" @input="this.value = $event.target.value; $emit('update:modelValue', cAsNumber);"
+                v-else-if="type == 'date'" type="date" :value="`${new Date().toISOString().split('T')[0]}`">
+
             <input :tabindex=tabindex :disabled="disabled" @input="$emit('update:modelValue', $event.target.value)"
                 v-else-if="(typeof value !== undefined)" type="text" placeholder="..." :name="`${variable}`"
                 :value="`${value}`"
                 oninput="this.value = this.value.replaceAll('\u0022', '').replaceAll('\'', '').replaceAll('`', '')">
+
             <input :tabindex=tabindex :disabled="disabled" :value="modelValue"
                 @input="$emit('update:modelValue', $event.target.value)" v-else type="text" placeholder="..."
                 :name="`${variable}`"
@@ -97,4 +102,5 @@ div.input-field-field:hover {
 div.input-field-field:has(input:focus) {
     background: #F5F5F5;
     border-width: 2px;
-}</style>
+}
+</style>

@@ -10,7 +10,7 @@
 <style>
 button.ui-single-icon-button {
     background: white;
-    margin-left: auto;
+    /* margin-left: auto; */
     border-radius: 20px;
     border: none;
     height: 40px;

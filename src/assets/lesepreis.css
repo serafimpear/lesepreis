@@ -14,7 +14,7 @@
 }
 
 b {
-    font-weight: bold !important;
+    font-weight: bold;
 }
 
 a {
@@ -191,7 +191,7 @@ div.student-leaderboard div.table-row {
 }
 
 div.student-books div.table-row {
-    grid-template-columns: 26px 1fr 1fr 5em 4.2em 3.3em;
+    grid-template-columns: 26px 1fr 1fr 5em 5.2em 3.3em;
 }
 
 div.multiplied-books div.table-row {

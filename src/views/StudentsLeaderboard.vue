@@ -401,9 +401,9 @@ export default {
             this.showStudentInfo = false;
         },
 
-        addBookToStudent: function ([book, passed]) {
+        addBookToStudent: function ([book, passed, date_added]) {
             this.readBookWindowVisible = false;
-            this.currentStudent.books.push({ id: book, date_added: Date.now(), passed: passed });
+            this.currentStudent.books.push({ id: book, date_added: date_added, passed: passed });
             this.saveStudent(false);
         },
 
@@ -423,9 +423,10 @@ export default {
             });
         },
 
-        updateBookFromStudent: function ([bookToChangeID, passed]) {
+        updateBookFromStudent: function ([bookToChangeID, passed, date_added]) {
             this.readBookWindowVisible = false;
             this.currentStudent.books.find(book => book.id === bookToChangeID).passed = passed;
+            this.currentStudent.books.find(book => book.id === bookToChangeID).date_added = date_added;
             this.saveStudent(false);
         },
 
