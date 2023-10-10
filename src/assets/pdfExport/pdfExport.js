@@ -183,7 +183,7 @@ export default { data() { return { pdfTemplate : `
 
         body {
             display: grid;
-            grid-template-rows: 1fr 10mm;
+            grid-template-rows: 1fr 7mm;
         }
 
         div .container {
@@ -198,6 +198,7 @@ export default { data() { return { pdfTemplate : `
             text-align: center;
             font-size: 0.8em;
             font-family: monospace;
+            height: 3mm;
         }
     </style>
 </body>
