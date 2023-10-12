@@ -171,7 +171,7 @@ export default {
         },
 
         updateBook() {
-            this.$emit("updateBook", [this.selectedBook.id, this.bookPassed, this.date_added]);
+            this.$emit("updateBook", [this.selectedBook.id, this.bookPassed]);
             this.reset();
         },
 
