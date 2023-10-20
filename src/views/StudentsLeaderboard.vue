@@ -310,6 +310,25 @@ export default {
                 }, () => { }, () => { });
                 return false;
             }
+
+            let possible_match = this.students.find(student => student.name == this.currentStudent.name && student.surname == this.currentStudent.surname && student.class == this.currentStudent.class);
+
+            if (possible_match) {
+                return this.ask({
+                    type: 'alert',
+                    subtitle: 'Dublikat',
+                    noButton: 'Ja',
+                    content: `Ein Schüler mit dem Namen "${this.currentStudent.name} ${this.currentStudent.surname}", der die Klasse ${this.currentStudent.class} besucht, existiert bereits!\n\nWollen Sie zu diesem wechseln?`,
+                }, () => {
+                    return false;
+                }, () => {
+                    this.currentStudentBeforeEdit = this.deepClone(possible_match);
+                    this.currentStudent = this.deepClone(possible_match);
+                    this.showStudentInfo = true;
+                    return false;
+                });
+            }
+
             let sum = 0;
             let passedCounter = 0;
             let failedCounter = 0;
