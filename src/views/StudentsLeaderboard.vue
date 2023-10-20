@@ -9,11 +9,11 @@
                         <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
                         <div class="table-cell"><img src="@/assets/svgs/icon-2.svg" class="table-icon"></div>
                         <div class="table-cell"
-                            @click="studentsSortBy = 'name'; studentsSortAscending = !studentsSortAscending">Vorname
+                            @click="studentsSortBy = 'surname'; studentsSortAscending = !studentsSortAscending">Nachname
                             <SortIcon />
                         </div>
                         <div class="table-cell"
-                            @click="studentsSortBy = 'surname'; studentsSortAscending = !studentsSortAscending">Nachname
+                            @click="studentsSortBy = 'name'; studentsSortAscending = !studentsSortAscending">Vorname
                             <SortIcon />
                         </div>
                         <div class="table-cell"
@@ -37,10 +37,10 @@
                             <div v-else class="table-cell" title="Schüler hat noch NICHT multipliziert"><img
                                     src="@/assets/svgs/icon-no-red.svg" class="table-icon"></div>
                             <div class="table-cell">
-                                <div class="table-cell-centered-content">{{ student.name }}</div>
+                                <div class="table-cell-centered-content">{{ student.surname }}</div>
                             </div>
                             <div class="table-cell">
-                                <div class="table-cell-centered-content">{{ student.surname }}</div>
+                                <div class="table-cell-centered-content">{{ student.name }}</div>
                             </div>
                             <div class="table-cell">
                                 <div class="table-cell-centered-content">{{ student.class }}</div>
