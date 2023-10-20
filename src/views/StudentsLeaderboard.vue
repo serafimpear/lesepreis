@@ -316,7 +316,7 @@ export default {
             if (possible_match) {
                 return this.ask({
                     type: 'alert',
-                    subtitle: 'Dublikat',
+                    subtitle: 'Duplikat',
                     noButton: 'Ja',
                     content: `Ein Schüler mit dem Namen "${this.currentStudent.name} ${this.currentStudent.surname}", der die Klasse ${this.currentStudent.class} besucht, existiert bereits!\n\nWollen Sie zu diesem wechseln?`,
                 }, () => {
