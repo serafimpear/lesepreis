@@ -319,7 +319,7 @@ export default {
                         type: 'alert',
                         subtitle: 'Duplikat',
                         noButton: 'Wechseln',
-                        content: `Ein Schüler mit dem Namen "${this.currentStudent.name} ${this.currentStudent.surname}", der die Klasse ${this.currentStudent.class} besucht, existiert bereits!\n\nWollen Sie zu diesem wechseln?`,
+                        content: `Ein Schüler mit dem Namen "${this.currentStudent.name} ${this.currentStudent.surname}", der die Klasse ${this.currentStudent.class} besucht, existiert bereits!\n\nMöchten Sie zu diesem wechseln?`,
                     }, () => {
                         return false;
                     }, () => {

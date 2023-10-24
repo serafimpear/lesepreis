@@ -212,6 +212,30 @@ export default {
                 return false;
             }
 
+            if (this.currentBook.id == -1) {
+                let possible_match = this.books.find(book => book.isbn == this.currentBook.isbn);
+                console.log(this.books);
+                console.log(this.currentBook.isbn);
+                console.log(possible_match);
+
+
+                if (possible_match) {
+                    return this.ask({
+                        type: 'alert',
+                        subtitle: 'Duplikat',
+                        noButton: 'Wechseln',
+                        content: `Ein Buch mit der ISBN-${this.currentBook.isbn} existiert bereits!\n\nMöchten Sie zu diesem wechseln?`,
+                    }, () => {
+                        return false;
+                    }, () => {
+                        this.currentBookBeforeEdit = this.deepClone(possible_match);
+                        this.currentBook = this.deepClone(possible_match);
+                        this.showBookInfo = true;
+                        return false;
+                    });
+                }
+            }
+
             ipcRenderer.sendSync("addBook", JSON.stringify(this.currentBook));
 
             if (close) {
