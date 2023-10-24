@@ -312,7 +312,7 @@ export default {
             }
 
             if (this.currentStudent.uid == -1) {
-                let possible_match = this.students.find(student => student.name == this.currentStudent.name && student.surname == this.currentStudent.surname && student.class == this.currentStudent.class);
+                let possible_match = this.students.find(student => student.name.toLowerCase() == this.currentStudent.name.toLowerCase() && student.surname.toLowerCase() == this.currentStudent.surname.toLowerCase() && student.class.toLowerCase() == this.currentStudent.class.toLowerCase());
 
                 if (possible_match) {
                     return this.ask({
