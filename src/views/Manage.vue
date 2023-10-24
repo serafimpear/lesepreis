@@ -10,9 +10,9 @@
                 </div>
             </div>
             <div class="text-button">
-                <div>HTML-Rangliste der Schüler (Top 25)</div>
+                <div>HTML-Rangliste der Schüler</div>
                 <Button text="Speichern"
-                    @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`), 25)" />
+                    @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
             </div>
             <!-- <div>
             <h3>Rangliste der Bücher</h3>
@@ -161,7 +161,7 @@ export default {
             this.students.forEach(student => {
                 sum += student.points;
             });
-            for (let i = 0; i < Math.min(count, this.students.length); i++) {
+            for (let i = 0; i < this.students.length; i++) {
                 this.students[i].rank = i;
                 users.push(this.students[i]);
             }

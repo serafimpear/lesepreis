@@ -97,15 +97,11 @@ export default { data() { return { pdfTemplate : `
         }
 
         .student {
-            height: 9mm;
+            height: 8mm;
         }
         
         tr.header, tr.footer {
-            height: 10mm;
-        }
-        
-        tr.header > th, tr.footer > th {
-            padding-top: 2mm;
+            height: 9mm;
         }
         
         tr:nth-child(odd) {
@@ -122,7 +118,9 @@ export default { data() { return { pdfTemplate : `
         }
         
         th {
-            padding: 1mm 4mm;
+            padding: 0 4mm;
+            line-height: 100%;
+            vertical-align: middle;
         }
         
         .header th {
@@ -135,7 +133,7 @@ export default { data() { return { pdfTemplate : `
         
         svg {
             vertical-align: middle;
-            height: 7mm;
+            height: 6mm;
         }
         
         tr:nth-child(1) {
