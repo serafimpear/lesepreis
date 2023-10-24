@@ -426,6 +426,7 @@ export default {
             this.readBookWindowVisible = false;
             this.currentStudent.books.push({ id: book, date_added: date_added, passed: passed });
             this.saveStudent(false);
+            this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
         },
 
         removeBookFromStudent: function (bookID) {
@@ -448,6 +449,7 @@ export default {
             this.readBookWindowVisible = false;
             this.currentStudent.books.find(book => book.id === bookToChangeID).passed = passed;
             this.saveStudent(false);
+            this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
         },
 
         multiplyBooks: function ([book1, book2]) {
@@ -456,6 +458,7 @@ export default {
             this.currentStudent.multiplied_books[1] = book2;
             this.currentStudent.date_multiplied = Date.now();
             this.saveStudent(false);
+            this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
         },
 
         deleteMultiplication: function () {
