@@ -28,6 +28,9 @@ export default { data() { return { pdfTemplate : `
                 <th>
                     Multipliziert
                 </th>
+                <th>
+                    Gelesene Bücher
+                </th>
             </tr>
             {{#each users}}
             <tr class="student">
@@ -65,6 +68,9 @@ export default { data() { return { pdfTemplate : `
                     <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                     {{/ifCond}}
+                </th>
+                <th>
+                    {{this.readed_books}}
                 </th>
             </tr>
             {{/each}}
