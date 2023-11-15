@@ -1,7 +1,7 @@
 <template>
     <div id="titleBarContainer">
         <div id="titleBar">
-            <div v-on:mouseover="showHistoryPopup = true;" v-on:mouseleave="showHistoryPopup = false;">
+            <!-- <div v-on:mouseover="showHistoryPopup = true;" v-on:mouseleave="showHistoryPopup = false;">
                 <button id="returnButton">
                     <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect width="29" height="29" rx="9" fill="#3F3F3F" />
@@ -11,7 +11,7 @@
                     </svg>
                 </button>
                 <HistoryPopup v-if="showHistoryPopup == true" />
-            </div>
+            </div> -->
             <div id="app-title-draggable-bar">
                 <div id="app-title">Lesepreis Verwaltung {{ version }}</div>
             </div>
