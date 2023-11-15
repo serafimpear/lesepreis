@@ -20,16 +20,16 @@ export default { data() { return { pdfTemplate : `
                     Klasse
                 </th>
                 <th>
-                    Lose
+                    Multipliziert
                 </th>
                 <th>
                     Qualifiziert
                 </th>
                 <th>
-                    Multipliziert
+                    Bücher gelesen
                 </th>
                 <th>
-                    Gelesene Bücher
+                    Lose
                 </th>
             </tr>
             {{#each users}}
@@ -39,22 +39,6 @@ export default { data() { return { pdfTemplate : `
                 </th>
                 <th>
                     {{this.class}}
-                </th>
-                <th>
-                    {{this.points}}
-                </th>
-                <th>
-                    {{#ifCond this.passed '===' 1}}
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.25 17.5L10.4831 20.6748C10.9118 20.9963 11.5177 20.9228 11.857 20.5081L22.5 7.5" stroke="#008A06" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    {{/ifCond}}
-                    {{#ifCond this.passed '===' 0}}
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.5 7.5L7.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    {{/ifCond}}
                 </th>
                 <th>
                     {{#ifCond this.multiplied_books.length '===' 2}}
@@ -70,7 +54,27 @@ export default { data() { return { pdfTemplate : `
                     {{/ifCond}}
                 </th>
                 <th>
-                    {{this.readed_books}}
+                    {{#ifCond this.passed '===' 1}}
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6.25 17.5L10.4831 20.6748C10.9118 20.9963 11.5177 20.9228 11.857 20.5081L22.5 7.5" stroke="#008A06" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    {{/ifCond}}
+                    {{#ifCond this.passed '===' 0}}
+                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.5 7.5L7.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    {{/ifCond}}
+                </th>
+                <th> 
+                    <div style="width:1cm;display:flex;justify-content:space-between;column-gap:2px;margin:auto">
+                        <div style="color:#008a06;">{{this.readed_books}}</div>
+                        <div>/</div>
+                        <div style="color:#d90000;">{{this.failed_books}}</div>
+                    </div>
+                </th>
+                <th>
+                    {{this.points}}
                 </th>
             </tr>
             {{/each}}
