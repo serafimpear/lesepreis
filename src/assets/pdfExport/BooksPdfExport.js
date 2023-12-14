@@ -1,9 +1,9 @@
-export default { data() { return { pdfTemplate : `
+export default { data() { return { BooksPdfTemplate : `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Lesepreis Rangliste {{date}}</title>
+    <title>Lesepreis Rangliste Bücher {{date}}</title>
 </head>
 <body onload="window.print()">
     <div class="container">
@@ -14,79 +14,32 @@ export default { data() { return { pdfTemplate : `
         <table>
             <tr class="header">
                 <th>
-                    Name
+                    Titel
                 </th>
                 <th>
-                    Klasse
+                    Autor
                 </th>
                 <th>
-                    Multipliziert
-                </th>
-                <th>
-                    Qualifiziert
-                </th>
-                <th>
-                    Bücher gelesen
-                </th>
-                <th>
-                    Lose
+                    Schüler gelesen
                 </th>
             </tr>
-            {{#each users}}
+            {{#each books}}
             <tr class="student">
                 <th>
-                    {{this.name}} {{this.surname}}
+                    {{this.title}} 
                 </th>
                 <th>
-                    {{this.class}}
+                    {{this.author}}
                 </th>
                 <th>
-                    {{#ifCond this.multiplied_books.length '===' 2}}
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.25 17.5L10.4831 20.6748C10.9118 20.9963 11.5177 20.9228 11.857 20.5081L22.5 7.5" stroke="#008A06" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    {{/ifCond}}
-                    {{#ifCond this.multiplied_books.length '===' 0}}
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.5 7.5L7.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    {{/ifCond}}
-                </th>
-                <th>
-                    {{#ifCond this.passed '===' 1}}
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6.25 17.5L10.4831 20.6748C10.9118 20.9963 11.5177 20.9228 11.857 20.5081L22.5 7.5" stroke="#008A06" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    {{/ifCond}}
-                    {{#ifCond this.passed '===' 0}}
-                    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M22.5 7.5L7.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    {{/ifCond}}
-                </th>
-                <th> 
-                    <div style="width:1cm;display:flex;justify-content:space-between;column-gap:2px;margin:auto">
-                        <div style="color:#008a06;">{{this.readed_books}}</div>
-                        <div>/</div>
-                        <div style="color:#d90000;">{{this.failed_books}}</div>
-                    </div>
-                </th>
-                <th>
-                    {{this.points}}
+                    {{this.readCount}}
                 </th>
             </tr>
             {{/each}}
             <tr class="footer">
-                <th>
-                    Summe Lose:
+                <th colspan="3">
+                    Insgesamt haben Schüler {{sum}} mal ein Buch gelesen
                 </th>
-                <th></th>
-                <th>
-                    {{sum}}
-                </th>
-            <th></th><th></th>
             </tr>
         </table>
         
@@ -117,7 +70,7 @@ export default { data() { return { pdfTemplate : `
             font-weight: lighter;
         }
         
-        tr > th:nth-child(1) {
+        tr > th:nth-child(1), tr > th:nth-child(2) {
             text-align: left;
         }
         

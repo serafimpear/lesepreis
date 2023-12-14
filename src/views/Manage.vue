@@ -10,9 +10,14 @@
                 </div>
             </div>
             <div class="text-button">
-                <div>HTML-Rangliste der Schüler</div>
-                <Button text="Speichern"
+                <div>Rangliste der Schüler <img class="export-inline-icon" src="@/assets/svgs/icon-people-group.svg"></div>
+                <Button text="Exportieren"
                     @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
+            </div>
+            <div class="text-button">
+                <div>Rangliste der Bücher <img class="export-inline-icon" src="@/assets/svgs/icon-books.svg"></div>
+                <Button text="Exportieren"
+                    @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
             </div>
             <!-- <div>
             <h3>Rangliste der Bücher</h3>
@@ -59,12 +64,13 @@ const fs = require('fs');
 import Button from '@/components/Button.vue'
 import Modal from "@/components/Modal.vue"
 import { modalFunctions } from "@/logic/modal.js"
-import pdfTemplate from '@/assets/pdfExport/pdfExport.js'
+import StudentsPdfTemplate from '@/assets/pdfExport/StudentsPdfExport.js'
+import BooksPdfTemplate from '@/assets/pdfExport/BooksPdfExport.js'
 var Handlebars = require("handlebars");
 const isDev = require('electron-is-dev')
 
 export default {
-    mixins: [modalFunctions, pdfTemplate],
+    mixins: [modalFunctions, StudentsPdfTemplate, BooksPdfTemplate],
 
     components: {
         Button, Modal
@@ -163,7 +169,7 @@ export default {
             });
             for (let i = 0; i < this.students.length; i++) {
                 this.students[i].rank = i;
-                users.push(this.students[i]);
+                if (this.students[i].points > 0) users.push(this.students[i]);
             }
 
             var options = {
@@ -173,7 +179,7 @@ export default {
                 border: "5mm",
             };
             const doc = {
-                html: this.pdfTemplate, // <-- changed, now with 'import'
+                html: this.StudentsPdfTemplate, // <-- changed, now with 'import'
                 data: {
                     users: users,
                     sum: sum,
@@ -190,7 +196,45 @@ export default {
 
         createBooksLeaderboard: function (pathToSave) {
             if (!pathToSave) return;
-            // save...
+            let sum = 0;
+            let exportbooks = [];
+            this.books.forEach(book => {
+                let readCount = 0;
+                for (let i = 0; i < this.students.length; i++) {
+                    for (let j = 0; j < this.students[i].books.length; j++) {
+                        if (this.students[i].books[j].id == book.id) {
+                            readCount++;
+                        }
+                    }
+                }
+                if (readCount > 0) exportbooks.push({title: book.title, author: book.author, readCount: readCount});
+                sum += readCount;
+            });
+
+            exportbooks = exportbooks.sort((a, b) => b.readCount - a.readCount).slice(0, 25);
+
+            var options = {
+                width: "210mm",
+                height: "297mm",
+                orientation: "portrait",
+                border: "5mm",
+            };
+
+            const doc = {
+                html: this.BooksPdfTemplate, // <-- changed, now with 'import'
+                data: {
+                    books: exportbooks,
+                    sum: sum,
+                    date: (new Date()).toLocaleDateString('de-DE'),
+                    year: "2023/24",
+                    version: "v" + this.version
+                },
+                type: '',
+            }
+            console.log(doc);
+            if (this.compilePDF(doc, options, pathToSave)) {
+                ipcRenderer.send("openFile", pathToSave);
+            }
         },
 
         saveFile: function (title, name) {
@@ -209,7 +253,7 @@ export default {
             }
         }
     },
-    mounted: function() {
+    mounted: function () {
         console.log(this.books);
         console.log(this.students);
         this.statistics = {
@@ -226,10 +270,10 @@ export default {
         }
         this.students.forEach((student) => {
             this.statistics.totalStudents++;
-            if(student.multiplied_books.length == 2) {
+            if (student.multiplied_books.length == 2) {
                 this.statistics.multiplied++;
             }
-            if(student.books.length >= 3) {
+            if (student.books.length >= 3) {
                 this.statistics.qualifiedStudents++;
             }
             this.statistics.readBooks += student.books.length;
@@ -237,15 +281,15 @@ export default {
 
         this.books.forEach(book => {
             this.statistics.books++;
-            if(book.language.toLowerCase() === 'deutsch') {
+            if (book.language.toLowerCase() === 'deutsch') {
                 this.statistics.germanBooks++;
-            } else if(book.language.toLowerCase() === 'englisch') {
+            } else if (book.language.toLowerCase() === 'englisch') {
                 this.statistics.englishBooks++;
-            } else if(book.language.toLowerCase() === 'russisch') {
+            } else if (book.language.toLowerCase() === 'russisch') {
                 this.statistics.russianBooks++;
-            } else if(book.language.toLowerCase() === 'französisch') {
+            } else if (book.language.toLowerCase() === 'französisch') {
                 this.statistics.frenchBooks++;
-            } else if(book.language.toLowerCase() === 'italienisch') {
+            } else if (book.language.toLowerCase() === 'italienisch') {
                 this.statistics.italianBooks++;
             }
         });
@@ -266,5 +310,10 @@ export default {
 
 .statistics-block {
     font-size: 18px;
+}
+
+.export-inline-icon {
+    height: 1.8em;
+    vertical-align: -0.5em;
 }
 </style>

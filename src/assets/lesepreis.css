@@ -115,7 +115,13 @@ nav.left-panel-navigation div.ps {
 
 nav.left-panel-navigation:hover div.ps,
 nav.left-panel-navigation:active div.ps {
-    width: 200px;
+    width: 100%;
+}
+
+nav.left-panel-navigation div.ps img  {
+    display: block;
+    width: 4em;
+    margin: 0.5em 0.2em;
 }
 
 nav.app-navigation-list {
