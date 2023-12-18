@@ -2,9 +2,11 @@
     <nav class="left-panel-navigation">
         <div class="left-panel-navigation-container">
             <div class="nav-element-logo">
-                <img src="@/assets/svgs/oberschulen-fallmerayer-pure-logo.svg" style="width: 2.3em;" class="oberschulen-fallmerayer-logo">
+                <img src="@/assets/svgs/oberschulen-fallmerayer-pure-logo.svg" style="width: 2.3em;"
+                    class="oberschulen-fallmerayer-logo">
                 <span class="nav-element-description">
-                    <span style="display: block; font-size: 0.9em; line-height: 0.9em;overflow:hidden">Oberschulen Fallmerayer</span>
+                    <span style="display: block; font-size: 0.9em; line-height: 0.9em;overflow:hidden">Oberschulen
+                        Fallmerayer</span>
                     <span
                         style="display: block; font-size: 0.9em; font-weight: 700; line-height: 1em;">Schulbibliothek</span>
                 </span>
@@ -17,7 +19,8 @@
                 </span>
             </div>
             <nav class="app-navigation-list">
-                <NavElement to="/students-leaderboard" text="Rangliste"><img src="@/assets/svgs/icon-people-group.svg"> </NavElement>
+                <NavElement to="/students-leaderboard" text="Rangliste"><img src="@/assets/svgs/icon-people-group.svg">
+                </NavElement>
                 <NavElement to="/books" text="Bücher"><img src="@/assets/svgs/icon-books.svg"> </NavElement>
                 <NavElement to="/manage" text="Verwalten"><img src="@/assets/svgs/icon-manage.svg"> </NavElement>
                 <!--NavElement to="/settings" text="Einstellungen"><img src="@/assets/svgs/icon-settings.svg"> </NavElement-->
@@ -36,6 +39,10 @@
                     BESSER BEIM STARTBILDSHIRM
         
             -->
+                <div>Fragen? Probleme? Wünsche?<br>
+                    <a href @click="contact">Kontakieren Sie den Entwickler
+                        <img src="@/assets/svgs/icon-support.svg"></a>
+                </div>
             </div>
             <!--div class="nav-element" id="return-to-main-menu">
                 <img src="@/assets/svgs/icon-sign-out.svg">
@@ -54,8 +61,14 @@
 import NavElement from "@/components/NavElement.vue"
 
 export default {
-  components: {
-    NavElement
-  }
+    components: {
+        NavElement
+    },
+
+    methods: {
+        contact: function () {
+            require('electron').shell.openExternal('https://github.com/serafimpear/lesepreis/issues');
+        }
+    }
 }
 </script>
