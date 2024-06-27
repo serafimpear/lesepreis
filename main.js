@@ -24,6 +24,10 @@ const database = new sqlite3.Database(userDataPath + `/schuljahr_${2023}.db`);
 
 database.serialize(() => {
     database.run("CREATE TABLE IF NOT EXISTS students (uid INTEGER PRIMARY KEY,name TEXT,surname TEXT,class TEXT,points INTEGER,readed_books INTEGER, failed_books INTEGER,passed BOOLEAN,multiplied_book_1 INTEGER, multiplied_book_2 INTEGER,books TEXT,date_multiplied INTEGER)");
+    // todo: make failed_books and read_books it's own table (because n to m relation); remove points and passed (as it can be calculated)
+    // and of course to read the old DB and save it as the new one!
+    // most importantly: make it possible to import data from previous year, while clearing the points and advancing the "Klasse" attribute
+
     database.run("CREATE TABLE IF NOT EXISTS books (id INTEGER PRIMARY KEY,title TEXT,author TEXT,language TEXT,points INTEGER,isbn TEXT)");
     database.run("CREATE TABLE IF NOT EXISTS reset (id INTEGER PRIMARY KEY,timestamp INTEGER,message TEXT,command TEXT)");
 });
