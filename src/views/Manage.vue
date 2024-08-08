@@ -273,7 +273,7 @@ export default {
             if (student.multiplied_books.length == 2) {
                 this.statistics.multiplied++;
             }
-            if (student.books.length >= 3) {
+            if (student.passed) {
                 this.statistics.qualifiedStudents++;
             }
             this.statistics.readBooks += student.books.length;

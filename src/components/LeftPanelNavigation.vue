@@ -44,10 +44,12 @@
                         <img src="@/assets/svgs/icon-support.svg"></a>
                 </div>
             </div>
-            <!--div class="nav-element" id="return-to-main-menu">
-                <img src="@/assets/svgs/icon-sign-out.svg">
-                <span class="nav-element-description">Zum Startbildschirm</span>
-            </div-->
+            <RouterLink to="/" class="exit-link">
+                <div class="nav-element" id="return-to-main-menu">
+                    <img src="@/assets/svgs/icon-sign-out.svg">
+                    <span class="nav-element-description">Zum Startbildschirm</span>
+                </div>
+            </RouterLink>
         </div>
         <!-- <div class="left-panel-navigation-slider">
             <img src="@/assets/svgs/icon-slider-left.svg">
@@ -55,7 +57,11 @@
     </nav>
 </template>
 
-<style scoped></style>
+<style>
+.exit-link:hover {
+    text-decoration: none;
+}
+</style>
 
 <script>
 import NavElement from "@/components/NavElement.vue"

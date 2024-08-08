@@ -1,5 +1,4 @@
 @import './lesepreis.smallscreen.css';
-
 #smallscreen {
     visibility: hidden;
     position: absolute;
@@ -11,6 +10,10 @@
     font-family: 'Open Sans';
     font-weight: 300;
     white-space: nowrap;
+}
+
+.wrap {
+    white-space: pre-wrap;
 }
 
 b {
@@ -118,7 +121,7 @@ nav.left-panel-navigation:active div.ps {
     width: 100%;
 }
 
-nav.left-panel-navigation div.ps img  {
+nav.left-panel-navigation div.ps img {
     display: block;
     width: 4em;
     margin: 0.5em 0.2em;
@@ -208,7 +211,8 @@ div.ui-table div.table-row.table-header-row {
     background: #F5F5F5 !important;
 }
 
-div.ui-table div.table-row.table-header-row div.table-cell, div.ui-table div.table-row.table-header-row .table-cell-centered-content {
+div.ui-table div.table-row.table-header-row div.table-cell,
+div.ui-table div.table-row.table-header-row .table-cell-centered-content {
     font-weight: bold !important;
 }
 
@@ -348,7 +352,6 @@ div.book-header-title button {
     margin-left: unset;
 }
 
-
 div.book-header-title button {
     margin-top: 22px;
 }
@@ -379,6 +382,7 @@ div.book-information {
     grid-template-rows: 40px 40px 40px 40px 40px 22px;
     gap: 8px;
 }
+
 
 /* div.book-information .book-language-points {
     display: grid;
@@ -521,6 +525,7 @@ div.books-list div.table-row {
     white-space: nowrap;
 }
 
+
 /* Transitions */
 
 .fade-enter-from,
@@ -545,11 +550,9 @@ div.books-list div.table-row {
     0% {
         transform: scale(0);
     }
-
     50% {
         transform: scale(1.25);
     }
-
     100% {
         transform: scale(1);
     }

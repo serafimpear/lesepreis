@@ -12,8 +12,6 @@ import TitleBar from '@/components/TitleBar.vue'
     </div>
 </template>
 
-<script>
-
-</script>
+<script></script>
 
 <style scoped></style>
