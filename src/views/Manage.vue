@@ -254,8 +254,6 @@ export default {
         }
     },
     mounted: function () {
-        console.log(this.books);
-        console.log(this.students);
         this.statistics = {
             totalStudents: 0,
             qualifiedStudents: 0,
