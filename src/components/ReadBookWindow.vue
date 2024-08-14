@@ -26,9 +26,9 @@
                     </div>
                     <div class="table-data">
                         <template v-for="currentBook in filteredBooksFromNotRead">
-                            <div :class="{ 'table-row': true, 'highlighted': selectedBook.id == currentBook.id }"
-                                v-if="!currentStudent.books.some(book => book.id === currentBook.id)"
-                                @click="if (selectedBook.id == currentBook.id) { selectedBook = -1; } else { selectedBook = currentBook; } bookPassed = undefined" >
+                            <div :class="{ 'table-row': true, 'highlighted': selectedBook.id === currentBook.id }"
+                                v-if="!studentBooks.get(currentStudent.uid).get(currentBook.id)"
+                                @click="if (selectedBook.id == currentBook.id) { selectedBook = null; } else { selectedBook = currentBook; } bookPassed = undefined" >
                                 <div class="table-cell">{{ currentBook.title }}</div>
                                 <div class="table-cell">{{ currentBook.author }}</div>
                                 <div class="table-cell">{{ currentBook.language }}</div>
@@ -57,9 +57,9 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <template v-for="student_book in currentStudent.books">
+                        <template v-for="student_book in studentBooks.get(currentStudent.uid).values()">
                             <div :class="{ 'table-row': true, 'highlighted': selectedBook.id == student_book.id }"
-                                @click="if (selectedBook.id == student_book.id) { selectedBook = -1; } else { selectedBook = student_book; } bookPassed = undefined ">
+                                @click="if (selectedBook.id == student_book.id) { selectedBook = null; } else { selectedBook = student_book; } bookPassed = undefined ">
                                 <div v-if="student_book.passed" class="table-cell" title="Prüfung bestanden"><img
                                         src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                                 <div v-else class="table-cell" title="Prüfung NICHT bestanden"><img
@@ -132,7 +132,7 @@ export default {
         return {
             searchBook: '',
             bookPassed: undefined,
-            selectedBook: -1,
+            selectedBook: null,
             currentView: 'not_read_books',
             searchBookFromNotRead: '',
             date_added: Date.now()
@@ -148,12 +148,12 @@ export default {
         DateInputField
     },
 
-    props: ['books', 'currentStudent'],
+    props: ['books', 'currentStudent', 'studentBooks'],
 
     methods: {
         reset() {
             this.bookPassed = undefined;
-            this.selectedBook = -1
+            this.selectedBook = null
             try {
             document.getElementById("radio_aw_1").checked = false
             document.getElementById("radio_aw_2").checked = false

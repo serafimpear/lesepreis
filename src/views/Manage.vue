@@ -10,7 +10,8 @@
                 </div>
             </div>
             <div class="text-button">
-                <div>Rangliste der Schüler <img class="export-inline-icon" src="@/assets/svgs/icon-people-group.svg"></div>
+                <div>Rangliste der Schüler <img class="export-inline-icon" src="@/assets/svgs/icon-people-group.svg">
+                </div>
                 <Button text="Exportieren"
                     @click="createStudentsLeaderboard(saveFile('Rangliste der Schüler speichern', `Rangliste der Schüler ${(new Date()).toLocaleDateString('de-DE')}`))" />
             </div>
@@ -78,8 +79,16 @@ export default {
 
     data() {
         return {
-            students: ipcRenderer.sendSync('getStudentsSorted'),
-            books: ipcRenderer.sendSync('getBooks'),
+            students: ipcRenderer.sendSync('DBQuery', 
+`SELECT SUM(b.points) as points, COUNT(b.id) as book_count, s.* 
+FROM students as s 
+INNER JOIN student_books as sb ON s.uid = sb.uid 
+INNER JOIN books as b ON sb.book_id = b.id
+GROUP BY s.uid 
+ORDER BY points DESC;`
+            ),
+            books: ipcRenderer.sendSync('DBQuery', 'SELECT b.*, COUNT(sb.uid) as read_count FROM books as b INNER JOIN student_books as sb on b.id = sb.book_id ' +
+                'GROUP BY b.id ORDER BY read_count DESC'),
             isDev: isDev,
             statistics: {},
             version: process.env.VITE_APP_VERSION
@@ -162,15 +171,6 @@ export default {
 
         createStudentsLeaderboard: function (pathToSave, count) {
             if (!pathToSave) return;
-            let users = [];
-            let sum = 0;
-            this.students.forEach(student => {
-                sum += student.points;
-            });
-            for (let i = 0; i < this.students.length; i++) {
-                this.students[i].rank = i;
-                if (this.students[i].points > 0) users.push(this.students[i]);
-            }
 
             var options = {
                 width: "210mm",
@@ -181,7 +181,7 @@ export default {
             const doc = {
                 html: this.StudentsPdfTemplate, // <-- changed, now with 'import'
                 data: {
-                    users: users,
+                    users: students,
                     sum: sum,
                     date: (new Date()).toLocaleDateString('de-DE'),
                     year: "2023/24",
@@ -199,19 +199,11 @@ export default {
             let sum = 0;
             let exportbooks = [];
             this.books.forEach(book => {
-                let readCount = 0;
-                for (let i = 0; i < this.students.length; i++) {
-                    for (let j = 0; j < this.students[i].books.length; j++) {
-                        if (this.students[i].books[j].id == book.id) {
-                            readCount++;
-                        }
-                    }
-                }
-                if (readCount > 0) exportbooks.push({title: book.title, author: book.author, readCount: readCount});
-                sum += readCount;
+                exportbooks.push({ title: book.title, author: book.author, readCount: book.readCount });
+                sum += book.readCount;
             });
 
-            exportbooks = exportbooks.sort((a, b) => b.readCount - a.readCount).slice(0, 25);
+            exportbooks = exportbooks.slice(0, 25);
 
             var options = {
                 width: "210mm",
@@ -257,11 +249,11 @@ export default {
         console.log(this.books);
         console.log(this.students);
         this.statistics = {
-            totalStudents: 0,
+            totalStudents: students.length,
             qualifiedStudents: 0,
             multiplied: 0,
             readBooks: 0,
-            books: 0,
+            books: books.length,
             germanBooks: 0,
             englishBooks: 0,
             russianBooks: 0,
@@ -269,18 +261,16 @@ export default {
             italianBooks: 0,
         }
         this.students.forEach((student) => {
-            this.statistics.totalStudents++;
-            if (student.multiplied_books.length == 2) {
+            if (student.multiplied_book_1 != -1) {
                 this.statistics.multiplied++;
             }
-            if (student.passed) {
+            if (student.book_count > 3) {
                 this.statistics.qualifiedStudents++;
             }
-            this.statistics.readBooks += student.books.length;
+            this.statistics.readBooks += student.book_count;
         });
 
         this.books.forEach(book => {
-            this.statistics.books++;
             if (book.language.toLowerCase() === 'deutsch') {
                 this.statistics.germanBooks++;
             } else if (book.language.toLowerCase() === 'englisch') {
