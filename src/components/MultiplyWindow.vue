@@ -22,13 +22,13 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <template v-for="cbook in student.books">
+                        <template v-for="cbook in studentBooks.get(student.uid).values()">
                             <div :class="{ 'table-row': true, 'highlighted': selectedBooks.includes(cbook.id) }"
                                 v-if="cbook.passed" @click="selectBook(cbook)">
-                                <div class="table-cell">{{ books.find(book => book.id === cbook.id).title }}</div>
-                                <div class="table-cell">{{ books.find(book => book.id === cbook.id).author }}</div>
-                                <div class="table-cell">{{ books.find(book => book.id === cbook.id).language }}</div>
-                                <div class="table-cell">{{ books.find(book => book.id === cbook.id).points }}</div>
+                                <div class="table-cell">{{ books.get(cbook.id).title }}</div>
+                                <div class="table-cell">{{ books.get(cbook.id).author }}</div>
+                                <div class="table-cell">{{ books.get(cbook.id).language }}</div>
+                                <div class="table-cell">{{ books.get(cbook.id).points }}</div>
                             </div>
                         </template>
                     </div>
@@ -64,7 +64,7 @@ export default {
         SearchBar,
     },
 
-    props: ['books', 'student'],
+    props: ['books', 'student', 'studentBooks'],
 
     methods: {
         close(result) {
@@ -75,8 +75,8 @@ export default {
             if (!this.selectedBooks.includes(cbook.id)) {
 
                 if (this.selectedBooks.length < 2) {
-                    let book_content = this.books.find(book_c => book_c.id == cbook.id);
-                    if (this.selectedBooks.length == 0 || ((book_content.language.toUpperCase() == "DEUTSCH") !== ((this.books.find(book => book.id == this.selectedBooks[0])).language.toUpperCase() == "DEUTSCH"))) {
+                    let book_content = this.books.get(cbook.id);
+                    if (this.selectedBooks.length == 0 || ((book_content.language.toUpperCase() == "DEUTSCH") !== ((this.books.get(this.selectedBooks[0])).language.toUpperCase() == "DEUTSCH"))) {
                         this.selectedBooks.push(cbook.id);
                     }
                     // if it is possible to select (if not (e.g. 2nd book is german), do not highlight it):
@@ -87,7 +87,7 @@ export default {
             }
             if (this.selectedBooks.length == 2) {
                 // calculate points
-                this.multiplicationPoints = this.books.find(book => book.id === this.selectedBooks[0]).points * this.books.find(book => book.id === this.selectedBooks[1]).points;
+                this.multiplicationPoints = this.books.get(this.selectedBooks[0]).points * this.books.get(this.selectedBooks[1]).points;
             } else {
                 this.multiplicationPoints = 0;
             }

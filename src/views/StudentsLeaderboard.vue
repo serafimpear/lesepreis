@@ -31,7 +31,7 @@
                                     src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler NICHT qualifiziert"><img
                                     src="@/assets/svgs/icon-no-red.svg" class="table-icon"></div>
-                            <div v-if="student.multiplied_books.length == 2" class="table-cell"
+                            <div v-if="student.multiplied_books_0 !== null" class="table-cell"
                                 title="Schüler hat multipliziert"><img src="@/assets/svgs/icon-yes-green.svg"
                                     class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler hat noch NICHT multipliziert"><img
@@ -82,18 +82,18 @@
                     <div class="readed-books-header">
 
 
-                        <!-- <InputField v-model="currentStudent.readed_books" text="Gelesene Bücher"
-                            :value=currentStudent.readed_books disabled="disabled" number="number" /> -->
+                        <!-- <InputField v-model="currentStudent.passed_count" text="Gelesene Bücher"
+                            :value=currentStudent.passed_count disabled="disabled" number="number" /> -->
 
 
-                        <InputFieldTwoValues text="Gelesene Bücher" :value1=currentStudent.readed_books
-                            :value2=currentStudent.failed_books />
+                        <InputFieldTwoValues text="Gelesene Bücher" :value1=currentStudent.passed_count
+                            :value2=currentStudent.failed_count />
 
                         <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed ? 'ja' : 'nein'"
                             :img=currentStudent.passed />
                         <Button text="Verwalten" @click="showReadBookWindow()" />
                     </div>
-                    <div class="student-books ui-table" v-if="currentStudent.books.length > 0">
+                    <div class="student-books ui-table" v-if="currentStudent.book_count > 0">
                         <div class="table-row table-header-row">
                             <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
                             <div class="table-cell">Titel
@@ -113,22 +113,22 @@
                             </div>
                         </div>
                         <div class="table-data">
-                            <div class="table-row" v-for="student_book in currentStudent.books">
+                            <div class="table-row" v-for="student_book in studentBooks.get(currentStudent.uid).values()">
                                 <div v-if="student_book.passed" class="table-cell" title="Prüfung bestanden"><img
                                         src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                                 <div v-else class="table-cell" title="Prüfung NICHT bestanden"><img
                                         src="@/assets/svgs/icon-no.svg" class="table-icon">
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         student_book.id).title }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         student_book.id).author }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         student_book.id).language }}</div>
                                 </div>
                                 <div class="table-cell">
@@ -136,18 +136,18 @@
                                         Date(student_book.date_added).toLocaleDateString("de-DE") }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         student_book.id).points }}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div v-if="currentStudent.multiplied_books.length == 2" class="multiplication">
+                <div v-if="currentStudent.multiplied_books_0 !== null" class="multiplication">
                     <div class="multiplication-header">
                         <InputFieldTrueFalse text="Multiplikation" value="durchgeführt" img="true" />
                         <InputField text="Punkte"
-                            :value="books.find(book => book.id === currentStudent.multiplied_books[0]).points * books.find(book => book.id === currentStudent.multiplied_books[1]).points"
+                            :value="books.get(currentStudent.multiplied_books_0).points * books.get(currentStudent.multiplied_books_1).points"
                             disabled="disabled" number="number" />
                         <InputField text="Datum"
                             :value="`${new Date(currentStudent.date_multiplied).toLocaleDateString('de-DE')}`"
@@ -170,26 +170,26 @@
                             </div>
                         </div>
                         <div class="table-data">
-                            <div class="table-row" v-for="book_id in currentStudent.multiplied_books">
+                            <div class="table-row" v-for="book_id in [currentStudent.multiplied_books_0, currentStudent.multiplied_books_1]">
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         book_id).title }}
                                     </div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         book_id).author
-                                    }}</div>
+                                        }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         book_id).language
-                                    }}</div>
+                                        }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
+                                    <div class="table-cell-centered-content">{{ books.get(
                                         book_id).points
-                                    }}</div>
+                                        }}</div>
                                 </div>
                             </div>
                         </div>
@@ -211,11 +211,11 @@
         </div>
         <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
             :textOK="modalButtonTextOK" @close="handleModalClose" :type="modalType"> {{ modalContent }} </Modal>
-        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false" :currentStudent=currentStudent
-            :books=books @selectBook="addBookToStudent" @updateBook="updateBookFromStudent"
-            @removeBook="removeBookFromStudent" />
+        <ReadBookWindow v-if="readBookWindowVisible" @close="readBookWindowVisible = false"
+            :currentStudent=currentStudent :books=books :studentBooks=studentBooks @selectBook="addBookToStudent"
+            @updateBook="updateBookFromStudent" @removeBook="removeBookFromStudent" />
         <MultiplyWindow v-if="multiplyWindowVisible" @close="multiplyWindowVisible = false" :student=currentStudent
-            :books=books @multiplyBooks="multiplyBooks" />
+            :books=books :studentBooks=studentBooks @multiplyBooks="multiplyBooks" />
     </main>
 </template>
 
@@ -265,8 +265,9 @@ export default {
 
     data() {
         return {
-            students: [],
-            books: [],
+            students: new Map(),
+            books: new Map(),
+            studentBooks: new Map(),
             currentStudent: undefined,
             searchStudent: '',
             showStudentInfo: false,
@@ -282,11 +283,39 @@ export default {
         deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
 
         updateBooksRemote: function () {
-            this.books = ipcRenderer.sendSync("getBooks");
+            const booksList = ipcRenderer.sendSync("getBooks");
+            this.books = new Map(booksList.map(book => [book.id, book]));
         },
 
-        updateStudentsRemote() {
-            this.students = ipcRenderer.sendSync("getStudents");
+        updateStudentBooksRemote: function() {
+            this.studentBooks = new Map(this.students.keys().map(studentID => [studentID, new Map()]));
+            const studentBooksList = ipcRenderer.sendSync("getStudentBooks");
+            studentBooksList.forEach(studentBookCombination => {
+                this.studentBooks.get(studentBookCombination.uid).set(studentBookCombination.book_id, studentBookCombination);
+            });
+        },
+
+        updateStudentsRemote: function() {
+            const studentsList = ipcRenderer.sendSync('DBQuery', `SELECT 
+  SUM(b.points) as points, 
+  COUNT(b.id) as book_count, 
+  COUNT(sbt.book_id) AS passed_count, 
+  COUNT(sbf.book_id) AS failed_count, 
+  s.*,
+  CASE WHEN COUNT(sbt.book_id) > 2 THEN TRUE ELSE FALSE END AS passed,
+  SUM(b.points) + COALESCE(s.multiplied_book_0 * s.multiplied_book_1, 0) AS total_points
+FROM 
+  students as s
+  INNER JOIN student_books as sb ON s.uid = sb.uid
+  INNER JOIN books as b ON sb.book_id = b.id
+  LEFT JOIN student_books as sbt ON s.uid = sbt.uid AND sbt.passed = true
+  LEFT JOIN student_books as sbf ON s.uid = sbf.uid AND sbf.passed = false
+GROUP BY 
+  s.uid
+ORDER BY 
+  total_points DESC;`);
+            this.students = new Map(studentsList.map(student => [student.uid, student]));
+            this.updateStudentBooksRemote();
             return true;
         },
 
@@ -311,66 +340,28 @@ export default {
                 return false;
             }
 
-            if (this.currentStudent.uid == -1) {
-                let possible_match = this.students.find(student => student.name.toLowerCase() == this.currentStudent.name.toLowerCase() && student.surname.toLowerCase() == this.currentStudent.surname.toLowerCase() && student.class.toLowerCase() == this.currentStudent.class.toLowerCase());
-
-                if (possible_match) {
-                    return this.ask({
-                        type: 'alert',
-                        subtitle: 'Duplikat',
-                        noButton: 'Wechseln',
-                        content: `Ein Schüler mit dem Namen "${this.currentStudent.name} ${this.currentStudent.surname}", der die Klasse ${this.currentStudent.class} besucht, existiert bereits!\n\nMöchten Sie zu diesem wechseln?`,
-                    }, () => {
-                        return false;
-                    }, () => {
-                        this.currentStudentBeforeEdit = this.deepClone(possible_match);
-                        this.currentStudent = this.deepClone(possible_match);
-                        this.showStudentInfo = true;
-                        return false;
-                    });
-                }
+            let possible_match = this.students.values().find(student => student.name.toLowerCase() == this.currentStudent.name.toLowerCase() && student.surname.toLowerCase() == this.currentStudent.surname.toLowerCase() && student.class.toLowerCase() == this.currentStudent.class.toLowerCase());
+            if (possible_match) {
+                return this.ask({
+                    type: 'alert',
+                    subtitle: 'Duplikat',
+                    noButton: 'Wechseln',
+                    content: `Ein Schüler mit dem Namen "${this.currentStudent.name} ${this.currentStudent.surname}", der die Klasse ${this.currentStudent.class} besucht, existiert bereits!\n\nMöchten Sie zu diesem wechseln?`,
+                }, () => {
+                    return false;
+                }, () => {
+                    this.currentStudentBeforeEdit = this.deepClone(possible_match);
+                    this.currentStudent = this.deepClone(possible_match);
+                    this.showStudentInfo = true;
+                    return false;
+                });
             }
 
-            let sum = 0;
-            let passedCounter = 0;
-            let failedCounter = 0;
-            this.currentStudent.books.forEach(student_book => {
-                let book_content = this.books.find(book => book.id == student_book.id);
-                if (student_book.passed) {
-                    sum += book_content.points;
-                    passedCounter++;
-                } else {
-                    failedCounter++;
-                }
-            })
-
-            if (this.currentStudent.multiplied_books.length != 0) {
-                let book1 = this.books.find(book => book.id == this.currentStudent.multiplied_books[0]);
-                let book2 = this.books.find(book => book.id == this.currentStudent.multiplied_books[1]);
-                // console.log(this.currentStudent.multiplied_books[0]);
-                sum += book1.points * book2.points;
-            }
-
-            this.currentStudent.failed_books = failedCounter;
-            this.currentStudent.readed_books = passedCounter;
-            this.currentStudent.passed = passedCounter > 2;
-            this.currentStudent.points = sum;
-
-            var csuid = ipcRenderer.sendSync("addStudent", JSON.stringify(this.currentStudent));
-
-            if (this.updateStudentsRemote() == true) {
-                if (this.currentStudent.uid == -1) {
-                    // console.log(csuid);
-                    this.currentStudent = this.deepClone(this.students.find(student => student.uid === csuid));
-                    // console.log(this.students.find(student => student.uid === csuid));
-                    this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
-                }
-            }
-            // console.log(this.currentStudent);
+            ipcRenderer.sendSync("upsertStudent", JSON.stringify(this.currentStudent));
+            this.students.set(this.currentStudent.uid, this.deepClone(this.currentStudent));
 
             if (close) {
-                this.currentStudent = undefined;
-                this.showStudentInfo = false;
+                this.closeStudent();
             }
 
             return true;
@@ -378,55 +369,54 @@ export default {
 
         newStudent: function () {
             this.currentStudent = {
-                uid: -1,
+                uid: null,
                 name: "",
                 surname: "",
                 class: "",
                 points: 0,
-                readed_books: 0,
-                failed_books: 0,
-                passed: false,
-                multiplied_books: [],
+                passed_count: 0,
+                failed_count: 0,
+                multiplied_book_0: null,
+                multiplied_book_1: null,
                 date_multiplied: 0,
-                books: [],
-            },
-                this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
+            };
+            const csuid = ipcRenderer.sendSync("upsertStudent", JSON.stringify(this.currentStudent));
+
+            this.currentStudent.uid = csuid;
+            this.students.set(csuid, this.deepClone(this.currentStudent));
+            
+            this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
             this.showStudentInfo = true;
         },
 
         deleteStudent: function () {
-            if (this.currentStudent.uid == -1) {
-                this.currentStudent = undefined;
-                this.showStudentInfo = false;
-                return;
-            }
-
             this.ask({
                 type: 'warning',
                 subtitle: 'Schüler löschen',
                 content: `Sind Sie sicher, dass sie den Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
                 okButton: 'Schüler löschen'
             }, () => {
-
                 console.log(ipcRenderer.sendSync("deleteStudent", JSON.stringify(this.currentStudent)));
-                this.updateStudentsRemote();
+                this.students.delete(this.currentStudent.uid);
 
-                this.currentStudent = undefined;
-                this.showStudentInfo = false;
+                this.closeStudent();
             }, () => {
             });
         },
 
         closeStudent: function () {
+            if (this.currentStudent.name == "") {
+                this.students.delete(this.currentStudent.uid);
+                ipcRenderer.sendSync('DBQuery', `DELETE FROM students WHERE uid = ${this.currentStudent.uid};`);
+            }
             this.currentStudent = undefined;
             this.showStudentInfo = false;
         },
 
-        addBookToStudent: function ([book, passed, date_added]) {
+        addBookToStudent: function ([bookID, passed, date_added]) {
             this.readBookWindowVisible = false;
-            this.currentStudent.books.push({ id: book, date_added: date_added, passed: passed });
-            this.saveStudent(false);
-            this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
+            this.studentBooks.get(this.currentStudent.uid).set(bookID, {uid: this.currentStudent.uid, book_id: bookID, passed: passed, date_added: date_added})
+            ipcRenderer.sendSync('DBQuery', `INSERT INTO student_books (uid, book_id, passed, date_added) VALUES (${this.currentStudent.uid}, ${bookID}, ${passed}, ${date_added});`);
         },
 
         removeBookFromStudent: function (bookID) {
@@ -434,12 +424,12 @@ export default {
             this.ask({
                 type: 'warning',
                 subtitle: 'Buch entfernen',
-                content: `Sind Sie sicher, dass sie das Buch “${this.books.find(book => book.id ===
-                    bookID).title}” von den gelesenen Büchern des Schülers “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
+                content: `Sind Sie sicher, dass sie das Buch “${this.books.get(bookID).title
+                }” von den gelesenen Büchern des Schülers “${this.currentStudent.name} ${this.currentStudent.surname}” entfernen wollen?`,
                 okButton: 'Buch entfernen'
             }, () => {
-                this.currentStudent.books = this.currentStudent.books.filter(book => book.id !== bookID)
-                this.saveStudent(false);
+                this.student_book.get(this.currentStudent.uid).delete(bookID)
+                ipcRenderer.sendSync('DBQuery', `DELETE FROM student_books WHERE uid = ${this.currentStudent.uid} AND book_id = ${bookID};`);
             }, () => {
                 this.readBookWindowVisible = true;
             });
@@ -447,22 +437,32 @@ export default {
 
         updateBookFromStudent: function ([bookToChangeID, passed]) {
             this.readBookWindowVisible = false;
-            this.currentStudent.books.find(book => book.id === bookToChangeID).passed = passed;
-            this.saveStudent(false);
+            this.studentBooks.get(this.currentStudent.uid).get(bookToChangeID).passed = passed;
+            ipcRenderer.sendSync('DBQuery', `UPDATE student_books SET passed = ${passed} WHERE uid = ${this.currentStudent.uid} AND book_id = ${bookToChangeID};`);
             this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
         },
 
-        multiplyBooks: function ([book1, book2]) {
+        multiplyBooks: function ([book1ID, book2ID]) {
             this.multiplyWindowVisible = false;
-            this.currentStudent.multiplied_books[0] = book1;
-            this.currentStudent.multiplied_books[1] = book2;
+            if (this.currentStudent.multiplied_book_0 !== null) {
+                this.currentStudent.points -= books.get(this.currentStudent.multiplied_books_0).points * books.get(this.currentStudent.multiplied_books_1).points;
+            }
+            this.currentStudent.multiplied_books_0 = book1ID;
+            this.currentStudent.multiplied_books_1 = book2ID;
+            this.currentStudent.points += books.get(this.currentStudent.multiplied_books_0).points * books.get(this.currentStudent.multiplied_books_1).points;
+
             this.currentStudent.date_multiplied = Date.now();
             this.saveStudent(false);
             this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
         },
 
         deleteMultiplication: function () {
-            this.currentStudent.multiplied_books = [];
+            if (this.currentStudent.multiplied_books_0 === null) {
+                return;
+            }
+            this.currentStudent.points -= books.get(this.currentStudent.multiplied_books_0).points * books.get(this.currentStudent.multiplied_books_1).points;
+            this.currentStudent.multiplied_books_0 = null;
+            this.currentStudent.multiplied_books_1 = null;
             this.saveStudent(false);
         },
 
@@ -494,12 +494,8 @@ export default {
 
         },
 
-        multiplyIfPossible: function () {
-            let bookscount = 0;
-            if (this.currentStudent.books.length > 0) this.currentStudent.books.forEach((book) => {
-                if (book.passed) bookscount += 1;
-            });
-            if (bookscount < 2) {
+        multiplyIfPossible: function () {           
+            if (this.currentStudent.book_count < 2) {
                 this.ask({
                     type: 'alert',
                     subtitle: 'Sie können nicht multiplizieren',
@@ -515,7 +511,7 @@ export default {
             }
         },
 
-
+        // probably no longer works... what does this do exactly?
         checkIfStudentChangedAndAskIfSaveAndThenDoAndHopeThatItWorks: function (_callback) {
             if (typeof this.currentStudent === 'object') {
                 if (!this.isStudentEqual(this.currentStudentBeforeEdit, this.currentStudent)) {
@@ -539,27 +535,26 @@ export default {
         },
 
         isStudentEqual: function (student1, student2) {
-            let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.points == student2.points && student1.passed == student2.passed && student1.readed_books == student2.readed_books)
+            let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.points == student2.points && student1.passed == student2.passed && student1.passed_count == student2.passed_count)
             return isequal
         },
         showReadBookWindow: function () {
-            if (this.currentStudent.uid == -1) {
-                this.ask({
-                    type: 'warning',
-                    subtitle: 'Bücher verwalten',
-                    content: `Sie können nicht die Bücher verwalten, solange Sie den Schüler nicht gespeichert haben. Wollen Sie den Schüler speichern?`,
-                    okButton: 'Abbrechen',
-                    noButton: 'Schüler speichern',
-                }, () => {
+            // if (this.currentStudent.name == "") {
+            //     this.ask({
+            //         type: 'warning',
+            //         subtitle: 'Bücher verwalten',
+            //         content: `Sie können nicht die Bücher verwalten, solange Sie den Schüler nicht gespeichert haben. Wollen Sie den Schüler speichern?`,
+            //         okButton: 'Abbrechen',
+            //         noButton: 'Schüler speichern',
+            //     }, () => {
 
-                }, () => {
-                    this.saveStudent(false);
-                });
-            } else {
-                this.readBookWindowVisible = true;
-            }
+            //     }, () => {
+            //         this.saveStudent(false);
+            //     });
+            // } else {
+            this.readBookWindowVisible = true;
+            // }
         }
-
     },
 
     beforeMount() {

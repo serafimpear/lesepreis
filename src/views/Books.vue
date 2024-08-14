@@ -8,21 +8,25 @@
             <SearchBar placeholder="Suche Bücher..." v-model="searchBook" />
             <div class="books-list ui-table">
                 <div class="table-row table-header-row">
-                    <div class="table-cell" @click="booksSortBy = 'title'; booksSortAscending = !booksSortAscending;">Titel
+                    <div class="table-cell" @click="booksSortBy = 'title'; booksSortAscending = !booksSortAscending;">
+                        Titel
                         <SortIcon />
                     </div>
                     <div class="table-cell" @click="booksSortBy = 'author'; booksSortAscending = !booksSortAscending;">
                         Autor:in
                         <SortIcon />
                     </div>
-                    <div class="table-cell" @click="booksSortBy = 'language'; booksSortAscending = !booksSortAscending;">
+                    <div class="table-cell"
+                        @click="booksSortBy = 'language'; booksSortAscending = !booksSortAscending;">
                         Sprache
                         <SortIcon />
                     </div>
-                    <div class="table-cell" @click="booksSortBy = 'points'; booksSortAscending = !booksSortAscending;">Lose
+                    <div class="table-cell" @click="booksSortBy = 'points'; booksSortAscending = !booksSortAscending;">
+                        Lose
                         <SortIcon />
                     </div>
-                    <div class="table-cell" @click="booksSortBy = 'isbn'; booksSortAscending = !booksSortAscending;">ISBN
+                    <div class="table-cell" @click="booksSortBy = 'isbn'; booksSortAscending = !booksSortAscending;">
+                        ISBN
                         <SortIcon />
                     </div>
                 </div>
@@ -52,8 +56,8 @@
                     <IconButton @click="closeBook()" type="no" />
                 </div>
                 <div class="book-information">
-                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable="" :value=currentBook.isbn
-                        v-model="currentBook.isbn" @input="searchBookWEB" tabindex="1" />
+                    <InputField text="ISBN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" variable=""
+                        :value=currentBook.isbn v-model="currentBook.isbn" @input="searchBookWEB" tabindex="1" />
                     <InputField text="Autor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" v-model="currentBook.author" variable=""
                         :value=currentBook.author tabindex="2" />
                     <InputField v-model="currentBook.title" text="Titel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -147,8 +151,7 @@ export default {
 
     data() {
         return {
-            books: [],
-            students: [],
+            books: new Map(),
             searchBook: '',
             currentBook: undefined,
             showBookInfo: false,
@@ -174,12 +177,8 @@ export default {
         deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
 
         updateBooksRemote: function () {
-            this.books = ipcRenderer.sendSync("getBooks");
-
-        },
-        updateStudentsRemote: function () {
-            this.students = ipcRenderer.sendSync("getStudents");
-
+            const booksList = ipcRenderer.sendSync("getBooks");
+            this.books = new Map(booksList.map(book => [book.id, book]));
         },
 
         selectBook: function (book) {
@@ -212,90 +211,79 @@ export default {
                 return false;
             }
 
-            if (this.currentBook.id == -1) {
-                let possible_match = this.books.find(book => book.isbn == this.currentBook.isbn);
+            let possible_match = this.books.values().find(book => book.isbn == this.currentBook.isbn);
 
-                if (possible_match) {
-                    return this.ask({
-                        type: 'alert',
-                        subtitle: 'Duplikat',
-                        noButton: 'Wechseln',
-                        content: `Ein Buch mit der ISBN-${this.currentBook.isbn} existiert bereits!\n\nMöchten Sie zu diesem wechseln?`,
-                    }, () => {
-                        return false;
-                    }, () => {
-                        this.currentBookBeforeEdit = this.deepClone(possible_match);
-                        this.currentBook = this.deepClone(possible_match);
-                        this.showBookInfo = true;
-                        return false;
-                    });
-                }
+            let returnEarly = false;
+            if (possible_match) {
+                return this.ask({
+                    type: 'alert',
+                    subtitle: 'Duplikat',
+                    noButton: 'Wechseln',
+                    content: `Ein Buch mit der ISBN-${this.currentBook.isbn} existiert bereits!\n\nMöchten Sie zu diesem wechseln?`,
+                }, () => {
+                    return false;
+                }, () => {
+                    this.currentBookBeforeEdit = this.deepClone(possible_match);
+                    this.currentBook = this.deepClone(possible_match);
+                    this.showBookInfo = true;
+                    returnEarly = true;
+                    return false;
+                });
             }
+            if (returnEarly)
+                return false; // not sure what the return value should be
+            
 
-            ipcRenderer.sendSync("addBook", JSON.stringify(this.currentBook));
+            const newid = ipcRenderer.sendSync("upsertBook", JSON.stringify(this.currentBook));
 
+            if (this.currentBook.id === null) {
+                this.currentBook.id = newid;
+            } 
+            this.books.set(this.currentBook.id, this.deepClone(this.currentBook));
+            
             if (close) {
-                this.currentBook = undefined;
-                this.bookResults = [];
-                this.showBookInfo = false;
+                this.closeBook();
             }
-            this.updateBooksRemote();
             return true;
         },
 
         deleteBook: function () {
-            if (this.currentBook.id == -1) {
-                this.currentBook = undefined;
-                this.bookResults = [];
-                this.showBookInfo = false;
+            if (this.currentBook.id === null) {
+                this.closeBook();
                 return;
             }
-
-            let readCount = 0;
-            for (let i = 0; i < this.students.length; i++) {
-                for (let j = 0; j < this.students[i].books.length; j++) {
-                    if (this.students[i].books[j].id == this.currentBook.id) {
-                        readCount++;
-                    }
-                }
-            }
-
-            if (readCount != 0) {
-                this.ask({
-                    type: 'alert',
-                    // if type == alert
-                    // braucht es kein okButton
-                    subtitle: 'Sie können das Buch nicht löschen!',
-                    content: ` "${this.currentBook.title}" haben ${readCount} Schüler gelesen. Um es zu löschen, entfernen Sie bei jedem Schüler dieses aus der Liste der gelesenen Bücher!`,
-                }, () => {
-                    // cannot happen
-                }, () => {
-                });
-                return;
-            }
-
             this.ask({
                 type: 'warning',
                 subtitle: 'Buch löschen',
                 content: `Sind Sie sicher, dass sie das Buch “${this.currentBook.title}” entfernen wollen?`,
                 okButton: 'Buch löschen'
             }, () => {
-
-                ipcRenderer.sendSync("deleteBook", JSON.stringify(this.currentBook));
-
-                this.updateBooksRemote();
-                this.updateStudentsRemote();
-                this.currentBook = undefined;
-                this.bookResults = [];
-                this.showBookInfo = false;
+                if (ipcRenderer.sendSync("deleteBook", JSON.stringify(this.currentBook)) == 'error') {
+                    this.ask({
+                        type: 'alert',
+                        // if type == alert
+                        // braucht es kein okButton
+                        subtitle: 'Sie können das Buch nicht löschen!', // theoretisch schon meglich btw...
+                        content: `Schüler haben das Buch "${this.currentBook.title}" gelesen. Um es zu löschen, entfernen Sie bei jedem Schüler dieses aus der Liste der gelesenen Bücher!`,
+                    }, () => {
+                        // cannot happen
+                    }, () => {
+                    });
+                    return;
+                }
+                this.books.delete(this.currentBook.id);
+                this.closeBook();
             }, () => {
             });
+
+
+
         },
 
         newBook: function () {
             this.bookResults = [];
             this.currentBook = {
-                id: -1,
+                id: null,
                 title: "",
                 author: "",
                 language: "",
@@ -408,7 +396,6 @@ export default {
     },
 
     beforeMount() {
-        this.updateStudentsRemote();
         this.updateBooksRemote();
     },
 
@@ -422,7 +409,7 @@ export default {
     computed: {
         filteredBooksList() {
             var s = this.searchBook.toLowerCase();
-            return this.sortListBy(this.books.filter(book => {
+            return this.sortListBy(this.books.values().filter(book => {
                 return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
             }), this.booksSortBy, this.booksSortAscending)
         }
