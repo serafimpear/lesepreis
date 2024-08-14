@@ -247,7 +247,7 @@ img.welcome-controls-box-logo {
 div.ui-table.years-table {
     margin: 1em 0;
     height: unset;
-    height: 22vh;
+    height: 18vh;
     overflow-y: auto;
 }
 
