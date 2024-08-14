@@ -11,7 +11,7 @@ const gotTheLock = app.requestSingleInstanceLock() // dont allow 2 lesepreis win
 
 async function getLastInsertRowId(database) {
     return new Promise((resolve, reject) => {
-        database.get("SELECT last_insert_rowid() as id", function (err, row) {
+        database.get("SELECT last_insert_rowid() as id", function(err, row) {
             if (err) {
                 reject(err);
             } else {
@@ -81,7 +81,7 @@ function createWindow() {
 
     win.loadFile('dist/index.html');
 
-    setTimeout(function () {
+    setTimeout(function() {
         splash.close();
         win.maximize();
         win.show();
@@ -108,14 +108,24 @@ function createWindow() {
     })
 
     ipc.on('getListOfSchoolYears', (event, dataReceived) => {
+        // const schoolYears = [];
+        // const files = fs.readdirSync(userDataPath);
+        // files.forEach(file => {
+        //     if (file.includes('schuljahr_')) {
+        //         schoolYears.push(file.split('_')[1].split('.')[0]);
+        //     }
+        // });
+        // event.returnValue = schoolYears;
         const schoolYears = [];
         const files = fs.readdirSync(userDataPath);
         files.forEach(file => {
-            if (file.includes('schuljahr_')) {
-                schoolYears.push(file.split('_')[1].split('.')[0]);
+            if (file.startsWith('schuljahr_')) {
+                const schoolYear = file.replace('schuljahr_', '').replace('.db', '');
+                schoolYears.push(schoolYear);
             }
         });
         event.returnValue = schoolYears;
+
     })
 
     ipc.on('login', (event, dataReceived) => {
@@ -175,8 +185,7 @@ function createWindow() {
                                     });
                                 });
                             });
-                        }
-                        else {
+                        } else {
                             initializeDB();
                         }
                     });
@@ -226,13 +235,13 @@ function createWindow() {
                     `multiplied_book_2, ` +
                     `date_multiplied` +
                     `) VALUES (?, ?, ?, ?, ?, ?)`, [
-                    data.name,
-                    data.surname,
-                    data.class,
-                    data.multiplied_book_1,
-                    data.multiplied_book_2,
-                    data.date_multiplied
-                ],
+                        data.name,
+                        data.surname,
+                        data.class,
+                        data.multiplied_book_1,
+                        data.multiplied_book_2,
+                        data.date_multiplied
+                    ],
                     (err) => {
                         if (err) {
                             console.error(err.message);
@@ -280,8 +289,7 @@ function createWindow() {
                         `multiplied_book_1 = ?, ` +
                         `multiplied_book_2 = ?, ` +
                         `date_multiplied = ?` +
-                        ` WHERE uid = ?`,
-                        [
+                        ` WHERE uid = ?`, [
                             data.name,
                             data.surname,
                             data.class,
@@ -334,8 +342,7 @@ function createWindow() {
                     } else {
                         event.returnValue = 'done3';
                     }
-                }
-                );
+                });
             });
         })
     });
@@ -352,19 +359,19 @@ function createWindow() {
         if (data.id == null) {
             database.serialize(() => {
                 database.run('INSERT INTO books (title,author,language, points, isbn) VALUES (?, ?, ?, ?, ?)', [
-                    data.title,
-                    data.author,
-                    data.language,
-                    data.points,
-                    data.isbn
-                ], 
-                (err) => {
-                    if (err) {
-                        console.error(err.message);
-                    } else {
-                        event.returnValue = this.lastID;
-                    }
-                })
+                        data.title,
+                        data.author,
+                        data.language,
+                        data.points,
+                        data.isbn
+                    ],
+                    (err) => {
+                        if (err) {
+                            console.error(err.message);
+                        } else {
+                            event.returnValue = this.lastID;
+                        }
+                    })
                 database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
                     Date.now(),
                     `Buch \"${data.title}\" hinzugefügt`,
@@ -387,20 +394,20 @@ function createWindow() {
                 });
                 database.serialize(() => {
                     database.run(`UPDATE books SET title = ?, author = ?, language = ?, points = ?, isbn = ? WHERE id = ?`, [
-                        data.title,
-                        data.author,
-                        data.language,
-                        data.points,
-                        data.isbn,
-                        data.id
-                    ], 
-                    (err) => {
-                        if (err) {
-                            console.error(err.message);
-                        } else {
-                            event.returnValue = this.lastID;
-                        }
-                    });
+                            data.title,
+                            data.author,
+                            data.language,
+                            data.points,
+                            data.isbn,
+                            data.id
+                        ],
+                        (err) => {
+                            if (err) {
+                                console.error(err.message);
+                            } else {
+                                event.returnValue = this.lastID;
+                            }
+                        });
                 });
             });
 
@@ -484,6 +491,7 @@ function createWindow() {
         shell.openPath(dataReceived);
     });
 }
+
 function initializeDB() {
     database.serialize(() => {
         // Enable foreign key constraints
