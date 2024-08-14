@@ -24,6 +24,9 @@ Sobald eine neue Version da ist, wird das Programm Sie darüber benachrichtigen 
 ## Export der Rangliste zum Drucken und Statistiken [Release 1.2.0 & 1.3.0]
 ![image](https://github.com/serafimpear/lesepreis/assets/67895914/8030dc51-ba55-4a1b-ab1d-20538efd6008)
 
+## Mehrere Schuljahre, Import und Export [Release 2.0.0]
+![Group 109](https://github.com/user-attachments/assets/3cdfc311-ca76-4ad9-a864-c15167adbaa3)
+
 
 ## Recommended IDE Setup
 
