@@ -5,6 +5,7 @@
         <img v-if="type == 'yes'" src="@/assets/svgs/icon-yes.svg">
         <img v-if="type == 'no'" src="@/assets/svgs/icon-no.svg">
         <img v-if="type == 'delete'" src="@/assets/svgs/icon-trashcan.svg">
+        <img v-if="type == 'import'" src="@/assets/svgs/import.svg">
     </button>
 </template>
 
