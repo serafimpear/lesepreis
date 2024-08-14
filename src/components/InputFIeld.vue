@@ -72,21 +72,21 @@ div.input-field {
     text-wrap: nowrap;
 }
 
-div.input-field .input-field-text {
+div.input-field .input-field-text, div.input-field-field .input-field-text {
     font-weight: 600;
     display: flex;
     align-items: center;
 }
 
-div.input-field .input-field-field.number {
+div.input-field .input-field-field.number, div.input-field-field .input-field-field.number {
     width: 67px;
 }
 
-div.input-field.disabled .input-field-field {
+div.input-field.disabled .input-field-field, div.input-field-field .input-field-field {
     border: 1px dotted black;
 }
 
-div.input-field input {
+div.input-field input, div.input-field-field input {
     border: none;
     outline: none;
     width: 100%;
