@@ -23,6 +23,7 @@
                 </NavElement>
                 <NavElement to="/books" text="Bücher"><img src="@/assets/svgs/icon-books.svg"> </NavElement>
                 <NavElement to="/manage" text="Verwalten"><img src="@/assets/svgs/icon-manage.svg"> </NavElement>
+                <NavElement to="/settings" text="Einstellungen"><img src="@/assets/svgs/icon-settings.svg"> </NavElement>
                 <!--NavElement to="/settings" text="Einstellungen"><img src="@/assets/svgs/icon-settings.svg"> </NavElement-->
             </nav>
             <div class="ps">
@@ -40,7 +41,7 @@
         
             -->
                 <div>Fragen? Probleme? Wünsche?<br>
-                    <a href @click="contact">Kontakieren Sie den Entwickler
+                    <a href="#" @click="contact">Kontakieren Sie den Entwickler
                         <img src="@/assets/svgs/icon-support.svg"></a>
                 </div>
             </div>
