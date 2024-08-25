@@ -41,12 +41,12 @@ export default { data() { return { StudentsPdfTemplate : `
                     {{this.class}}
                 </th>
                 <th>
-                    {{#ifCond this.multiplied_books.length '===' 2}}
+                    {{#ifCond this.multiplied_book_1 '===' -1}}
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6.25 17.5L10.4831 20.6748C10.9118 20.9963 11.5177 20.9228 11.857 20.5081L22.5 7.5" stroke="#008A06" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                     {{/ifCond}}
-                    {{#ifCond this.multiplied_books.length '===' 0}}
+                    {{#ifCond this.multiplied_book_1 '===' -1}}
                     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M22.5 7.5L7.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M7.5 7.5L22.5 22.5" stroke="#D90000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

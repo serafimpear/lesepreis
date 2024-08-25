@@ -22,13 +22,13 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <template v-for="cbook in studentBooks.get(student.uid).values()">
-                            <div :class="{ 'table-row': true, 'highlighted': selectedBooks.includes(cbook.id) }"
+                        <template v-for="cbook in studentBooks.values()">
+                            <div :class="{ 'table-row': true, 'highlighted': selectedBooks.includes(cbook.book_id) }"
                                 v-if="cbook.passed" @click="selectBook(cbook)">
-                                <div class="table-cell">{{ books.get(cbook.id).title }}</div>
-                                <div class="table-cell">{{ books.get(cbook.id).author }}</div>
-                                <div class="table-cell">{{ books.get(cbook.id).language }}</div>
-                                <div class="table-cell">{{ books.get(cbook.id).points }}</div>
+                                <div class="table-cell">{{ books.get(cbook.book_id).title }}</div>
+                                <div class="table-cell">{{ books.get(cbook.book_id).author }}</div>
+                                <div class="table-cell">{{ books.get(cbook.book_id).language }}</div>
+                                <div class="table-cell">{{ books.get(cbook.book_id).points }}</div>
                             </div>
                         </template>
                     </div>
@@ -72,18 +72,18 @@ export default {
         },
 
         selectBook: function (cbook) {
-            if (!this.selectedBooks.includes(cbook.id)) {
+            if (!this.selectedBooks.includes(cbook.book_id)) {
 
                 if (this.selectedBooks.length < 2) {
-                    let book_content = this.books.get(cbook.id);
+                    let book_content = this.books.get(cbook.book_id);
                     if (this.selectedBooks.length == 0 || ((book_content.language.toUpperCase() == "DEUTSCH") !== ((this.books.get(this.selectedBooks[0])).language.toUpperCase() == "DEUTSCH"))) {
-                        this.selectedBooks.push(cbook.id);
+                        this.selectedBooks.push(cbook.book_id);
                     }
                     // if it is possible to select (if not (e.g. 2nd book is german), do not highlight it):
                 }
             } else {
                 // if already selected, remove the highlight
-                this.selectedBooks.splice(this.selectedBooks.indexOf(cbook.id), 1);
+                this.selectedBooks.splice(this.selectedBooks.indexOf(cbook.book_id), 1);
             }
             if (this.selectedBooks.length == 2) {
                 // calculate points

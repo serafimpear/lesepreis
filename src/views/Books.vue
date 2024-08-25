@@ -211,7 +211,7 @@ export default {
                 return false;
             }
 
-            let possible_match = this.books.values().find(book => book.isbn == this.currentBook.isbn);
+            let possible_match = [...this.books.values()].find(book => book.isbn == this.currentBook.isbn);
 
             let returnEarly = false;
             if (possible_match) {
@@ -409,7 +409,7 @@ export default {
     computed: {
         filteredBooksList() {
             var s = this.searchBook.toLowerCase();
-            return this.sortListBy(this.books.values().filter(book => {
+            return this.sortListBy([...this.books.values()].filter(book => {
                 return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
             }), this.booksSortBy, this.booksSortAscending)
         }

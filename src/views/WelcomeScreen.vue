@@ -100,8 +100,9 @@ export default {
 
         openYear: function (year) {
             console.log("open year", year);
-            ipcRenderer.sendSync("login", year);
-            this.$router.push('/students-leaderboard');
+            if (ipcRenderer.sendSync("login", year)) {
+                this.$router.push('/students-leaderboard');
+            }
         },
 
         newYear: function () {

@@ -6,10 +6,55 @@ const os = require('os');
 const fs = require('fs');
 const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
-
 const gotTheLock = app.requestSingleInstanceLock() // dont allow 2 lesepreis windows
 
-async function getLastInsertRowId(database) {
+var database;
+
+function databaseAll(query) {
+    return new Promise((resolve, reject) => {
+        database.all(query, function (err, rows) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+}
+function databaseRun(query) {
+    return new Promise((resolve, reject) => {
+        database.run(query, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+function databaseRunParams(query, params) {
+    return new Promise((resolve, reject) => {
+        database.run(query, params, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+function databaseGet(query) {
+    return new Promise((resolve, reject) => {
+        database.get(query, function (err, row) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+    });
+}
+async function getLastInsertRowId() {
     return new Promise((resolve, reject) => {
         database.get("SELECT last_insert_rowid() as id", function(err, row) {
             if (err) {
@@ -33,10 +78,6 @@ if (!gotTheLock) {
         }
     })
 }
-
-// signed test 2
-
-var database;
 
 const ipc = ipcMain;
 
@@ -81,7 +122,7 @@ function createWindow() {
 
     win.loadFile('dist/index.html');
 
-    setTimeout(function() {
+    setTimeout(function () {
         splash.close();
         win.maximize();
         win.show();
@@ -131,37 +172,43 @@ function createWindow() {
     ipc.on('login', (event, dataReceived) => {
         // dataReceived is the name of the school year
         database = new sqlite3.Database(userDataPath + `/schuljahr_${dataReceived}.db`);
+
         database.on('trace', (sql) => {
             console.log('Query:', sql);
         });
 
-        database.serialize(() => {
-            database.get("SELECT name FROM sqlite_master WHERE type='table' AND name='student_books'", (err, row) => {
-                if (err) {
-                    console.error(err.message);
-                    return;
-                }
+        database.serialize(async () => {
+            try {
+                let isNewSchema = await databaseGet("SELECT name FROM sqlite_master WHERE type='table' AND name='student_books'");
                 // check if we use the new schema
-                if (!row) {
+                if (!isNewSchema) {
+                    let isMigrationNeeded = await databaseGet("SELECT name FROM sqlite_master WHERE type='table' AND name='students'");
 
-                    database.get("SELECT name FROM sqlite_master WHERE type='table' AND name='students'", (err, row) => {
-                        if (err) {
-                            console.error(err.message);
-                            return;
+                    // if new / empty db, initialize it
+                    if (!isMigrationNeeded) {
+                        await initializeDB();
+                        return;
+                    }
+
+                    // if it uses the old schema, it will be updated
+                    if (!fs.existsSync(userDataPath + '/backup')) {
+                        fs.mkdirSync(userDataPath + '/backup');
+                    }
+
+                    fs.copyFileSync(userDataPath + `/schuljahr_${dataReceived}.db`, userDataPath + `/backup/schuljahr_${dataReceived}_${Date.now()}.db`);
+
+                    let studentsBackup = await databaseAll("SELECT * FROM students");
+                    console.log('----------', studentsBackup)
+
+                    await databaseRun("DROP TABLE IF EXISTS students");
+
+                    await initializeDB();
+
+                    for (let student of studentsBackup) {
+                        if (!student.multiplied_books) {
+                            student.multiplied_books = [-1, -1];
                         }
-                        // if it uses the old schema, it will be updated
-                        if (row) {
-                            let studentsBackup = [];
-                            database.all("SELECT * FROM students", (err, rows) => {
-                                if (err) {
-                                    console.error(err.message);
-                                    return;
-                                }
-                                studentsBackup = rows;
-                                database.run("DROP TABLE IF EXISTS students");
-                                initializeDB();
-                                studentsBackup.forEach(student => {
-                                    database.run(`INSERT INTO students (
+                        await databaseRunParams(`INSERT INTO students (
                                     name, 
                                     surname, 
                                     class, 
@@ -169,30 +216,29 @@ function createWindow() {
                                     multiplied_book_2, 
                                     date_multiplied
                                     ) VALUES (?, ?, ?, ?, ?, ?)`, [
-                                        student.name,
-                                        student.surname,
-                                        student.class,
-                                        student.multiplied_books[0],
-                                        student.multiplied_books[1],
-                                        data.date_multiplied
-                                    ]);
-                                    student.books.forEach(book => {
-                                        database.run(`INSERT INTO student_books (uid, book_id, passed) VALUES (?, ?, ?)`, [
-                                            student.uid,
-                                            book.id,
-                                            book.passed
-                                        ]);
-                                    });
-                                });
-                            });
-                        } else {
-                            initializeDB();
-                        }
-                    });
+                            student.name,
+                            student.surname,
+                            student.class,
+                            student.multiplied_books[0],
+                            student.multiplied_books[1],
+                            student.date_multiplied
+                        ]);
+                        let books = JSON.parse(student.books);
+                        for (let book of books) {
+                            await database.run(`INSERT INTO student_books (uid, book_id, passed) VALUES (?, ?, ?)`, [
+                                student.uid,
+                                book.id,
+                                book.passed
+                            ]);
+                        };
+                    };
                 }
-            });
+                event.returnValue = true;
+            } catch (err) {
+                console.error('&&&&&&&&&&&&&&&&&', err);
+                event.returnValue = false;
+            }
         });
-        event.returnValue = true;
     });
 
     ipc.on('getStudents', (event, args) => {
@@ -204,7 +250,7 @@ function createWindow() {
         });
     });
     ipc.on('getStudentBooks', (event, args) => {
-        database.all('SELECT * FROM getStudentBooks', [], (err, rows) => {
+        database.all('SELECT * FROM student_books', [], (err, rows) => {
             if (err) {
                 throw err;
             }
@@ -216,6 +262,7 @@ function createWindow() {
     ipc.on('DBQuery', (event, args) => {
         database.all(args, [], (err, rows) => {
             if (err) {
+                console.error(err);
                 throw err;
             }
             event.returnValue = rows;
@@ -223,11 +270,11 @@ function createWindow() {
     })
 
 
-    ipc.on("upsertStudent", (event, dataReceived) => {
+    ipc.on("upsertStudent", async (event, dataReceived) => {
         data = JSON.parse(dataReceived);
         if (data.uid == null) {
-            database.serialize(() => {
-                database.run(`INSERT INTO students (` +
+            try {
+                await databaseRunParams(`INSERT INTO students (` +
                     `name, ` +
                     `surname, ` +
                     `class, ` +
@@ -235,116 +282,121 @@ function createWindow() {
                     `multiplied_book_2, ` +
                     `date_multiplied` +
                     `) VALUES (?, ?, ?, ?, ?, ?)`, [
-                        data.name,
-                        data.surname,
-                        data.class,
-                        data.multiplied_book_1,
-                        data.multiplied_book_2,
-                        data.date_multiplied
-                    ],
-                    (err) => {
-                        if (err) {
-                            console.error(err.message);
-                        } else {
-                            event.returnValue = this.lastID;
-                        }
-                    }
-                )
-                database.run('INSERT INTO reset (timestamp, message, command) VALUES (?, ?, ?)', [
-                    Date.now(),
-                    `Schüler \"${data.name} ${data.surname}\" hinzugefügt`,
-                    `DELETE FROM students WHERE name = \"${data.name}\"` +
-                    `AND surname = \"${data.surname}\"` +
-                    `AND class = \"${data.class}\"` +
-                    `AND multiplied_book_1 = ${mul1} ` +
-                    `AND multiplied_book_2 = ${mul2} ` +
-                    `AND date_multiplied = ${data.date_multiplied}`
-                ])
-            });
+                    data.name,
+                    data.surname,
+                    data.class,
+                    data.multiplied_book_1,
+                    data.multiplied_book_2,
+                    data.date_multiplied
+                ]);
+
+                console.log('_____________________', await getLastInsertRowId())
+                event.returnValue = await getLastInsertRowId();
+            } catch (err) {
+                console.error(err);
+            }
+
+            // database.run('INSERT INTO reset (timestamp, message, command) VALUES (?, ?, ?)', [
+            //     Date.now(),
+            //     `Schüler \"${data.name} ${data.surname}\" hinzugefügt`,
+            //     `DELETE FROM students WHERE name = \"${data.name}\"` +
+            //     `AND surname = \"${data.surname}\"` +
+            //     `AND class = \"${data.class}\"` +
+            //     `AND multiplied_book_1 = ${mul1} ` +
+            //     `AND multiplied_book_2 = ${mul2} ` +
+            //     `AND date_multiplied = ${data.date_multiplied}`
+            // ])
         } else {
-            database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
-                if (err) {
-                    throw err;
-                }
-                rows.forEach(row => {
-                    database.serialize(() => {
-                        database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
-                            Date.now(),
-                            `Schüler ${data.name} ${data.surname} geändert und gespeichert`,
-                            `UPDATE students SET name = \"${row.name}\",` +
-                            `surname = \"${row.surname}\",` +
-                            `class = \"${row.class}\",` +
-                            `multiplied_book_1 = ${row.multiplied_book_1},` +
-                            `multiplied_book_2 = ${row.multiplied_book_2},` +
-                            `date_multiplied = ${row.date_multiplied} ` +
-                            `WHERE uid = ${row.uid}`
-                        ])
-                    });
-                });
-                database.serialize(() => {
-                    database.run(`UPDATE students ` +
-                        `SET name = ?, ` +
-                        `surname = ?, ` +
-                        `class = ?, ` +
-                        `multiplied_book_1 = ?, ` +
-                        `multiplied_book_2 = ?, ` +
-                        `date_multiplied = ?` +
-                        ` WHERE uid = ?`, [
-                            data.name,
-                            data.surname,
-                            data.class,
-                            data.multiplied_book_1,
-                            data.multiplied_book_2,
-                            data.date_multiplied,
-                            data.uid
-                        ])
-                    event.returnValue = "done2";
-                });
-            });
+            // database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
+            //     if (err) {
+            //         throw err;
+            //     }
+            // rows.forEach(row => {
+            //     database.serialize(() => {
+            //         database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
+            //             Date.now(),
+            //             `Schüler ${data.name} ${data.surname} geändert und gespeichert`,
+            //             `UPDATE students SET name = \"${row.name}\",` +
+            //             `surname = \"${row.surname}\",` +
+            //             `class = \"${row.class}\",` +
+            //             `multiplied_book_1 = ${row.multiplied_book_1},` +
+            //             `multiplied_book_2 = ${row.multiplied_book_2},` +
+            //             `date_multiplied = ${row.date_multiplied} ` +
+            //             `WHERE uid = ${row.uid}`
+            //         ])
+            //     });
+            // });
+            database.run(`UPDATE students ` +
+                `SET name = ?, ` +
+                `surname = ?, ` +
+                `class = ?, ` +
+                `multiplied_book_1 = ?, ` +
+                `multiplied_book_2 = ?, ` +
+                `date_multiplied = ?` +
+                ` WHERE uid = ?`, [
+                data.name,
+                data.surname,
+                data.class,
+                data.multiplied_book_1,
+                data.multiplied_book_2,
+                data.date_multiplied,
+                data.uid
+            ])
+            event.returnValue = "done2";
+            // });
         }
     });
     ipc.on("deleteStudent", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
-        database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            rows.forEach(row => {
-                database.serialize(() => {
-                    database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
-                        Date.now(),
-                        `Schüler "${data.name} ${data.surname}" gelöscht`,
-                        // `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_1}, books = '${JSON.stringify(row.books)}', date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
-                        `INSERT INTO students (uid, ` +
-                        `name, ` +
-                        `surname, ` +
-                        `class, ` +
-                        `multiplied_book_1, ` +
-                        `multiplied_book_2, ` +
-                        `date_multiplied) VALUES (` +
-                        `${row.uid}, ` +
-                        `\"${row.name}\", ` +
-                        `\"${row.surname}\", ` +
-                        `\"${row.class}\", ` +
-                        `${row.multiplied_book_1}, ` +
-                        `${row.multiplied_book_2}, ` +
-                        `${row.date_multiplied})`,
-                    ])
-                });
+        // database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
+        //     if (err) {
+        //         throw err;
+        //     }
+        // database.serialize(() => {
+        //     rows.forEach(row => {
+        //         database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
+        //             Date.now(),
+        //             `Schüler "${data.name} ${data.surname}" gelöscht`,
+        //             // `UPDATE students SET name = \"${row.name}\", surname = \"${row.surname}\", class = \"${row.class}\", points = ${row.points}, readed_books = ${row.readed_books}, failed_books = ${row.failed_books}, passed = ${row.passed}, multiplied_book_1 = ${row.multiplied_book_1}, multiplied_book_2 = ${row.multiplied_book_1}, books = '${JSON.stringify(row.books)}', date_multiplied = ${row.date_multiplied} WHERE uid = ${row.uid}`
+        //             `INSERT INTO students (uid, ` +
+        //             `name, ` +
+        //             `surname, ` +
+        //             `class, ` +
+        //             `multiplied_book_1, ` +
+        //             `multiplied_book_2, ` +
+        //             `date_multiplied) VALUES (` +
+        //             `${row.uid}, ` +
+        //             `\"${row.name}\", ` +
+        //             `\"${row.surname}\", ` +
+        //             `\"${row.class}\", ` +
+        //             `${row.multiplied_book_1}, ` +
+        //             `${row.multiplied_book_2}, ` +
+        //             `${row.date_multiplied})`,
+        //         ])
+        //     });
+        // });
+        // database.all('SELECT * FROM reset', [], (err, rows) => {
+        //     if (err) {
+        //         throw err;
+        //     }
+        //     if (rows.length > 15) {
+        //         database.run('DELETE FROM reset WHERE id = (SELECT MIN(id) FROM reset)');
+        //     }
+        // });
+
+        database.serialize(() => {
+            database.run(`DELETE FROM students WHERE uid = ?`, [
+                data.uid
+            ], (err) => {
+                if (err) {
+                    console.error("Error deleting student:", err.message);
+                    event.returnValue = 'error';
+                } else {
+                    event.returnValue = 'done3';
+                }
             });
-            database.serialize(() => {
-                database.run(`DELETE FROM students WHERE uid = ?`, [
-                    data.uid
-                ], (err) => {
-                    if (err) {
-                        console.error("Error deleting student:", err.message);
-                        event.returnValue = 'error';
-                    } else {
-                        event.returnValue = 'done3';
-                    }
-                });
-            });
-        })
+        });
+        // });
     });
     ipc.on('getBooks', (event, args) => {
         database.all('SELECT * FROM books', [], (err, rows) => {
@@ -357,120 +409,122 @@ function createWindow() {
     ipc.on("upsertBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
         if (data.id == null) {
-            database.serialize(() => {
-                database.run('INSERT INTO books (title,author,language, points, isbn) VALUES (?, ?, ?, ?, ?)', [
+            database.serialize(async () => {
+                try {
+                    await databaseRunParams('INSERT INTO books (title,author,language, points, isbn) VALUES (?, ?, ?, ?, ?)', [
                         data.title,
                         data.author,
                         data.language,
                         data.points,
                         data.isbn
-                    ],
-                    (err) => {
+                    ]);
+
+                    console.log('_____________________', this.lastID)
+                    event.returnValue = await getLastInsertRowId();
+                } catch (err) {
+                    console.error(err);
+                }
+                // database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
+                //     Date.now(),
+                //     `Buch \"${data.title}\" hinzugefügt`,
+                //     `DELETE FROM books WHERE title = \"${data.title}\" AND author = \"${data.author}\" AND language = \"${data.language}\" AND points = ${data.points} AND isbn = \"${data.isbn}\"`
+                // ])
+            });
+        } else {
+            // database.all(`SELECT * FROM books WHERE id = ${data.id}`, [], (err, rows) => {
+            //     if (err) {
+            //         throw err;
+            //     }
+            //     rows.forEach(row => {
+            //         database.serialize(() => {
+            //             database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
+            //                 Date.now(),
+            //                 `Buch \"${data.title}\" geändert und gespeichert`,
+            //                 `UPDATE books SET title = \"${row.title}\", author = \"${row.author}\", language = \"${row.language}\", points = ${row.points}, isbn = \"${row.isbn}\" WHERE id = ${row.id}`
+            //             ])
+            //         });
+            //     });
+            database.serialize(() => {
+                database.run(`UPDATE books SET title = ?, author = ?, language = ?, points = ?, isbn = ? WHERE id = ?`, [
+                    data.title,
+                    data.author,
+                    data.language,
+                    data.points,
+                    data.isbn,
+                    data.id
+                ],
+                    async (err) => {
                         if (err) {
                             console.error(err.message);
                         } else {
-                            event.returnValue = this.lastID;
+                            event.returnValue = await getLastInsertRowId();
                         }
-                    })
-                database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
-                    Date.now(),
-                    `Buch \"${data.title}\" hinzugefügt`,
-                    `DELETE FROM books WHERE title = \"${data.title}\" AND author = \"${data.author}\" AND language = \"${data.language}\" AND points = ${data.points} AND isbn = \"${data.isbn}\"`
-                ])
-            });
-        } else {
-            database.all(`SELECT * FROM books WHERE id = ${data.id}`, [], (err, rows) => {
-                if (err) {
-                    throw err;
-                }
-                rows.forEach(row => {
-                    database.serialize(() => {
-                        database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
-                            Date.now(),
-                            `Buch \"${data.title}\" geändert und gespeichert`,
-                            `UPDATE books SET title = \"${row.title}\", author = \"${row.author}\", language = \"${row.language}\", points = ${row.points}, isbn = \"${row.isbn}\" WHERE id = ${row.id}`
-                        ])
                     });
-                });
-                database.serialize(() => {
-                    database.run(`UPDATE books SET title = ?, author = ?, language = ?, points = ?, isbn = ? WHERE id = ?`, [
-                            data.title,
-                            data.author,
-                            data.language,
-                            data.points,
-                            data.isbn,
-                            data.id
-                        ],
-                        (err) => {
-                            if (err) {
-                                console.error(err.message);
-                            } else {
-                                event.returnValue = this.lastID;
-                            }
-                        });
-                });
             });
+            // });
 
         }
     })
     ipc.on("deleteBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
-        database.all(`SELECT * FROM books WHERE id = ${data.id}`, [], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            rows.forEach(row => {
-                database.serialize(() => {
-                    database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
-                        Date.now(),
-                        `Buch ${row.title} von ${row.author} gelöscht`,
-                        // `UPDATE books SET title = \"${row.title}\", author = \"${row.author}\", language = \"${row.language}\", points = ${row.points}, isbn = \"${row.isbn}\" WHERE id = ${row.id}`
-                        `INSERT INTO books (id, title, author, language, points, isbn) VALUES (${row.id}, \"${row.title}\", \"${row.author}\", \"${row.language}\", ${row.points}, \"${row.isbn}\")`
-                    ])
-                });
-            });
+        // database.all(`SELECT * FROM books WHERE id = ${data.id}`, [], (err, rows) => {
+        //     if (err) {
+        //         throw err;
+        //     }
+        // rows.forEach(row => {
+        //     database.serialize(() => {
+        //         database.run('INSERT INTO reset (timestamp,message,command) VALUES (?, ?, ?)', [
+        //             Date.now(),
+        //             `Buch ${row.title} von ${row.author} gelöscht`,
+        //             // `UPDATE books SET title = \"${row.title}\", author = \"${row.author}\", language = \"${row.language}\", points = ${row.points}, isbn = \"${row.isbn}\" WHERE id = ${row.id}`
+        //             `INSERT INTO books (id, title, author, language, points, isbn) VALUES (${row.id}, \"${row.title}\", \"${row.author}\", \"${row.language}\", ${row.points}, \"${row.isbn}\")`
+        //         ])
+        //     });
+        // });
 
-            database.serialize(() => {
-                database.run(`DELETE FROM books WHERE id = ?`, [
-                    data.id
-                ]), (err) => {
-                    if (err) {
-                        console.error("Error deleting books:", err.message);
-                        event.returnValue = 'error';
-                    } else {
-                        event.returnValue = 'done6';
-                    }
+        database.serialize(() => {
+            database.run(`DELETE FROM books WHERE id = ?`, [
+                data.id
+            ]), (err) => {
+                if (err) {
+                    console.error("Error deleting books:", err.message);
+                    event.returnValue = 'error';
+                } else {
+                    event.returnValue = 'done6';
                 }
-            });
-        });
-    })
-    ipc.on("getResetHistory", (event, dataReceived) => {
-        const resetHistory = [];
-        database.all('SELECT * FROM reset ORDER BY id DESC LIMIT 5', [], (err, rows) => {
-            if (err) {
-                throw err;
             }
-            rows.forEach(row => {
-                resetHistory.push(row);
-            });
-            console.log(resetHistory)
-            event.returnValue = resetHistory;
         });
+        // });
     })
-    ipc.on("reset", (event, dataReceived) => {
-        // just give how many steps you want to go back as argument?
-        // right now it's a list of all the reset steps
-        // <-- thanks David i'll give you the list with all steps to do
-        data = JSON.parse(dataReceived);
-        for (let i = 0; i < data.length; i++) {
-            database.serialize(() => {
-                console.log("\nTO RESET DO: " + data[i].command + "\n");
-                database.run(data[i].command.replaceAll('\u005c', ''));
-                database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id]);
-            });
-        }
-        win.webContents.send('updateDataRemote');
-    })
+
+    // ipc.on("getResetHistory", (event, dataReceived) => {
+    //     const resetHistory = [];
+    //     database.all('SELECT * FROM reset ORDER BY id DESC LIMIT 5', [], (err, rows) => {
+    //         if (err) {
+    //             throw err;
+    //         }
+    //         rows.forEach(row => {
+    //             resetHistory.push(row);
+    //         });
+    //         console.log(resetHistory)
+    //         event.returnValue = resetHistory;
+    //     });
+    // })
+
+    // ipc.on("reset", (event, dataReceived) => {
+    //     // just give how many steps you want to go back as argument?
+    //     // right now it's a list of all the reset steps
+    //     // <-- thanks David i'll give you the list with all steps to do
+    //     data = JSON.parse(dataReceived);
+    //     for (let i = 0; i < data.length; i++) {
+    //         database.serialize(() => {
+    //             console.log("\nTO RESET DO: " + data[i].command + "\n");
+    //             database.run(data[i].command.replaceAll('\u005c', ''));
+    //             database.run(`DELETE FROM reset WHERE id = ?`, [data[i].id]);
+    //         });
+    //     }
+    //     win.webContents.send('updateDataRemote');
+    // })
 
     ipc.on("openSaveDialog", (event, dataReceived) => {
         dialog.showSaveDialog({
@@ -492,38 +546,36 @@ function createWindow() {
     });
 }
 
-function initializeDB() {
-    database.serialize(() => {
-        // Enable foreign key constraints
-        database.run("PRAGMA foreign_keys = ON");
-        database.run("CREATE TABLE IF NOT EXISTS students (" +
-            "uid INTEGER PRIMARY KEY, " +
-            "name TEXT, " +
-            "surname TEXT, " +
-            "class TEXT, " +
-            "multiplied_book_1 INTEGER, " +
-            "multiplied_book_2 INTEGER, " +
-            "date_multiplied INTEGER DEFAULT CURRENT_TIMESTAMP)");
-        database.run("CREATE TABLE IF NOT EXISTS books (" +
-            "id INTEGER PRIMARY KEY, " +
-            "title TEXT, " +
-            "author TEXT, " +
-            "language TEXT, " +
-            "points INTEGER, " +
-            "isbn TEXT)");
-        database.run("CREATE TABLE IF NOT EXISTS student_books (" +
-            "uid INTEGER, " +
-            "book_id INTEGER, " +
-            "passed BOOLEAN, " +
-            "date_added INTEGER DEFAULT CURRENT_TIMESTAMP, " +
-            "FOREIGN KEY(uid) REFERENCES students(uid) ON DELETE CASCADE, " +
-            "FOREIGN KEY(book_id) REFERENCES books(id) ON DELETE RESTRICT)");
-        database.run("CREATE TABLE IF NOT EXISTS reset (" +
-            "id INTEGER PRIMARY KEY, " +
-            "timestamp INTEGER, " +
-            "message TEXT, " +
-            "command TEXT)");
-    });
+async function initializeDB() {
+    // Enable foreign key constraints
+    await databaseRun("PRAGMA foreign_keys = ON");
+    await databaseRun("CREATE TABLE IF NOT EXISTS students (" +
+        "uid INTEGER PRIMARY KEY, " +
+        "name TEXT, " +
+        "surname TEXT, " +
+        "class TEXT, " +
+        "multiplied_book_1 INTEGER, " +
+        "multiplied_book_2 INTEGER, " +
+        "date_multiplied INTEGER DEFAULT CURRENT_TIMESTAMP)");
+    await databaseRun("CREATE TABLE IF NOT EXISTS books (" +
+        "id INTEGER PRIMARY KEY, " +
+        "title TEXT, " +
+        "author TEXT, " +
+        "language TEXT, " +
+        "points INTEGER, " +
+        "isbn TEXT)");
+    await databaseRun("CREATE TABLE IF NOT EXISTS student_books (" +
+        "uid INTEGER, " +
+        "book_id INTEGER, " +
+        "passed BOOLEAN, " +
+        "date_added INTEGER DEFAULT CURRENT_TIMESTAMP, " +
+        "FOREIGN KEY(uid) REFERENCES students(uid) ON DELETE CASCADE, " +
+        "FOREIGN KEY(book_id) REFERENCES books(id) ON DELETE RESTRICT)");
+    // database.run("CREATE TABLE IF NOT EXISTS reset (" +
+    //     "id INTEGER PRIMARY KEY, " +
+    //     "timestamp INTEGER, " +
+    //     "message TEXT, " +
+    //     "command TEXT)");
 }
 
 app.whenReady().then(() => {

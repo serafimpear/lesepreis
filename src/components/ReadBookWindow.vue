@@ -26,9 +26,9 @@
                     </div>
                     <div class="table-data">
                         <template v-for="currentBook in filteredBooksFromNotRead">
-                            <div :class="{ 'table-row': true, 'highlighted': selectedBook.id === currentBook.id }"
-                                v-if="!studentBooks.get(currentStudent.uid).get(currentBook.id)"
-                                @click="if (selectedBook.id == currentBook.id) { selectedBook = null; } else { selectedBook = currentBook; } bookPassed = undefined" >
+                            <div :class="{ 'table-row': true, 'highlighted': selectedBook?.id === currentBook.id }"
+                                v-if="!studentBooks.has(currentBook.id)"
+                                @click="if (selectedBook?.id == currentBook.id) { selectedBook = null; } else { selectedBook = currentBook; } bookPassed = undefined" >
                                 <div class="table-cell">{{ currentBook.title }}</div>
                                 <div class="table-cell">{{ currentBook.author }}</div>
                                 <div class="table-cell">{{ currentBook.language }}</div>
@@ -57,33 +57,29 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <template v-for="student_book in studentBooks.get(currentStudent.uid).values()">
-                            <div :class="{ 'table-row': true, 'highlighted': selectedBook.id == student_book.id }"
-                                @click="if (selectedBook.id == student_book.id) { selectedBook = null; } else { selectedBook = student_book; } bookPassed = undefined ">
+                        <template v-for="student_book in studentBooks.values()">
+                            <div :class="{ 'table-row': true, 'highlighted': selectedBook?.id == student_book.book_id }"
+                                @click="if (selectedBook?.id == student_book.book_id) { selectedBook = null; } else { selectedBook = books.get(student_book.book_id); } bookPassed = undefined ">
                                 <div v-if="student_book.passed" class="table-cell" title="Prüfung bestanden"><img
                                         src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
                                 <div v-else class="table-cell" title="Prüfung NICHT bestanden"><img
                                         src="@/assets/svgs/icon-no.svg" class="table-icon">
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
-                                                student_book.id).title }}</div>
+                                    <div class="table-cell-centered-content">{{ books.get(student_book.book_id).title }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
-                                                student_book.id).author }}</div>
+                                    <div class="table-cell-centered-content">{{ books.get(student_book.book_id).author }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
-                                                student_book.id).language }}</div>
+                                    <div class="table-cell-centered-content">{{ books.get(student_book.book_id).language }}</div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ new
                                                 Date(student_book.date_added).toLocaleDateString("de-DE") }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.find(book => book.id ===
-                                                student_book.id).points }}</div>
+                                    <div class="table-cell-centered-content">{{ books.get(student_book.book_id).points }}</div>
                                 </div>
                             </div>
                         </template>
@@ -91,27 +87,27 @@
                 </div>
                 <div class="addbookwindow-buttons">
                     <div class="addbook-window-passed-radio-box"
-                        v-if="(typeof selectedBook == 'object') && (currentView == 'not_read_books')">
+                        v-if="(selectedBook !== null) && (currentView == 'not_read_books')">
                         <div class="addbook-window-passed-radio-box-title">Prüfung</div>
                         <RadioInput inputid="radio_aw_1" text="bestanden" color="green" @click="bookPassed = true" />
                         <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false" />
                     </div>
                     <div class="addbook-window-passed-radio-box"
-                        v-if="(typeof selectedBook == 'object') && (currentView == 'read_books')">
+                        v-if="(selectedBook !== null) && (currentView == 'read_books')">
                         <div class="addbook-window-passed-radio-box-title">Prüfung</div>
                         <RadioInput inputid="radio_aw_1" text="bestanden" color="green" @click="bookPassed = true"
                             :checked="selectedBook.passed == true" />
                         <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false"
                             :checked="selectedBook.passed == false" />
                     </div>
-                    <DateInputField class="addbook-window-date-picker" v-if="typeof selectedBook == 'object' && currentView == 'not_read_books'" v-model="date_added" text="Datum" />
+                    <DateInputField class="addbook-window-date-picker" v-if="selectedBook !== null && currentView == 'not_read_books'" v-model="date_added" text="Datum" />
                     <!-- <Button text="Abbrechen" @click="close(false)" /> -->
                     <Button
-                        v-if="(typeof bookPassed == 'boolean' && typeof selectedBook == 'object') && currentView == 'not_read_books'"
+                        v-if="(typeof bookPassed == 'boolean' && selectedBook !== null) && currentView == 'not_read_books'"
                         text="Hinzufügen" @click="selectBook" color="green" />
-                    <Button v-if="typeof selectedBook == 'object' && currentView == 'read_books'" text="Entfernen"
+                    <Button v-if="selectedBook !== null && currentView == 'read_books'" text="Entfernen"
                         @click="removeBook" color="red" tclass="remove-button" />
-                    <Button v-if="(typeof selectedBook == 'object' && currentView == 'read_books') && ((selectedBook.passed != bookPassed) && typeof bookPassed == 'boolean')"
+                    <Button v-if="(selectedBook !== null && currentView == 'read_books') && ((selectedBook.passed != bookPassed) && typeof bookPassed == 'boolean')"
                         text="Änderungen speichern" @click="updateBook" color="green" />
                 </div>
             </div>
@@ -148,7 +144,7 @@ export default {
         DateInputField
     },
 
-    props: ['books', 'currentStudent', 'studentBooks'],
+    props: ['books', 'studentBooks'],
 
     methods: {
         reset() {
@@ -221,7 +217,7 @@ export default {
         filteredBooksFromNotRead() {
             var s = this.searchBookFromNotRead.toLowerCase();
             
-            return this.sortListBy(this.books.filter(book => {
+            return this.sortListBy([...this.books.values()].filter(book => {
                 return (book.title.toLowerCase().includes(s) || book.author.toLowerCase().includes(s) || book.language.toLowerCase().includes(s) || book.isbn.toLowerCase().includes(s))
             }), this.booksSortBy, this.booksSortAscending)
         }
