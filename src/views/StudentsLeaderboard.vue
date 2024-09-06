@@ -354,6 +354,9 @@ ORDER BY
         },
 
         saveStudent: function (close = true) {
+            if (!this.currentStudent) {
+                return false;
+            }
             let possible_match = [...this.students.values()].find(student => student.name.toLowerCase() == this.currentStudent.name.toLowerCase() && student.surname.toLowerCase() == this.currentStudent.surname.toLowerCase() && student.class.toLowerCase() == this.currentStudent.class.toLowerCase() && student.uid != this.currentStudent.uid);
             if (possible_match) {
                 return this.ask({
