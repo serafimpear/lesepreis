@@ -12,7 +12,7 @@ var database;
 
 function databaseAll(query) {
     return new Promise((resolve, reject) => {
-        database.all(query, function (err, rows) {
+        database.all(query, function(err, rows) {
             if (err) {
                 reject(err);
             } else {
@@ -21,9 +21,10 @@ function databaseAll(query) {
         });
     });
 }
+
 function databaseRun(query) {
     return new Promise((resolve, reject) => {
-        database.run(query, function (err) {
+        database.run(query, function(err) {
             if (err) {
                 reject(err);
             } else {
@@ -32,9 +33,10 @@ function databaseRun(query) {
         });
     });
 }
+
 function databaseRunParams(query, params) {
     return new Promise((resolve, reject) => {
-        database.run(query, params, function (err) {
+        database.run(query, params, function(err) {
             if (err) {
                 reject(err);
             } else {
@@ -43,9 +45,10 @@ function databaseRunParams(query, params) {
         });
     });
 }
+
 function databaseGet(query) {
     return new Promise((resolve, reject) => {
-        database.get(query, function (err, row) {
+        database.get(query, function(err, row) {
             if (err) {
                 reject(err);
             } else {
@@ -122,7 +125,7 @@ function createWindow() {
 
     win.loadFile('dist/index.html');
 
-    setTimeout(function () {
+    setTimeout(function() {
         splash.close();
         win.maximize();
         win.show();
@@ -177,7 +180,7 @@ function createWindow() {
             console.log('Query:', sql);
         });
 
-        database.serialize(async () => {
+        database.serialize(async() => {
             try {
                 let isNewSchema = await databaseGet("SELECT name FROM sqlite_master WHERE type='table' AND name='student_books'");
                 // check if we use the new schema
@@ -187,6 +190,7 @@ function createWindow() {
                     // if new / empty db, initialize it
                     if (!isMigrationNeeded) {
                         await initializeDB();
+                        event.returnValue = true;
                         return;
                     }
 
@@ -270,7 +274,7 @@ function createWindow() {
     })
 
 
-    ipc.on("upsertStudent", async (event, dataReceived) => {
+    ipc.on("upsertStudent", async(event, dataReceived) => {
         data = JSON.parse(dataReceived);
         if (data.uid == null) {
             try {
@@ -282,13 +286,13 @@ function createWindow() {
                     `multiplied_book_2, ` +
                     `date_multiplied` +
                     `) VALUES (?, ?, ?, ?, ?, ?)`, [
-                    data.name,
-                    data.surname,
-                    data.class,
-                    data.multiplied_book_1,
-                    data.multiplied_book_2,
-                    data.date_multiplied
-                ]);
+                        data.name,
+                        data.surname,
+                        data.class,
+                        data.multiplied_book_1,
+                        data.multiplied_book_2,
+                        data.date_multiplied
+                    ]);
 
                 console.log('_____________________', await getLastInsertRowId())
                 event.returnValue = await getLastInsertRowId();
@@ -334,20 +338,20 @@ function createWindow() {
                 `multiplied_book_2 = ?, ` +
                 `date_multiplied = ?` +
                 ` WHERE uid = ?`, [
-                data.name,
-                data.surname,
-                data.class,
-                data.multiplied_book_1,
-                data.multiplied_book_2,
-                data.date_multiplied,
-                data.uid
-            ])
+                    data.name,
+                    data.surname,
+                    data.class,
+                    data.multiplied_book_1,
+                    data.multiplied_book_2,
+                    data.date_multiplied,
+                    data.uid
+                ])
             event.returnValue = "done2";
             // });
         }
     });
     ipc.on("deleteStudent", (event, dataReceived) => {
-        data = JSON.parse(dataReceived);
+        // data = JSON.parse(dataReceived);
         // database.all(`SELECT * FROM students WHERE uid = ${data.uid}`, [], (err, rows) => {
         //     if (err) {
         //         throw err;
@@ -386,7 +390,7 @@ function createWindow() {
 
         database.serialize(() => {
             database.run(`DELETE FROM students WHERE uid = ?`, [
-                data.uid
+                dataReceived
             ], (err) => {
                 if (err) {
                     console.error("Error deleting student:", err.message);
@@ -409,7 +413,7 @@ function createWindow() {
     ipc.on("upsertBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
         if (data.id == null) {
-            database.serialize(async () => {
+            database.serialize(async() => {
                 try {
                     await databaseRunParams('INSERT INTO books (title,author,language, points, isbn) VALUES (?, ?, ?, ?, ?)', [
                         data.title,
@@ -446,14 +450,14 @@ function createWindow() {
             //     });
             database.serialize(() => {
                 database.run(`UPDATE books SET title = ?, author = ?, language = ?, points = ?, isbn = ? WHERE id = ?`, [
-                    data.title,
-                    data.author,
-                    data.language,
-                    data.points,
-                    data.isbn,
-                    data.id
-                ],
-                    async (err) => {
+                        data.title,
+                        data.author,
+                        data.language,
+                        data.points,
+                        data.isbn,
+                        data.id
+                    ],
+                    async(err) => {
                         if (err) {
                             console.error(err.message);
                         } else {

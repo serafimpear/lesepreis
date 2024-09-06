@@ -247,7 +247,7 @@ ORDER BY points DESC;`
     },
     mounted: function () {
         this.statistics = {
-            totalStudents: students.length,
+            totalStudents: this.students.length,
             qualifiedStudents: 0,
             multiplied: 0,
             readBooks: 0,
