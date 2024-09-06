@@ -71,7 +71,7 @@
                     <InputField tabindex="3" v-model="currentStudent.surname" text="Nachname"
                         :value=currentStudent.surname />
                     <InputField tabindex="5" v-model="currentStudent.class" text="Klasse" number="number"
-                        :value=currentStudent.class @keyup.enter="saveStudent()" />
+                        :value=currentStudent.class @keyup.enter="saveStudent()" /> 
                     <InputField tabindex="4" v-model="currentStudent.name" text="Vorname&nbsp;&nbsp;&nbsp;"
                         :value=currentStudent.name />
                     <InputField v-model="currentStudent.total_points" text="Lose&nbsp;&nbsp;&nbsp;" disabled="disabled"
@@ -279,6 +279,15 @@ export default {
         }
     },
 
+    watch: {
+        currentStudent: {
+            handler(val) {
+                this.saveStudent(false);
+            },
+            deep: true, // Add this property to watch for changes to nested properties
+        },
+    },
+
     methods: {
         deepClone: function (e) { if (null == e || "object" != typeof e) return e; if (Array.isArray(e)) return e.map(e => this.deepClone(e)); const t = {}; for (let r in e) e.hasOwnProperty(r) && (t[r] = this.deepClone(e[r])); return t },
 
@@ -333,7 +342,7 @@ ORDER BY
                     }, () => { }, () => { });
                     return;
                 }
-                this.saveStudent(false);
+                // this.saveStudent(false); // not needed because of watcher
             }
             // this.currentStudentBeforeEdit = this.deepClone(student);
             this.currentStudent = this.deepClone(student);
@@ -502,7 +511,7 @@ ORDER BY
             this.currentStudent.total_points += this.books.get(this.currentStudent.multiplied_book_1).points * this.books.get(this.currentStudent.multiplied_book_2).points;
 
             this.currentStudent.date_multiplied = Date.now();
-            this.saveStudent(false);
+            // this.saveStudent(false); // not needed because of watcher
             // this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
         },
 
@@ -513,7 +522,7 @@ ORDER BY
             this.currentStudent.total_points -= books.get(this.currentStudent.multiplied_book_1).points * books.get(this.currentStudent.multiplied_book_2).points;
             this.currentStudent.multiplied_book_1 = -1;
             this.currentStudent.multiplied_book_2 = -1;
-            this.saveStudent(false);
+            // this.saveStudent(false); // not needed because of watcher
         },
 
         sortListBy: function (list, criterion, sortAscending) {
