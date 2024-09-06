@@ -172,6 +172,11 @@ ORDER BY points DESC;`
         createStudentsLeaderboard: function (pathToSave, count) {
             if (!pathToSave) return;
 
+            let sum = 0;
+            this.students.forEach(student => {
+                sum += student.points;
+            });
+
             var options = {
                 width: "210mm",
                 height: "297mm",
@@ -181,7 +186,7 @@ ORDER BY points DESC;`
             const doc = {
                 html: this.StudentsPdfTemplate, // <-- changed, now with 'import'
                 data: {
-                    users: students,
+                    users: this.students,
                     sum: sum,
                     date: (new Date()).toLocaleDateString('de-DE'),
                     year: "2023/24",
@@ -251,7 +256,7 @@ ORDER BY points DESC;`
             qualifiedStudents: 0,
             multiplied: 0,
             readBooks: 0,
-            books: books.length,
+            books: this.books.length,
             germanBooks: 0,
             englishBooks: 0,
             russianBooks: 0,
