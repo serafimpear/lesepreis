@@ -319,7 +319,7 @@ FROM
   LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
   LEFT JOIN books AS mb2 ON s.multiplied_book_2 = mb2.id
   LEFT JOIN student_books AS sb ON s.uid = sb.uid
-  INNER JOIN books AS b ON sb.book_id = b.id
+  LEFT JOIN books AS b ON sb.book_id = b.id
 GROUP BY 
   s.uid
 ORDER BY 
