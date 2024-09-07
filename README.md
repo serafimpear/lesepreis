@@ -3,8 +3,9 @@
 Eine App, basiert auf electron.js & vue.js für die Verwaltung vom Lesepreis in den Oberschulen J.Ph.Fallmerayer
 > ![image](https://github.com/serafimpear/lesepreis/assets/67895914/b809901f-52e3-4474-8db1-5f460b56c689)
 
-# Update: Release!
-Nach langer Zusammenarbeit ist das Programm endlich rausgekommen! Schauen Sie die Releases an!
+# Update: Release 2.0.0!
+![image](https://github.com/user-attachments/assets/6d0d3a21-6eb2-4f73-bde0-145f4223ef00)
+
 
 ## Automatische Updates
 Sobald eine neue Version da ist, wird das Programm Sie darüber benachrichtigen und sie automatisch installieren! 
