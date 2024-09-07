@@ -4,7 +4,7 @@ Eine App, basiert auf electron.js & vue.js für die Verwaltung vom Lesepreis in 
 > ![image](https://github.com/serafimpear/lesepreis/assets/67895914/b809901f-52e3-4474-8db1-5f460b56c689)
 
 # Update: Release 2.0.0!
-![image](https://github.com/user-attachments/assets/6d0d3a21-6eb2-4f73-bde0-145f4223ef00)
+![image](https://github.com/user-attachments/assets/532a6108-e3fc-4854-a785-b5990ad576ae)
 
 
 ## Automatische Updates
