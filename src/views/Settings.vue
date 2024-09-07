@@ -3,8 +3,8 @@
         <div class="manage-section">
             <h1>Einstellungen</h1>
             <InputField v-model="googleAPIKey" text="Google API Key"
-                        value="AIzaSyA81ig_LA7piHwhiYhJ0pHkqhZGMq9gdcQ" />
-            <Button type="yes" text="Speichern" color="green" @click="" />
+                        :value="googleAPIKey" />
+            <Button style="margin-left:auto;margin-top:10px" type="yes" text="Speichern" color="green" @click="setAPIKey()" />
         </div>
         <div>&nbsp;</div>
         <div></div>
@@ -36,12 +36,15 @@ export default {
         return {
             isDev: isDev,
             statistics: {},
-            version: process.env.VITE_APP_VERSION
+            version: process.env.VITE_APP_VERSION,
+            googleAPIKey: ipcRenderer.sendSync('getApiKey'),
         }
     },
 
     methods: {
-
+        setAPIKey: function() {
+            ipcRenderer.send('setApiKey', this.googleAPIKey);
+        },
     }
 }
 
