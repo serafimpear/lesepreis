@@ -10,6 +10,7 @@
                     <b>Schuljahr auswählen</b>
                     <div class="years-table ui-table">
                         <div class="table-data">
+                            <div class="no-data" v-if="years.length == 0">Keine Schuljahre vorhanden</div>
                             <div class="table-row" v-for="year in years">
                                 <div class="table-cell" @click="openYear(year)">
                                     <div class="table-cell-centered-content">{{ year }}</div>
@@ -43,7 +44,7 @@
             </div>
         </div>
         <div class="bottom-text"><b>UI, Logik:</b> Serafim Thaler, 5AN&nbsp;&nbsp;&nbsp;<b>Logik, Datenbanken:</b> David
-            Mairhofer, 5AT&nbsp;&nbsp;&nbsp;<b>Sortierung-Algorithmus:</b> Elias Walter Ebner, 5AN</div>
+            Mairhofer, 5AT&nbsp;&nbsp;&nbsp;<span style="opacity: 0.6;"><b>Sortierung-Algorithmus:</b> Elias Walter Ebner, 5AN</span></div>
         <div class="bottom-line"></div>
     </div>
     <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
@@ -83,7 +84,7 @@ export default {
     methods: {
 
         saveFile: function (title, name) {
-            let response = ipcRenderer.sendSync("openSaveDialog", { title: title, name: name });
+            let response = ipcRenderer.sendSync("openSaveDialogDB", { title: title, name: name });
             if (response.filePath) {
                 return response.filePath;
             } else if (response.canceled) {
@@ -93,6 +94,23 @@ export default {
                     type: 'alert',
                     subtitle: 'Fehler beim Speichern',
                     content: `Die Datei konnte nicht gespeichert werden. Wenden Sie sich bitte an die Entwickler der App`,
+                }, () => { }, () => { });
+                return false;
+            }
+        },
+
+        openFile: function (title) {
+            let response = ipcRenderer.sendSync("openFileDialog", { title: title });
+            console.log(response.filePaths[0]);
+            if (response.filePaths[0]) {
+                return response.filePaths[0];
+            } else if (response.canceled) {
+                return false;
+            } else {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Fehler beim Öffnen',
+                    content: `Die Datei konnte nicht geöffnet werden. Wenden Sie sich bitte an die Entwickler der App`,
                 }, () => { }, () => { });
                 return false;
             }
@@ -113,21 +131,24 @@ export default {
             }, () => {
                 // code if entered string
                 console.log('Got: ' + this.modelValue);
+                // this.modelValue is already filtered for special characters and max length
+                if (ipcRenderer.sendSync("login", this.modelValue)) {
+                    this.$router.push('/students-leaderboard');
+                }
             }, () => {
                 // code if abort
             });
-
-
-            // this.modelValue is already filtered for special characters and max length
-            // code to change year name:
-            //...
-
         },
 
         importYear: function () {
             // open file and save it to the database files folder
-            // create a importFile function (similar to saveFile)
-            // ...
+            let filepath = this.openFile("Schuljahr importieren");
+            console.log('trying to import year', filepath);
+            if (filepath) {
+                console.log('trying to import year', filepath);
+                ipcRenderer.sendSync("importYear", filepath);
+                window.history.go()
+            }
         },
 
         editYearName: function (year) {
@@ -138,15 +159,14 @@ export default {
             }, () => {
                 // code if entered string
                 console.log('Got: ' + this.modelValue);
+
+                // this.modelValue is already filtered for special characters and max length
+                // code to change year name:
+                ipcRenderer.sendSync("editYearName", { oldName: year, newName: this.modelValue });
+                window.history.go()
             }, () => {
                 // code if abort
             });
-
-
-            // this.modelValue is already filtered for special characters and max length
-            // code to change year name:
-            //...
-
         },
 
         deleteYear: function (year) {
@@ -157,13 +177,31 @@ export default {
                 okButton: 'Löschen',
             }, () => {
                 // code to delete year
+                if (ipcRenderer.sendSync("deleteYear", year)) {
+                    this.ask({
+                        type: 'alert',
+                        subtitle: 'Schuljahr gelöscht',
+                        content: `Das Schuljahr “${year}” wurde erfolgreich gelöscht`,
+                    }, () => { }, () => { });
+                    window.history.go()
+                } else {
+                    this.ask({
+                        type: 'alert',
+                        subtitle: 'Fehler beim Löschen',
+                        content: `Das Schuljahr konnte nicht gelöscht werden. Wenden Sie sich bitte an die Entwickler der App`,
+                    }, () => { }, () => { });
+                }
             }, () => {
                 // code if pressed no (leave empty)
             });
         },
 
-        exportYear: function () {
+        exportYear: function (year) {
             // save file (use saveFile function)
+            let path = this.saveFile("Schuljahr exportieren", `Schuljahr ${year}.db`);
+            if (path) {
+                ipcRenderer.sendSync("exportYear", { year: year, path: path });
+            }
         }
     },
     mounted: function () { }

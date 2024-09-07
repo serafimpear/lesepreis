@@ -545,6 +545,122 @@ function createWindow() {
         });
     });
 
+    ipc.on("openSaveDialogDB", (event, dataReceived) => {
+        dialog.showSaveDialog({
+            title: dataReceived.title,
+            defaultPath: path.join(app.getPath('documents'), dataReceived.name),
+            filters: [
+                { name: 'Lesepreis Schuljahr-Datenbank', extensions: ['db'] },
+                { name: 'All Files', extensions: ['*'] },
+            ],
+        }).then((result) => {
+            event.returnValue = result;
+        }).catch((err) => {
+            event.returnValue = false;
+        });
+    });
+
+    ipc.on("openFileDialog", (event, dataReceived) => {
+        dialog.showOpenDialog({
+            title: dataReceived.title,
+            defaultPath: path.join(app.getPath('documents')),
+            filters: [
+                { name: 'Lesepreis Schuljahr-Datenbank', extensions: ['db'] }
+            ],
+            properties: ['openFile']
+        }).then((result) => {
+            event.returnValue = result;
+        }).catch((err) => {
+            event.returnValue = false;
+        });
+    });
+
+    ipc.on("importYear", (event, dataReceived) => {
+        try {
+            console.log('-----------------', dataReceived, userDataPath + '/' + path.basename(dataReceived));
+
+            // dataReceived is the path to the file like C:\Users\user\Documents\schuljahr_2021.db
+            // copy the file to the userDataPath
+            //fs.copyFileSync(dataReceived, userDataPath + '/' + path.basename(dataReceived, ".db") + " (Importiert am " + new Date().toLocaleDateString('ru') + ").db");
+            // if dataReceived path file starts with schuljahr_ leave as it is, else add schuljahr_ prefix
+            fs.copyFileSync(dataReceived, userDataPath + '/' + (path.basename(dataReceived).startsWith('schuljahr_') ? path.basename(dataReceived, ".db") + " (Importiert am " + new Date().toLocaleDateString('ru') + ").db" : 'schuljahr_' + path.basename(dataReceived, ".db") + " (Importiert am " + new Date().toLocaleDateString('ru') + ").db"));
+
+
+        } catch (err) {
+            console.error(err);
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
+    });
+
+    // ipcRenderer.sendSync("editYearName", { oldName: year, newName: this.modelValue }); (reminder: filename changes with schuljahr_ prefix)
+    ipc.on("editYearName", (event, dataReceived) => {
+        try {
+            //check if already connected to the database
+            if (database) {
+                database.close((err) => {
+                    if (err) {
+                        console.error(err.message);
+                    }
+                    console.log('Closed the database connection.');
+                    fs.renameSync(userDataPath + '/schuljahr_' + dataReceived.oldName + '.db', userDataPath + '/schuljahr_' + dataReceived.newName + '.db');
+                });
+            } else {
+                fs.renameSync(userDataPath + '/schuljahr_' + dataReceived.oldName + '.db', userDataPath + '/schuljahr_' + dataReceived.newName + '.db');
+            }
+
+        } catch (err) {
+            console.error(err);
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
+    });
+
+    ipc.on("deleteYear", (event, dataReceived) => {
+        try {
+            if (database) {
+                database.close((err) => {
+                    if (err) {
+                        console.error(err.message);
+                    }
+                    console.log('Closed the database connection.');
+
+                    // dont delete the file, but move it to backup folder (keeping same name) - dataReceived is the name of the school year
+                    if (!fs.existsSync(userDataPath + '/backup')) {
+                        fs.mkdirSync(userDataPath + '/backup');
+                    }
+
+                    fs.renameSync(userDataPath + '/schuljahr_' + dataReceived + '.db', userDataPath + '/backup/schuljahr_' + dataReceived + '_DELETED_ON_' + Date.now() + '.db');
+                });
+            } else {
+                // dont delete the file, but move it to backup folder (keeping same name) - dataReceived is the name of the school year
+                if (!fs.existsSync(userDataPath + '/backup')) {
+                    fs.mkdirSync(userDataPath + '/backup');
+                }
+
+                fs.renameSync(userDataPath + '/schuljahr_' + dataReceived + '.db', userDataPath + '/backup/schuljahr_' + dataReceived + '_DELETED_ON_' + Date.now() + '.db');
+            }
+        } catch (err) {
+            console.error(err);
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
+    });
+
+    ipc.on("exportYear", (event, dataReceived) => {
+        try {
+            fs.copyFileSync(userDataPath + '/schuljahr_' + dataReceived.year + '.db', dataReceived.path);
+        } catch (err) {
+            console.error(err);
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
+    });
+
     ipc.on("openFile", (event, dataReceived) => {
         shell.openPath(dataReceived);
     });
