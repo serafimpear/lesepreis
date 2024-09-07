@@ -21,7 +21,7 @@
                 </div>
                 <div class="modal-buttons">
                     <Button text="Abbrechen" @click="close(false)" />
-                    <Button v-if="textOK != false && (typeof modelValue == 'string' && modelValue != '')" :text=textOK
+                    <Button v-if="textOK != false && (typeof modelValue == 'string' && modelValue.trim() != '')" :text=textOK
                         color="red" @click="close(modelValue)" />
                 </div>
             </div>

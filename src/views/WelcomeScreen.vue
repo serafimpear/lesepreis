@@ -15,13 +15,13 @@
                                 <div class="table-cell" @click="openYear(year)">
                                     <div class="table-cell-centered-content">{{ year }}</div>
                                 </div>
-                                <div class="table-cell" @click="editYearName(year)">
+                                <div class="table-cell icon-cell" @click="editYearName(year)">
                                     <img src="@/assets/svgs/edit.svg" class="table-icon">
                                 </div>
-                                <div class="table-cell" @click="deleteYear(year)">
+                                <div class="table-cell icon-cell" @click="deleteYear(year)">
                                     <img src="@/assets/svgs/trashcan.svg" class="table-icon">
                                 </div>
-                                <div class="table-cell" @click="exportYear(year)">
+                                <div class="table-cell icon-cell" @click="exportYear(year)">
                                     <img src="@/assets/svgs/export.svg" class="table-icon">
                                 </div>
                             </div>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="bottom-text"><b>UI, Logik:</b> Serafim Thaler, 5AN&nbsp;&nbsp;&nbsp;<b>Logik, Datenbanken:</b> David
-            Mairhofer, 5AT&nbsp;&nbsp;&nbsp;<span style="opacity: 0.6;"><b>Sortierung-Algorithmus:</b> Elias Walter Ebner, 5AN</span></div>
+            Mairhofer, 5AT&nbsp;&nbsp;&nbsp;<span style="opacity: 0.5;"><b>Min. Beitr.:</b> Elias Ebner, 5AN</span></div>
         <div class="bottom-line"></div>
     </div>
     <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
@@ -173,7 +173,7 @@ export default {
             this.ask({
                 type: 'warning',
                 subtitle: 'Schuljahr löschen',
-                content: `Sind Sie sicher, dass sie das Schuljahr “${year}” löschen wollen?     ACHTUNG DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN!`,
+                content: `Sind Sie sicher, dass Sie das Schuljahr “${year}” löschen wollen?     !!!ACHTUNG DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN!!!`,
                 okButton: 'Löschen',
             }, () => {
                 // code to delete year
@@ -344,5 +344,9 @@ div.ui-table.years-table .table-row {
     grid-template-columns: 30px 1fr;
     margin-bottom: 1em;
     gap: 2px 0;
+}
+
+.icon-cell:hover {
+    transform: scale(1.1);
 }
 </style>
