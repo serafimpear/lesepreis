@@ -31,6 +31,7 @@
                     </div>
                 </div>
                 <div class="table-data">
+                    <div class="no-data" style="padding: 10px;" v-if="filteredBooksList.length == 0">Keine Bücher vorhanden</div>
                     <div class="table-row" v-for="book in filteredBooksList" @click="selectBook(book)">
                         <div class="table-cell">{{ book.title }}</div>
                         <div class="table-cell">{{ book.author }}</div>
@@ -169,7 +170,8 @@ export default {
             },
             booksSortBy: 'title',
             booksSortAscending: false,
-            currentBookBeforeEdit: undefined
+            currentBookBeforeEdit: undefined,
+            googleAPIKey: ipcRenderer.sendSync('getApiKey'),
         }
     },
 
@@ -298,7 +300,7 @@ export default {
             this.bookResults = [];
             if (this.currentBook.isbn.length >= 10) {
                 this.isLoading = true;
-                axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${this.currentBook.isbn}&key=AIzaSyA81ig_LA7piHwhiYhJ0pHkqhZGMq9gdcQ`).then(response => {
+                axios.get(`https://www.googleapis.com/books/v1/volumes?q=isbn:${this.currentBook.isbn}&key=${this.googleAPIKey}`).then(response => {
                     const data = response.data;
                     if (data.totalItems > 0) {
                         for (var resultId = 0; resultId < data.totalItems; resultId++) {

@@ -26,6 +26,7 @@
                         </div>
                     </div>
                     <div class="table-data">
+                        <div class="no-data" style="padding: 10px;" v-if="filteredStudentsList.length == 0">Keine Schüler vorhanden</div>
                         <div class="table-row" v-for="student in filteredStudentsList" @click="selectStudent(student)">
                             <div v-if="student.passed" class="table-cell" title="Schüler qualifiziert"><img
                                     src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
@@ -612,6 +613,7 @@ ORDER BY
         //         _callback();
         //     }
         // },
+
         isStudentEqual: function (student1, student2) {
             let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.points == student2.points && student1.total_points == student2.total_points && student1.passed == student2.passed && student1.passed_count == student2.passed_count)
             return isequal
@@ -654,6 +656,37 @@ ORDER BY
             return this.sortListBy([...this.students.values()].filter(student => {
                 return (student.name.toLowerCase().includes(s) || student.surname.toLowerCase().includes(s) || student.class.toLowerCase().includes(s) || (student.name.toLowerCase() + ' ' + student.surname.toLowerCase()).includes(s) || (student.surname.toLowerCase() + ' ' + student.name.toLowerCase()).includes(s))
             }), this.studentsSortBy, this.studentsSortAscending);
+        }
+    },
+
+    // check beforerouterleave if current student name, surname or class is empty and if yes prevent router change and create a modal
+    beforeRouteLeave(to, from, next) {
+        if (this.currentStudent) {
+            this.currentStudent.name = this.currentStudent.name.replace(/['"`]/g, '').trim();
+            this.currentStudent.surname = this.currentStudent.surname.replace(/['"`]/g, '').trim();
+            this.currentStudent.class = this.currentStudent.class.replace(/['"`]/g, '').trim();
+            if (this.currentStudent.name == "" && this.currentStudent.surname == "" && this.currentStudent.class == "") {
+                next();
+                console.log(ipcRenderer.sendSync("deleteStudent", this.currentStudent.uid));
+                this.students.delete(this.currentStudent.uid);
+                this.studentBooks.delete(this.currentStudent.uid);
+            }
+
+            if (this.currentStudent.name == "" || this.currentStudent.surname == "" || this.currentStudent.class == "") {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Schüler:in speichern',
+                    content: `Bitte füllen Sie alle Felder aus!`,
+                }, () => {
+                    next(false);
+                }, () => {
+                    next(false);
+                });
+            } else {
+                next();
+            }
+        } else {
+            next();
         }
     }
 }
