@@ -327,7 +327,7 @@ export default {
   COUNT(CASE WHEN sb.passed = false THEN sb.book_id END) AS failed_count, 
   s.*,
   CASE WHEN COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) > 2 THEN TRUE ELSE FALSE END AS passed,
-  SUM(b.points) + COALESCE(mb1.points * mb2.points, 0) AS total_points
+  COALESCE(mb1.points * mb2.points + SUM(b.points), 0) AS total_points
 FROM 
   students AS s
   LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
