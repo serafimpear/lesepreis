@@ -62,6 +62,7 @@
             <div v-if="showStudentInfo == true" class="content">
                 <div class="student-header-title">
                     <h1>Schüler:in</h1>
+                    <div class="auto-save">Änderungen werden automatisch gespeichert</div>
                     <Button type="delete" text="Löschen" color="red" @click="deleteStudent()" />
                     <!--<Button type="yes" text="Speichern" color="green" @click="saveStudent()" />-->
                     <IconButton @click="closeStudent()" type="no" />
@@ -229,6 +230,14 @@ div#no_student_selected {
     text-align: center;
     width: 100%;
     height: 100%;
+}
+
+.auto-save {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    font-size: 0.85em;
+    font-style: italic;
 }
 </style>
 
