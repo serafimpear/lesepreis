@@ -10,6 +10,16 @@ const gotTheLock = app.requestSingleInstanceLock() // dont allow 2 lesepreis win
 
 var database;
 
+// // if dont exist, create a file 'settings.ini' in the userDataPath, hence copy 'dist/assets/default.ini' to 'settings.ini'
+// if (!fs.existsSync(userDataPath + '/settings.ini')) {
+//     fs.copyFileSync('dist/assets/default.ini', userDataPath + '/settings.ini');
+// }
+
+//if dont exist, create a file 'settings.ini' in the userDataPath, and set the default apikey
+if (!fs.existsSync(userDataPath + '/settings.ini')) {
+    fs.writeFileSync(userDataPath + '/settings.ini', 'apikey=AIzaSyA81ig_LA7piHwhiYhJ0pHkqhZGMq9gdcQ');
+}
+
 function databaseAll(query) {
     return new Promise((resolve, reject) => {
         database.all(query, function(err, rows) {
@@ -663,6 +673,23 @@ function createWindow() {
 
     ipc.on("openFile", (event, dataReceived) => {
         shell.openPath(dataReceived);
+    });
+
+    ipc.on("getApiKey", (event, dataReceived) => {
+        const settings = fs.readFileSync(userDataPath + '/settings.ini', 'utf8');
+        const apiKey = settings.split('\n').find(line => line.startsWith('apikey=')).split('=')[1];
+        event.returnValue = apiKey;
+    });
+
+    ipc.on("setApiKey", (event, dataReceived) => {
+        const settings = fs.readFileSync(userDataPath + '/settings.ini', 'utf8');
+        const newSettings = settings.split('\n').map(line => {
+            if (line.startsWith('apikey=')) {
+                return 'apikey=' + dataReceived;
+            }
+            return line;
+        }).join('\n');
+        fs.writeFileSync(userDataPath + '/settings.ini', newSettings);
     });
 }
 
