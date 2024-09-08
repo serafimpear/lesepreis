@@ -180,11 +180,6 @@ export default {
             }, () => {
                 // code to delete year
                 if (ipcRenderer.sendSync("deleteYear", year)) {
-                    this.ask({
-                        type: 'alert',
-                        subtitle: 'Schuljahr gelöscht',
-                        content: `Das Schuljahr “${year}” wurde erfolgreich gelöscht`,
-                    }, () => { }, () => { });
                     window.history.go()
                 } else {
                     this.ask({
