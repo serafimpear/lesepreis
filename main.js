@@ -691,6 +691,12 @@ function createWindow() {
         }).join('\n');
         fs.writeFileSync(userDataPath + '/settings.ini', newSettings);
     });
+
+    ipc.on("changeTitleYear", (event, dataReceived) => {
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", dataReceived);
+        win.webContents.send('updateSchoolYear', dataReceived);
+    });
+
 }
 
 async function initializeDB() {

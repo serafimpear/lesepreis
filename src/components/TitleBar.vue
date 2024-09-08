@@ -13,7 +13,8 @@
                 <HistoryPopup v-if="showHistoryPopup == true" />
             </div> -->
             <div id="app-title-draggable-bar">
-                <div id="app-title">Lesepreis Verwaltung {{ version }}</div>
+                <div id="app-title">Lesepreis Verwaltung {{ version }} <template v-if="schoolYear != false">• {{ truncateSchoolYear(schoolYear) }}</template>
+                </div>
             </div>
             <button v-if="isDev" id="devToolsButton">
                 <svg width="29" height="29" viewBox="0 0 29 29" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -25,7 +26,8 @@
             <button id="minimizeButton">
                 <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="0.5" y="0.5" width="29" height="29" rx="9" fill="#3F3F3F" />
-                    <path d="M8 15H22" stroke="#D9D9D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M8 15H22" stroke="#D9D9D9" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
             </button>
             <button id="maximizeRestoreButton">
@@ -54,6 +56,7 @@
 <script>
 const isDev = require('electron-is-dev')
 import HistoryPopup from '@/components/HistoryPopup.vue'
+const { ipcRenderer } = require('electron');
 
 export default {
     components: {
@@ -64,7 +67,27 @@ export default {
         return {
             showHistoryPopup: false,
             version: process.env.VITE_APP_VERSION,
-            isDev: isDev
+            isDev: isDev,
+            schoolYear: false
+        }
+    },
+
+    mounted() {
+        ipcRenderer.on('updateSchoolYear', (event, newSchoolYear) => {
+            this.schoolYear = newSchoolYear;
+        });
+    },
+
+    beforeDestroy() {
+        ipcRenderer.removeAllListeners('update-school-year');
+    },
+
+    methods: {
+        truncateSchoolYear(schoolYear) {
+            if (schoolYear.length > 7) {
+                return schoolYear.substring(0, 4) + '...';
+            }
+            return schoolYear;
         }
     }
 }
