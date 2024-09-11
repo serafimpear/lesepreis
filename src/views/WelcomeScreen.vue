@@ -119,6 +119,7 @@ export default {
         openYear: function (year) {
             console.log("open year", year);
             if (ipcRenderer.sendSync("login", year)) {
+                ipcRenderer.send("changeTitleYear", year)
                 this.$router.push('/students-leaderboard');
             }
         },
@@ -133,6 +134,7 @@ export default {
                 console.log('Got: ' + this.modelValue);
                 // this.modelValue is already filtered for special characters and max length
                 if (ipcRenderer.sendSync("login", this.modelValue)) {
+                    ipcRenderer.send("changeTitleYear", this.modelValue)
                     this.$router.push('/students-leaderboard');
                 }
             }, () => {
@@ -178,11 +180,6 @@ export default {
             }, () => {
                 // code to delete year
                 if (ipcRenderer.sendSync("deleteYear", year)) {
-                    this.ask({
-                        type: 'alert',
-                        subtitle: 'Schuljahr gelöscht',
-                        content: `Das Schuljahr “${year}” wurde erfolgreich gelöscht`,
-                    }, () => { }, () => { });
                     window.history.go()
                 } else {
                     this.ask({

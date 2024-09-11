@@ -26,7 +26,8 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <div class="no-data" style="padding: 10px;" v-if="filteredStudentsList.length == 0">Keine Schüler vorhanden</div>
+                        <div class="no-data" style="padding: 10px;" v-if="filteredStudentsList.length == 0">Keine
+                            Schüler vorhanden</div>
                         <div class="table-row" v-for="student in filteredStudentsList" @click="selectStudent(student)">
                             <div v-if="student.passed_count >= 3" class="table-cell" title="Schüler qualifiziert"><img
                                     src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
@@ -124,23 +125,23 @@
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                student_book.book_id).title }}</div>
+                                        student_book.book_id).title }}</div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                student_book.book_id).author }}</div>
+                                        student_book.book_id).author }}</div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                student_book.book_id).language }}</div>
+                                        student_book.book_id).language }}</div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ new
-                Date(student_book.date_added).toLocaleDateString("de-DE") }}</div>
+                                        Date(student_book.date_added).toLocaleDateString("de-DE") }}</div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                student_book.book_id).points }}</div>
+                                        student_book.book_id).points }}</div>
                                 </div>
                             </div>
                         </div>
@@ -177,22 +178,22 @@
                                 v-for="book_id in [currentStudent.multiplied_book_1, currentStudent.multiplied_book_2]">
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                book_id).title }}
+                                        book_id).title }}
                                     </div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                book_id).author
+                                        book_id).author
                                         }}</div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                book_id).language
+                                        book_id).language
                                         }}</div>
                                 </div>
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
-                book_id).points
+                                        book_id).points
                                         }}</div>
                                 </div>
                             </div>
@@ -619,21 +620,20 @@ ORDER BY
             return isequal
         },
         showReadBookWindow: function () {
-            // if (this.currentStudent.name == "") {
-            //     this.ask({
-            //         type: 'warning',
-            //         subtitle: 'Bücher verwalten',
-            //         content: `Sie können nicht die Bücher verwalten, solange Sie den Schüler nicht gespeichert haben. Wollen Sie den Schüler speichern?`,
-            //         okButton: 'Abbrechen',
-            //         noButton: 'Schüler speichern',
-            //     }, () => {
+            if (this.currentStudent.name == "") {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Bücher verwalten',
+                    content: `Bitte füllen Sie alle Felder aus, bevor Sie die Bücher verwalten`,
+                    // okButton: 'Abbrechen',
+                    noButton: 'Alle Felder ausfüllen',
+                }, () => {
 
-            //     }, () => {
-            //         this.saveStudent(false);
-            //     });
-            // } else {
-            this.readBookWindowVisible = true;
-            // }
+                }, () => {
+                });
+            } else {
+                this.readBookWindowVisible = true;
+            }
         }
     },
 
@@ -647,6 +647,11 @@ ORDER BY
         ipcRenderer.on("updateDataRemote", function () {
             that.updateStudentsRemote();
         });
+
+        // filter students and remove everyone with (this.currentStudent.name == "" || this.currentStudent.surname == "" || this.currentStudent.class == "")
+        this.students = new Map([...this.students.values()].filter(student => {
+            return (student.name != "" && student.surname != "" && student.class != "")
+        }).map(student => [student.uid, student]));
     },
 
     computed: {

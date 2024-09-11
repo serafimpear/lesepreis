@@ -45,7 +45,7 @@
                         <img src="@/assets/svgs/icon-support.svg"></a>
                 </div>
             </div>
-            <RouterLink to="/" class="exit-link">
+            <RouterLink to="/" class="exit-link" @click="resetName">
                 <div class="nav-element" id="return-to-main-menu">
                     <img src="@/assets/svgs/icon-sign-out.svg">
                     <span class="nav-element-description">Zum Startbildschirm</span>
@@ -66,6 +66,7 @@
 
 <script>
 import NavElement from "@/components/NavElement.vue"
+const { ipcRenderer } = require('electron')
 
 export default {
     components: {
@@ -75,6 +76,11 @@ export default {
     methods: {
         contact: function () {
             require('electron').shell.openExternal('https://github.com/serafimpear/lesepreis/issues');
+        },
+
+        resetName: function () {
+            console.log('resetting name');
+            ipcRenderer.send("changeTitleYear", false);
         }
     }
 }
