@@ -28,7 +28,7 @@
                     <div class="table-data">
                         <div class="no-data" style="padding: 10px;" v-if="filteredStudentsList.length == 0">Keine Schüler vorhanden</div>
                         <div class="table-row" v-for="student in filteredStudentsList" @click="selectStudent(student)">
-                            <div v-if="student.passed" class="table-cell" title="Schüler qualifiziert"><img
+                            <div v-if="student.passed_count >= 3" class="table-cell" title="Schüler qualifiziert"><img
                                     src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
                             <div v-else class="table-cell" title="Schüler NICHT qualifiziert"><img
                                     src="@/assets/svgs/icon-no-red.svg" class="table-icon"></div>
@@ -91,7 +91,7 @@
                         <InputFieldTwoValues text="Gelesene Bücher" :value1=currentStudent.passed_count
                             :value2=currentStudent.failed_count />
 
-                        <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed ? 'ja' : 'nein'"
+                        <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed_count >= 3 ? 'ja' : 'nein'"
                             :img=currentStudent.passed />
                         <Button text="Verwalten" @click="showReadBookWindow()" />
                     </div>
@@ -615,7 +615,7 @@ ORDER BY
         // },
 
         isStudentEqual: function (student1, student2) {
-            let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.points == student2.points && student1.total_points == student2.total_points && student1.passed == student2.passed && student1.passed_count == student2.passed_count)
+            let isequal = (student1.name == student2.name && student1.surname == student2.surname && student1.class == student2.class && student1.points == student2.points && student1.total_points == student2.total_points && student1.passed_count == student2.passed_count)
             return isequal
         },
         showReadBookWindow: function () {
