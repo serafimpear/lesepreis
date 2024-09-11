@@ -82,12 +82,12 @@ export default {
             students: ipcRenderer.sendSync('DBQuery', 
 `SELECT SUM(b.points) as points, COUNT(b.id) as book_count, s.* 
 FROM students as s 
-INNER JOIN student_books as sb ON s.uid = sb.uid 
-INNER JOIN books as b ON sb.book_id = b.id
+LEFT JOIN student_books as sb ON s.uid = sb.uid 
+LEFT JOIN books as b ON sb.book_id = b.id
 GROUP BY s.uid 
 ORDER BY points DESC;`
             ),
-            books: ipcRenderer.sendSync('DBQuery', 'SELECT b.*, COUNT(sb.uid) as read_count FROM books as b INNER JOIN student_books as sb on b.id = sb.book_id ' +
+            books: ipcRenderer.sendSync('DBQuery', 'SELECT b.*, COUNT(sb.uid) as read_count FROM books as b LEFT JOIN student_books as sb on b.id = sb.book_id ' +
                 'GROUP BY b.id ORDER BY read_count DESC'),
             isDev: isDev,
             statistics: {},
@@ -251,6 +251,7 @@ ORDER BY points DESC;`
         }
     },
     mounted: function () {
+        console.log('students', this.students)
         this.statistics = {
             totalStudents: this.students.length,
             qualifiedStudents: 0,
