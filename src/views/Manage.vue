@@ -204,8 +204,8 @@ ORDER BY points DESC;`
             let sum = 0;
             let exportbooks = [];
             this.books.forEach(book => {
-                exportbooks.push({ title: book.title, author: book.author, readCount: book.readCount });
-                sum += book.readCount;
+                exportbooks.push({ title: book.title, author: book.author, readCount: book.read_count });
+                sum += book.read_count;
             });
 
             exportbooks = exportbooks.slice(0, 25);
