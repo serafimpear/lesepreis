@@ -497,16 +497,17 @@ function createWindow() {
         // });
 
         database.serialize(() => {
-            database.run(`DELETE FROM books WHERE id = ?`, [
-                data.id
-            ]), (err) => {
-                if (err) {
-                    console.error("Error deleting books:", err.message);
-                    event.returnValue = 'error';
-                } else {
-                    event.returnValue = 'done6';
-                }
-            }
+            database.run("PRAGMA foreign_keys = ON", (er1r) => {
+                database.run(`DELETE FROM books WHERE id = ?`, [data.id], function(err) {
+                    if (err) {
+                        console.error("Error deleting books:", err.message);
+                        event.returnValue = 'error';
+                    } else {
+                        event.returnValue = 'done6';
+                    }
+                });
+            });
+
         });
         // });
     })
