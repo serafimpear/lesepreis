@@ -8,7 +8,7 @@
                     <Button text="Gelesen" :tclass="currentView != 'read_books' ? 'diselected-button' : ''" @click="changeCurrentView('read_books')" />
                     <IconButton @click="close(false)" type="no" />
                 </div>
-                <SearchBar v-model="searchBookFromNotRead" tabindex="1" placeholder="Buch suchen..." />
+                <SearchBar v-if="currentView != 'read_books'" v-model="searchBookFromNotRead" tabindex="1" placeholder="Buch suchen..." />
                 <div class="books-list-add-unread ui-table" v-if="currentView == 'not_read_books'">
                     <div class="table-row table-header-row">
                         <div class="table-cell">Titel
