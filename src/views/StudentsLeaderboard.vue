@@ -542,7 +542,7 @@ ORDER BY
             if (this.currentStudent.multiplied_book_1 === -1) {
                 return;
             }
-            this.currentStudent.total_points -= books.get(this.currentStudent.multiplied_book_1).points * books.get(this.currentStudent.multiplied_book_2).points;
+            this.currentStudent.total_points -= this.books.get(this.currentStudent.multiplied_book_1).points * this.books.get(this.currentStudent.multiplied_book_2).points;
             this.currentStudent.multiplied_book_1 = -1;
             this.currentStudent.multiplied_book_2 = -1;
             // this.saveStudent(false); // not needed because of watcher
