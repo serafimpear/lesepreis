@@ -184,8 +184,6 @@ ORDER BY points DESC;`
                 orientation: "portrait",
                 border: "5mm",
             };
-            
-            console.log(this.students)
             const doc = {
                 html: this.StudentsPdfTemplate, // <-- changed, now with 'import'
                 data: {
