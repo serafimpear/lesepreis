@@ -5,10 +5,10 @@
                 <div class="addbook-window-title">
                     <div class="addbook-window-title-title">Bücher verwalten</div>
                     <Button text="Nicht gelesen" :tclass="currentView != 'read_books' ? '' :'diselected-button'" @click="changeCurrentView('not_read_books')" />
-                    <Button text="Gelesen" :tclass="currentView != 'read_books' ? 'diselected-button' : ''" @click="changeCurrentView('read_books')" />
+                    <Button text="Gelesen" :tclass="currentView != 'read_books' ? 'diselected-button' : ''" @click="changeCurrentView('read_books'); searchBookFromNotRead = ''" />
                     <IconButton @click="close(false)" type="no" />
                 </div>
-                <SearchBar v-if="currentView != 'read_books'" v-model="searchBookFromNotRead" tabindex="1" placeholder="Buch suchen..." />
+                <SearchBar :style="'visibility:' + (currentView != 'read_books' ? 'visible' : 'hidden') + ';'" v-model="searchBookFromNotRead" tabindex="1" placeholder="Buch suchen..." />
                 <div class="books-list-add-unread ui-table" v-if="currentView == 'not_read_books'">
                     <div class="table-row table-header-row">
                         <div class="table-cell">Titel
