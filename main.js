@@ -420,6 +420,22 @@ function createWindow() {
             event.returnValue = rows;
         });
     })
+    ipc.on('getBookStudents', (event, bookid) => {
+        database.all("SELECT students.uid, students.surname, students.name, students.class, strftime('%d.%m.%Y', student_books.date_added) AS date_added FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            event.returnValue = rows;
+        });
+    })
+    ipc.on('getBookStudentsCount', (event, bookid) => {
+        database.all("SELECT COUNT(DISTINCT students.uid) AS count FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
+            if (err) {
+                throw err;
+            }
+            event.returnValue = rows[0].count;
+        });
+    })
     ipc.on("upsertBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
         if (data.id == null) {

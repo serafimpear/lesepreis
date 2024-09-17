@@ -25,18 +25,24 @@
                         Lose
                         <SortIcon />
                     </div>
+                    <div class="table-cell" @click="booksSortBy = 'read'; booksSortAscending = !booksSortAscending;">
+                        Gelesen
+                        <SortIcon />
+                    </div>
                     <div class="table-cell" @click="booksSortBy = 'isbn'; booksSortAscending = !booksSortAscending;">
                         ISBN
                         <SortIcon />
                     </div>
                 </div>
                 <div class="table-data">
-                    <div class="no-data" style="padding: 10px;" v-if="filteredBooksList.length == 0">Keine Bücher vorhanden</div>
+                    <div class="no-data" style="padding: 10px;" v-if="filteredBooksList.length == 0">Keine Bücher
+                        vorhanden</div>
                     <div class="table-row" v-for="book in filteredBooksList" @click="selectBook(book)">
                         <div class="table-cell">{{ book.title }}</div>
                         <div class="table-cell">{{ book.author }}</div>
                         <div class="table-cell">{{ book.language }}</div>
                         <div class="table-cell">{{ book.points }}</div>
+                        <div class="table-cell">{{ getBookStudentsCount(book.id) }}</div>
                         <div class="table-cell">{{ book.isbn }}</div>
                     </div>
                 </div>
@@ -76,14 +82,16 @@
                             <span v-else-if="noResults">Keine Ergebnisse</span>
                             <span v-else-if="noResults != true && isLoading != true">&nbsp;</span>
                         </div>
-                        <div v-if="bookResults.length > 0" style="font-size: 18px;font-style: normal;font-weight: 300;">
+                        <div v-if="bookResults.length > 0 && searchBookWEBActive" style="font-size: 18px;font-style: normal;font-weight: 300;">
                             Mögliche Bücher</div>
-                        <div v-if="bookResults.length > 0" style="font-size: 12px;font-style: italic;font-weight: 300;">
+                        <div v-if="bookResults.length > 0 && searchBookWEBActive" style="font-size: 12px;font-style: italic;font-weight: 300;">
                             Kicken Sie auf ein Ergebnis, um
                             die Daten automatisch auszufüllen</div>
+                        <div v-if="searchBookWEBActive == false"><b>{{ bookStudents.length }}</b> Schüler haben dieses Buch gelesen <template v-if="bookStudents.length">:</template>
+                        </div>
                     </div>
                 </div>
-                <div class="book-search">
+                <div class="book-search" v-if="searchBookWEBActive">
                     <div class="book-result" v-for="result in bookResults" @click="selectResultBook(result)">
                         <div class="book-result-cover">
                             <img :src="result.thumbnailURL">
@@ -93,10 +101,31 @@
                         <div class="book-result-language">{{ result.language }}</div>
                     </div>
                 </div>
-                <!-- <div class="delete-save-bar">
-                    <Button type="delete" text="Löschen" color="red" @click="deleteBook()" />
-                    <Button type="yes" text="Speichern" color="green" @click="saveBook()" />
-                </div> -->
+                <div class="list-of-book-students" v-if="searchBookWEBActive == false && bookStudents.length > 0">
+                    <!-- Display all students that have read this book -->
+                    <div style="overflow: hidden;">
+                        <div class="book-students-table ui-table">
+                            <div class="table-row table-header-row">
+                                <div class="table-cell">Name</div>
+                                <div class="table-cell">Klasse</div>
+                                <div class="table-cell">Datum</div>
+                            </div>
+                            <div class="table-data">
+                                <div class="table-row" v-for="student in bookStudents">
+                                    <div class="table-cell">
+                                        <div class="table-cell-centered-content">{{ student.surname + ' ' + student.name }}</div>
+                                    </div>
+                                    <div class="table-cell">
+                                        <div class="table-cell-centered-content">{{ student.class }}</div>
+                                    </div>
+                                    <div class="table-cell">
+                                        <div class="table-cell-centered-content">{{ student.date_added }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div v-else id="no_book_selected">Klicken Sie auf ein Buch,<br>
                 um seine Informationen zu bearbeiten</div>
@@ -115,11 +144,23 @@ div#no_book_selected {
     width: 100%;
     height: 100%;
 }
+
+div.list-of-book-students div.table-row {
+    grid-template-columns: 1fr 4em 7em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 </style>
 
 <style>
 main#main-books {
     grid-template-columns: 2fr 1px 1fr;
+}
+
+@media only screen and (max-width: 1700px) and (max-height: 800px) {
+    div.book-information {
+        grid-template-rows: repeat(5, 23px) 22px;
+    }
 }
 </style>
 
@@ -153,6 +194,7 @@ export default {
     data() {
         return {
             books: new Map(),
+            bookStudents: new Map(),
             searchBook: '',
             currentBook: undefined,
             showBookInfo: false,
@@ -172,6 +214,7 @@ export default {
             booksSortAscending: false,
             currentBookBeforeEdit: undefined,
             googleAPIKey: ipcRenderer.sendSync('getApiKey'),
+            searchBookWEBActive: false,
         }
     },
 
@@ -183,12 +226,25 @@ export default {
             this.books = new Map(booksList.map(book => [book.id, book]));
         },
 
+        getBookStudentsCount: function (id) {
+            return ipcRenderer.sendSync("getBookStudentsCount", id);
+        },
+
+        getBookStudents: function () {
+            // const booksList = ipcRenderer.sendSync("getBookStudents", this.currentBook.id);
+            this.bookStudents = ipcRenderer.sendSync("getBookStudents", this.currentBook.id);
+            // this.bookStudents = new Map(booksList.map(student => [student.uid, student]));
+            //uid, surname, name, class, date_added
+            console.log(this.bookStudents.length)
+        },
+
         selectBook: function (book) {
             this.checkIfBookChangedAndAskIfSaveAndThenDoAndHopeThatItWorks(() => {
                 this.currentBookBeforeEdit = this.deepClone(book);
                 this.currentBook = this.deepClone(book);
                 this.bookResults = [];
                 this.showBookInfo = true;
+                this.getBookStudents();
             });
         },
 
@@ -234,15 +290,15 @@ export default {
             }
             if (returnEarly)
                 return false; // not sure what the return value should be
-            
+
 
             const newid = ipcRenderer.sendSync("upsertBook", JSON.stringify(this.currentBook));
 
             if (this.currentBook.id === null) {
                 this.currentBook.id = newid;
-            } 
+            }
             this.books.set(this.currentBook.id, this.deepClone(this.currentBook));
-            
+
             if (close) {
                 this.closeBook();
             }
@@ -297,6 +353,7 @@ export default {
             this.currentBookBeforeEdit = this.deepClone(this.currentBook);
         },
         searchBookWEB: function () {
+            this.searchBookWEBActive = true;
             this.bookResults = [];
             if (this.currentBook.isbn.length >= 10) {
                 this.isLoading = true;
@@ -337,6 +394,7 @@ export default {
             this.currentBook.title = result.title;
             this.currentBook.author = result.author;
             this.currentBook.language = result.language;
+            this.searchBookWEBActive = false;
         },
         sortListBy: function (list, criterion, sortAscending) {
             list.sort((a, b) => {
@@ -356,6 +414,9 @@ export default {
                 } else if (criterion === 'isbn') {
                     elementA = a.isbn.toLowerCase();
                     elementB = b.isbn.toLowerCase();
+                } else if (criterion === 'read') {
+                    elementA = this.getBookStudentsCount(a.id);
+                    elementB = this.getBookStudentsCount(b.id);
                 }
 
 

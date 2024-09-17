@@ -520,7 +520,7 @@ div.delete-save-bar button {
 }
 
 div.books-list div.table-row {
-    grid-template-columns: 1fr 1fr 5em 3.3em 10em;
+    grid-template-columns: 1fr 1fr 5em 3.3em 5em 7.5em;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
