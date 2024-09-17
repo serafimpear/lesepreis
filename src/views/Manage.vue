@@ -80,7 +80,8 @@ export default {
     data() {
         return {
             students: ipcRenderer.sendSync('DBQuery', 
-`SELECT SUM(b.points) as points, COUNT(b.id) as book_count, s.* 
+`SELECT SUM(b.points) as points, COUNT(b.id) as book_count, 
+COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, s.* 
 FROM students as s 
 LEFT JOIN student_books as sb ON s.uid = sb.uid 
 LEFT JOIN books as b ON sb.book_id = b.id
@@ -183,6 +184,8 @@ ORDER BY points DESC;`
                 orientation: "portrait",
                 border: "5mm",
             };
+            
+            console.log(this.students)
             const doc = {
                 html: this.StudentsPdfTemplate, // <-- changed, now with 'import'
                 data: {
