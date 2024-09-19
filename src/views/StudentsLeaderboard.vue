@@ -92,8 +92,8 @@
                         <InputFieldTwoValues text="Gelesene Bücher" :value1=currentStudent.passed_count
                             :value2=currentStudent.failed_count />
 
-                        <InputFieldTrueFalse text="Schüler qualifiziert" :value="currentStudent.passed_count >= 3 ? 'ja' : 'nein'"
-                            :img=currentStudent.passed />
+                        <InputFieldTrueFalse text="Schüler qualifiziert"
+                            :value="currentStudent.passed_count >= 3 ? 'ja' : 'nein'" :img=currentStudent.passed />
                         <Button text="Verwalten" @click="showReadBookWindow()" />
                     </div>
                     <div class="student-books ui-table" v-if="currentStudent.book_count > 0">
@@ -427,6 +427,17 @@ ORDER BY
         },
 
         deleteStudent: function () {
+            this.currentStudent.name = this.currentStudent.name.replace(/['"`]/g, '').trim();
+            this.currentStudent.surname = this.currentStudent.surname.replace(/['"`]/g, '').trim();
+            this.currentStudent.class = this.currentStudent.class.replace(/['"`]/g, '').trim();
+            if (this.currentStudent.name == "" && this.currentStudent.surname == "" && this.currentStudent.class == "") {
+                console.log(ipcRenderer.sendSync("deleteStudent", this.currentStudent.uid));
+                this.students.delete(this.currentStudent.uid);
+                this.studentBooks.delete(this.currentStudent.uid);
+                this.closeStudent();
+                return false;
+            }
+
             this.ask({
                 type: 'warning',
                 subtitle: 'Schüler löschen',
