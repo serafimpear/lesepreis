@@ -185,7 +185,7 @@ export default {
                     this.ask({
                         type: 'alert',
                         subtitle: 'Fehler beim Löschen',
-                        content: `Das Schuljahr konnte nicht gelöscht werden. Wenden Sie sich bitte an die Entwickler der App`,
+                        content: `Das Schuljahr konnte nicht gelöscht werden. Wenden Sie sich bitte an die Entwickler der App                                                                                                            TIPP: Vielleicht ist die Datenbank-Datei irgendwo in einem anderen Programm geöffnet? Probieren Sie alle anderen Programme zu schließen`,
                     }, () => { }, () => { });
                 }
             }, () => {
