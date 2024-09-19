@@ -140,8 +140,7 @@
                                         Date(student_book.date_added).toLocaleDateString("de-DE") }}</div>
                                 </div>
                                 <div class="table-cell">
-                                    <div class="table-cell-centered-content">{{ books.get(
-                                        student_book.book_id).points }}</div>
+                                    <div class="table-cell-centered-content">{{ student_book.passed ? books.get(student_book.book_id).points : 0 }}</div>
                                 </div>
                             </div>
                         </div>
@@ -343,8 +342,9 @@ export default {
 // ORDER BY 
 //   total_points DESC;`
 
-`SELECT 
-  SUM(COALESCE(b.points, 0)) AS points, 
+`
+SELECT 
+  SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END) AS points, 
   COUNT(b.id) AS book_count, 
   COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, 
   COUNT(CASE WHEN sb.passed = false THEN sb.book_id END) AS failed_count, 
@@ -354,7 +354,7 @@ export default {
     CASE 
       WHEN s.multiplied_book_1 = -1 OR s.multiplied_book_2 = -1 THEN 0 
       ELSE COALESCE(mb1.points, 0) * COALESCE(mb2.points, 0) 
-    END + SUM(COALESCE(b.points, 0)), 
+    END + SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END), 
     0
   ) AS total_points
 FROM 
@@ -367,6 +367,7 @@ GROUP BY
   s.uid
 ORDER BY 
   total_points DESC;
+
 `
 );
             this.students = reactive(new Map(studentsList.map(student => [student.uid, student])));
