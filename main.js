@@ -422,7 +422,7 @@ function createWindow() {
         });
     })
     ipc.on('getBookStudents', (event, bookid) => {
-        database.all("SELECT students.uid, students.surname, students.name, students.class, strftime('%d.%m.%Y', student_books.date_added) AS date_added FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
+        database.all("SELECT students.uid, students.surname, students.name, students.class, student_books.date_added AS date_added FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
             if (err) {
                 throw err;
             }

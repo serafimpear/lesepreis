@@ -119,7 +119,7 @@
                                         <div class="table-cell-centered-content">{{ student.class }}</div>
                                     </div>
                                     <div class="table-cell">
-                                        <div class="table-cell-centered-content">{{ student.date_added }}</div>
+                                        <div class="table-cell-centered-content">{{ new Date(student.date_added).toLocaleDateString("de-DE") }}</div>
                                     </div>
                                 </div>
                             </div>
