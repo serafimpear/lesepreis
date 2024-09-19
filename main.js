@@ -20,6 +20,8 @@ if (!fs.existsSync(userDataPath + '/settings.ini')) {
     fs.writeFileSync(userDataPath + '/settings.ini', 'apikey=AIzaSyA81ig_LA7piHwhiYhJ0pHkqhZGMq9gdcQ');
 }
 
+
+
 function databaseAll(query) {
     return new Promise((resolve, reject) => {
         database.all(query, function(err, rows) {
@@ -219,17 +221,21 @@ function createWindow() {
                     await initializeDB();
 
                     for (let student of studentsBackup) {
-                        if (!student.multiplied_books) {
+                        if (student.multiplied_book_1 < 0) {
                             student.multiplied_books = [-1, -1];
+                        } else {
+                            student.multiplied_books = [student.multiplied_book_1, student.multiplied_book_2];
                         }
                         await databaseRunParams(`INSERT INTO students (
+                                    uid,
                                     name, 
                                     surname, 
                                     class, 
                                     multiplied_book_1, 
                                     multiplied_book_2, 
                                     date_multiplied
-                                    ) VALUES (?, ?, ?, ?, ?, ?)`, [
+                                    ) VALUES (?, ?, ?, ?, ?, ?, ?)`, [
+                            student.uid,
                             student.name,
                             student.surname,
                             student.class,
