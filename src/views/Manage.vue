@@ -69,6 +69,7 @@ import StudentsPdfTemplate from '@/assets/pdfExport/StudentsPdfExport.js'
 import BooksPdfTemplate from '@/assets/pdfExport/BooksPdfExport.js'
 var Handlebars = require("handlebars");
 const isDev = require('electron-is-dev')
+const schoolYear = localStorage.getItem('schoolYear')
 
 export default {
     mixins: [modalFunctions, StudentsPdfTemplate, BooksPdfTemplate],
@@ -92,7 +93,8 @@ ORDER BY points DESC;`
                 'GROUP BY b.id ORDER BY read_count DESC'),
             isDev: isDev,
             statistics: {},
-            version: process.env.VITE_APP_VERSION
+            version: process.env.VITE_APP_VERSION,
+            schoolYear: schoolYear
         }
     },
 
@@ -190,7 +192,7 @@ ORDER BY points DESC;`
                     users: this.students,
                     sum: sum,
                     date: (new Date()).toLocaleDateString('de-DE'),
-                    year: "2023/24",
+                    year: this.schoolYear,
                     version: "v" + this.version
                 },
                 type: '',
@@ -224,7 +226,7 @@ ORDER BY points DESC;`
                     books: exportbooks,
                     sum: sum,
                     date: (new Date()).toLocaleDateString('de-DE'),
-                    year: "2023/24",
+                    year: this.schoolYear,
                     version: "v" + this.version
                 },
                 type: '',
@@ -249,10 +251,12 @@ ORDER BY points DESC;`
                 }, () => { }, () => { });
                 return false;
             }
-        }
+        },
     },
+
     mounted: function () {
         console.log('students', this.students)
+
         this.statistics = {
             totalStudents: this.students.length,
             qualifiedStudents: 0,
@@ -265,6 +269,7 @@ ORDER BY points DESC;`
             frenchBooks: 0,
             italianBooks: 0,
         }
+
         this.students.forEach((student) => {
             if (student.multiplied_book_1 != -1) {
                 this.statistics.multiplied++;
@@ -288,7 +293,7 @@ ORDER BY points DESC;`
                 this.statistics.italianBooks++;
             }
         });
-    }
+    },
 }
 
 </script>

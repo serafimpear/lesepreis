@@ -75,6 +75,7 @@ export default {
     mounted() {
         ipcRenderer.on('updateSchoolYear', (event, newSchoolYear) => {
             this.schoolYear = newSchoolYear;
+            localStorage.setItem('schoolYear', this.schoolYear)
         });
     },
 
