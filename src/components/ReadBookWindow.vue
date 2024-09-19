@@ -8,7 +8,7 @@
                     <Button text="Gelesen" :tclass="currentView != 'read_books' ? 'diselected-button' : ''" @click="changeCurrentView('read_books'); searchBookFromNotRead = ''" />
                     <IconButton @click="close(false)" type="no" />
                 </div>
-                <SearchBar :style="'visibility:' + (currentView != 'read_books' ? 'visible' : 'hidden') + ';'" v-model="searchBookFromNotRead" tabindex="1" placeholder="Buch suchen..." />
+                <SearchBar v-bind:disabled="currentView == 'read_books'" :style="'opacity:' + (currentView != 'read_books' ? '1' : '0.5') + '; ' + 'pointer-events:' + (currentView != 'read_books' ? 'all' : 'none') + ';'" v-model="searchBookFromNotRead" tabindex="1" placeholder="Buch suchen..." />
                 <div class="books-list-add-unread ui-table" v-if="currentView == 'not_read_books'">
                     <div class="table-row table-header-row">
                         <div class="table-cell">Titel
