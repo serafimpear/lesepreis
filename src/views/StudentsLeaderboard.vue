@@ -257,6 +257,7 @@ import ReadBookWindow from "@/components/ReadBookWindow.vue"
 import MultiplyWindow from "@/components/MultiplyWindow.vue"
 import InputFieldTwoValues from "@/components/InputFieldTwoValues.vue"
 import { modalFunctions } from "@/logic/modal.js"
+import { reactive } from 'vue'
 //import { rollupVersion } from "vite"
 // ^ idk wer das importiert hat, aber es führt dazu, dass vite nicht builden kann (error)
 
@@ -278,9 +279,9 @@ export default {
 
     data() {
         return {
-            students: new Map(),
-            books: new Map(),
-            studentBooks: new Map(),
+            students: reactive(new Map()),
+            books: reactive(new Map()),
+            studentBooks: reactive(new Map()),
             currentStudent: undefined,
             searchStudent: '',
             showStudentInfo: false,
@@ -308,11 +309,11 @@ export default {
 
         updateBooksRemote: function () {
             const booksList = ipcRenderer.sendSync("getBooks");
-            this.books = new Map(booksList.map(book => [book.id, book]));
+            this.books = reactive(new Map(booksList.map(book => [book.id, book])));
         },
 
         updateStudentBooksRemote: function () {
-            this.studentBooks = new Map([...this.students.keys()].map(studentID => [studentID, new Map()]));
+            this.studentBooks = reactive(new Map([...this.students.keys()].map(studentID => [studentID, reactive(new Map())])));
             const studentBooksList = ipcRenderer.sendSync("getStudentBooks");
             studentBooksList.forEach(studentBookCombination => {
                 this.studentBooks.get(studentBookCombination.uid).set(studentBookCombination.book_id, studentBookCombination);
@@ -321,14 +322,41 @@ export default {
         },
 
         updateStudentsRemote: function () {
-            const studentsList = ipcRenderer.sendSync('DBQuery', `SELECT 
-  SUM(b.points) AS points, 
+            const studentsList = ipcRenderer.sendSync('DBQuery',
+// wrong query!
+// `SELECT 
+//   SUM(b.points) AS points, 
+//   COUNT(b.id) AS book_count, 
+//   COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, 
+//   COUNT(CASE WHEN sb.passed = false THEN sb.book_id END) AS failed_count, 
+//   s.*,
+//   CASE WHEN COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) > 2 THEN TRUE ELSE FALSE END AS passed,
+//   COALESCE(mb1.points * mb2.points + SUM(b.points), 0) AS total_points
+// FROM 
+//   students AS s
+//   LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
+//   LEFT JOIN books AS mb2 ON s.multiplied_book_2 = mb2.id
+//   LEFT JOIN student_books AS sb ON s.uid = sb.uid
+//   LEFT JOIN books AS b ON sb.book_id = b.id
+// GROUP BY 
+//   s.uid
+// ORDER BY 
+//   total_points DESC;`
+
+`SELECT 
+  SUM(COALESCE(b.points, 0)) AS points, 
   COUNT(b.id) AS book_count, 
   COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, 
   COUNT(CASE WHEN sb.passed = false THEN sb.book_id END) AS failed_count, 
   s.*,
   CASE WHEN COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) > 2 THEN TRUE ELSE FALSE END AS passed,
-  COALESCE(mb1.points * mb2.points + SUM(b.points), 0) AS total_points
+  COALESCE(
+    CASE 
+      WHEN s.multiplied_book_1 = -1 OR s.multiplied_book_2 = -1 THEN 0 
+      ELSE COALESCE(mb1.points, 0) * COALESCE(mb2.points, 0) 
+    END + SUM(COALESCE(b.points, 0)), 
+    0
+  ) AS total_points
 FROM 
   students AS s
   LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
@@ -338,8 +366,10 @@ FROM
 GROUP BY 
   s.uid
 ORDER BY 
-  total_points DESC;`);
-            this.students = new Map(studentsList.map(student => [student.uid, student]));
+  total_points DESC;
+`
+);
+            this.students = reactive(new Map(studentsList.map(student => [student.uid, student])));
             this.updateStudentBooksRemote();
             return true;
         },
@@ -420,7 +450,7 @@ ORDER BY
             this.currentStudent.uid = csuid;
             this.students.set(csuid, this.deepClone(this.currentStudent));
 
-            this.studentBooks.set(csuid, new Map());
+            this.studentBooks.set(csuid, reactive(new Map()));
 
             // this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
             this.showStudentInfo = true;
@@ -660,9 +690,9 @@ ORDER BY
         });
 
         // filter students and remove everyone with (this.currentStudent.name == "" || this.currentStudent.surname == "" || this.currentStudent.class == "")
-        this.students = new Map([...this.students.values()].filter(student => {
+        this.students = reactive(new Map([...this.students.values()].filter(student => {
             return (student.name != "" && student.surname != "" && student.class != "")
-        }).map(student => [student.uid, student]));
+        }).map(student => [student.uid, student])));
     },
 
     computed: {

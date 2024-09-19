@@ -177,6 +177,7 @@ import axios from 'axios';
 
 import Modal from "@/components/Modal.vue"
 import { modalFunctions } from "@/logic/modal.js"
+import { reactive } from 'vue'
 
 export default {
     mixins: [modalFunctions],
@@ -193,8 +194,8 @@ export default {
 
     data() {
         return {
-            books: new Map(),
-            bookStudents: new Map(),
+            books: reactive(new Map()),
+            bookStudents: reactive(new Map()),
             searchBook: '',
             currentBook: undefined,
             showBookInfo: false,
@@ -223,7 +224,9 @@ export default {
 
         updateBooksRemote: function () {
             const booksList = ipcRenderer.sendSync("getBooks");
-            this.books = new Map(booksList.map(book => [book.id, book]));
+            this.books = reactive(new Map(booksList.map(book => [book.id, book])));
+            console.log('this.books')
+            console.log(this.books)
         },
 
         getBookStudentsCount: function (id) {
@@ -233,7 +236,7 @@ export default {
         getBookStudents: function () {
             // const booksList = ipcRenderer.sendSync("getBookStudents", this.currentBook.id);
             this.bookStudents = ipcRenderer.sendSync("getBookStudents", this.currentBook.id);
-            // this.bookStudents = new Map(booksList.map(student => [student.uid, student]));
+            // this.bookStudents = new reactive(Map(booksList.map(student => [student.uid, student])));
             //uid, surname, name, class, date_added
             console.log(this.bookStudents.length)
         },
@@ -269,14 +272,15 @@ export default {
                 return false;
             }
 
-            let possible_match = [...this.books.values()].find(book => book.isbn == this.currentBook.isbn);
+            let possible_match = [...this.books.values()].find(book => book.isbn == this.currentBook.isbn) ;
 
             let returnEarly = false;
             if (possible_match) {
                 return this.ask({
-                    type: 'alert',
+                    type: 'warning',
                     subtitle: 'Duplikat',
                     noButton: 'Wechseln',
+                    okButton: 'Abbrechen',
                     content: `Ein Buch mit der ISBN-${this.currentBook.isbn} existiert bereits!\n\nMöchten Sie zu diesem wechseln?`,
                 }, () => {
                     return false;
