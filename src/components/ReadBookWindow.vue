@@ -96,9 +96,9 @@
                         v-if="(selectedBook !== null) && (currentView == 'read_books')">
                         <div class="addbook-window-passed-radio-box-title">Prüfung</div>
                         <RadioInput inputid="radio_aw_1" text="bestanden" color="green" @click="bookPassed = true"
-                            :checked="selectedBook.passed == true" />
+                            :checked="studentBooks.get(selectedBook.id).passed" />
                         <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false"
-                            :checked="selectedBook.passed == false" />
+                            :checked="!studentBooks.get(selectedBook.id).passed" />
                     </div>
                     <DateInputField class="addbook-window-date-picker" v-if="selectedBook !== null && currentView == 'not_read_books'" v-model="date_added" text="Datum" />
                     <!-- <Button text="Abbrechen" @click="close(false)" /> -->
