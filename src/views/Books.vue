@@ -82,12 +82,15 @@
                             <span v-else-if="noResults">Keine Ergebnisse</span>
                             <span v-else-if="noResults != true && isLoading != true">&nbsp;</span>
                         </div>
-                        <div v-if="bookResults.length > 0 && searchBookWEBActive" style="font-size: 18px;font-style: normal;font-weight: 300;">
+                        <div v-if="bookResults.length > 0 && searchBookWEBActive"
+                            style="font-size: 18px;font-style: normal;font-weight: 300;">
                             Mögliche Bücher</div>
-                        <div v-if="bookResults.length > 0 && searchBookWEBActive" style="font-size: 12px;font-style: italic;font-weight: 300;">
+                        <div v-if="bookResults.length > 0 && searchBookWEBActive"
+                            style="font-size: 12px;font-style: italic;font-weight: 300;">
                             Kicken Sie auf ein Ergebnis, um
                             die Daten automatisch auszufüllen</div>
-                        <div v-if="searchBookWEBActive == false"><b>{{ bookStudents.length }}</b> Schüler haben dieses Buch gelesen <template v-if="bookStudents.length">:</template>
+                        <div v-if="searchBookWEBActive == false"><b>{{ bookStudents.length ? bookStudents.length : 0 }}</b> Schüler haben dieses
+                            Buch gelesen <template v-if="bookStudents.length">:</template>
                         </div>
                     </div>
                 </div>
@@ -113,13 +116,15 @@
                             <div class="table-data">
                                 <div class="table-row" v-for="student in bookStudents">
                                     <div class="table-cell">
-                                        <div class="table-cell-centered-content">{{ student.surname + ' ' + student.name }}</div>
+                                        <div class="table-cell-centered-content">{{ student.surname + ' ' + student.name
+                                            }}</div>
                                     </div>
                                     <div class="table-cell">
                                         <div class="table-cell-centered-content">{{ student.class }}</div>
                                     </div>
                                     <div class="table-cell">
-                                        <div class="table-cell-centered-content">{{ new Date(student.date_added).toLocaleDateString("de-DE") }}</div>
+                                        <div class="table-cell-centered-content">{{ new
+                                            Date(student.date_added).toLocaleDateString("de-DE") }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -216,6 +221,7 @@ export default {
             currentBookBeforeEdit: undefined,
             googleAPIKey: ipcRenderer.sendSync('getApiKey'),
             searchBookWEBActive: false,
+            currentBookISBN: ''
         }
     },
 
@@ -248,6 +254,7 @@ export default {
                 this.bookResults = [];
                 this.showBookInfo = true;
                 this.getBookStudents();
+                this.currentBookISBN = this.currentBook.isbn;
             });
         },
 
@@ -255,6 +262,8 @@ export default {
             this.currentBook = undefined;
             this.bookResults = [];
             this.showBookInfo = false;
+            this.currentBookISBN = '';
+            this.bookStudents = reactive(new Map());
         },
 
         saveBook: function (close = true) {
@@ -272,10 +281,11 @@ export default {
                 return false;
             }
 
-            let possible_match = [...this.books.values()].find(book => book.isbn == this.currentBook.isbn) ;
+            let possible_match = [...this.books.values()].find(book => book.isbn == this.currentBook.isbn);
+            let is_there_a_match = possible_match && this.currentBookISBN != this.currentBook.isbn;
 
             let returnEarly = false;
-            if (possible_match) {
+            if (is_there_a_match) {
                 return this.ask({
                     type: 'warning',
                     subtitle: 'Duplikat',
@@ -287,13 +297,15 @@ export default {
                 }, () => {
                     this.currentBookBeforeEdit = this.deepClone(possible_match);
                     this.currentBook = this.deepClone(possible_match);
+                    this.bookResults = [];
                     this.showBookInfo = true;
+                    this.getBookStudents();
+                    this.currentBookISBN = this.currentBook.isbn;
                     returnEarly = true;
-                    return false;
                 });
             }
             if (returnEarly)
-                return false; // not sure what the return value should be
+                return false; // not sure what the return value should be <-- i think it's fine xD
 
 
             const newid = ipcRenderer.sendSync("upsertBook", JSON.stringify(this.currentBook));
@@ -355,7 +367,10 @@ export default {
             this.showBookInfo = true;
             this.isNew = true;
             this.currentBookBeforeEdit = this.deepClone(this.currentBook);
+            this.currentBookISBN = '';
+            this.bookStudents = reactive(new Map());
         },
+        
         searchBookWEB: function () {
             this.searchBookWEBActive = true;
             this.bookResults = [];
