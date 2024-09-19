@@ -239,10 +239,11 @@ function createWindow() {
                         ]);
                         let books = JSON.parse(student.books);
                         for (let book of books) {
-                            await database.run(`INSERT INTO student_books (uid, book_id, passed) VALUES (?, ?, ?)`, [
+                            await database.run(`INSERT INTO student_books (uid, book_id, passed, date_added) VALUES (?, ?, ?, ?)`, [
                                 student.uid,
                                 book.id,
-                                book.passed
+                                book.passed,
+                                book.date_added
                             ]);
                         };
                     };
