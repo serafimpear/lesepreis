@@ -1,4 +1,4 @@
-export default { data() { return { BooksPdfTemplate : `
+export default { data() { return { BooksPdfTemplate: `
 <!DOCTYPE html>
 <html>
 <head>
@@ -164,4 +164,4 @@ export default { data() { return { BooksPdfTemplate : `
     </style>
 </body>
 </html>
-`}}};
+` } } };
