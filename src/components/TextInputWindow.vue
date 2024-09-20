@@ -130,6 +130,11 @@ export default {
     width: 100%;
     overflow: hidden;
     text-wrap: wrap;
+    white-space: pre-wrap;
+}
+
+.modal-window .modal-content p {
+    white-space: pre-wrap;
 }
 
 .modal-window .modal-buttons button {
