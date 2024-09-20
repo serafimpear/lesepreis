@@ -1,7 +1,7 @@
 <template>
     <main>
         <div class="manage-section">
-            <h1>Daten exportieren</h1>
+            <h1>Ranglisten drucken</h1>
             <!-- <div style="font-size: 16px; font-style: normal; font-weight: 300;">Hier können Sie Daten vom
                 Programm verwalten, z.B. Ranglisten exportieren</div><br> -->
             <div class="ui-infobox">
@@ -19,6 +19,18 @@
                 <div>Rangliste der Bücher <img class="export-inline-icon" src="@/assets/svgs/icon-books.svg"></div>
                 <Button text="Exportieren"
                     @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
+            </div>
+            <br>
+            <h1>Daten exportieren</h1>
+            <div class="text-button">
+                <div>Ungelesene Bücher exportieren</div>
+                <Button type="export" text="Exportieren" @click="exportUnreadBooks()" />
+            </div>
+
+            <h1>Daten importieren</h1>
+            <div class="text-button">
+                <div>Ungelesene Bücher importieren</div>
+                <Button type="import" text="Importieren" @click="importUnreadBooks()" />
             </div>
             <!-- <div>
             <h3>Rangliste der Bücher</h3>
@@ -80,17 +92,17 @@ export default {
 
     data() {
         return {
-            students: ipcRenderer.sendSync('DBQuery', 
-// `SELECT SUM(b.points) as points,
-// COUNT(b.id) as book_count, 
-// COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, s.* 
-// FROM students as s 
-// LEFT JOIN student_books as sb ON s.uid = sb.uid 
-// LEFT JOIN books as b ON sb.book_id = b.id
-// GROUP BY s.uid 
-// ORDER BY points DESC;`
+            students: ipcRenderer.sendSync('DBQuery',
+                // `SELECT SUM(b.points) as points,
+                // COUNT(b.id) as book_count, 
+                // COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, s.* 
+                // FROM students as s 
+                // LEFT JOIN student_books as sb ON s.uid = sb.uid 
+                // LEFT JOIN books as b ON sb.book_id = b.id
+                // GROUP BY s.uid 
+                // ORDER BY points DESC;`
 
-`SELECT SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END) AS points, 
+                `SELECT SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END) AS points, 
 COUNT(b.id) AS book_count,
 COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, s.*,
 
@@ -256,6 +268,49 @@ ORDER BY points DESC;`
             console.log(doc);
             if (this.compilePDF(doc, options, pathToSave)) {
                 ipcRenderer.send("openFile", pathToSave);
+            }
+        },
+
+        exportUnreadBooks: function () {
+            let response = ipcRenderer.sendSync("openSaveDialogDB", { title: 'Ungelesene Bücher exportieren', name: `Ungelesene Bücher ${(new Date()).toLocaleDateString('de-DE')}` });
+            if (response.filePath) {
+                ipcRenderer.sendSync("exportUnreadBooks", { year: schoolYear, path: response.filePath });
+            } else if (response.canceled) {
+                return false;
+            } else {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Fehler beim Speichern',
+                    content: `Die Datei konnte nicht gespeichert werden. Wenden Sie sich bitte an die Entwickler der App`,
+                }, () => { }, () => { });
+                return false;
+            }
+        },
+
+        openFile: function (title) {
+            let response = ipcRenderer.sendSync("openFileDialog", { title: title });
+            console.log(response.filePaths[0]);
+            if (response.filePaths[0]) {
+                return response.filePaths[0];
+            } else if (response.canceled) {
+                return false;
+            } else {
+                this.ask({
+                    type: 'alert',
+                    subtitle: 'Fehler beim Öffnen',
+                    content: `Die Datei konnte nicht geöffnet werden. Wenden Sie sich bitte an die Entwickler der App`,
+                }, () => { }, () => { });
+                return false;
+            }
+        },
+        
+        importUnreadBooks: function () {
+            // open file and save it to the database files folder
+            let filepath = this.openFile("Ungelesene Bücher importieren");
+            console.log('trying to import unread books', filepath);
+            if (filepath) {
+                console.log('trying to import unread books', filepath);
+                ipcRenderer.sendSync("importUnreadBooks", filepath);
             }
         },
 

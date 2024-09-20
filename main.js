@@ -20,11 +20,9 @@ if (!fs.existsSync(userDataPath + '/settings.ini')) {
     fs.writeFileSync(userDataPath + '/settings.ini', 'apikey=AIzaSyA81ig_LA7piHwhiYhJ0pHkqhZGMq9gdcQ');
 }
 
-
-
-function databaseAll(query) {
+function databaseAll(db, query) {
     return new Promise((resolve, reject) => {
-        database.all(query, function(err, rows) {
+        db.all(query, function(err, rows) {
             if (err) {
                 reject(err);
             } else {
@@ -34,9 +32,9 @@ function databaseAll(query) {
     });
 }
 
-function databaseRun(query) {
+function databaseRun(db, query) {
     return new Promise((resolve, reject) => {
-        database.run(query, function(err) {
+        db.run(query, function(err) {
             if (err) {
                 reject(err);
             } else {
@@ -46,9 +44,9 @@ function databaseRun(query) {
     });
 }
 
-function databaseRunParams(query, params) {
+function databaseRunParams(db, query, params) {
     return new Promise((resolve, reject) => {
-        database.run(query, params, function(err) {
+        db.run(query, params, function(err) {
             if (err) {
                 reject(err);
             } else {
@@ -58,9 +56,9 @@ function databaseRunParams(query, params) {
     });
 }
 
-function databaseGet(query) {
+function databaseGet(db, query) {
     return new Promise((resolve, reject) => {
-        database.get(query, function(err, row) {
+        db.get(query, function(err, row) {
             if (err) {
                 reject(err);
             } else {
@@ -194,10 +192,10 @@ function createWindow() {
 
         database.serialize(async() => {
             try {
-                let isNewSchema = await databaseGet("SELECT name FROM sqlite_master WHERE type='table' AND name='student_books'");
+                let isNewSchema = await databaseGet(database, "SELECT name FROM sqlite_master WHERE type='table' AND name='student_books'");
                 // check if we use the new schema
                 if (!isNewSchema) {
-                    let isMigrationNeeded = await databaseGet("SELECT name FROM sqlite_master WHERE type='table' AND name='students'");
+                    let isMigrationNeeded = await databaseGet(database, "SELECT name FROM sqlite_master WHERE type='table' AND name='students'");
 
                     // if new / empty db, initialize it
                     if (!isMigrationNeeded) {
@@ -213,10 +211,9 @@ function createWindow() {
 
                     fs.copyFileSync(userDataPath + `/schuljahr_${dataReceived}.db`, userDataPath + `/backup/schuljahr_${dataReceived}_${Date.now()}.db`);
 
-                    let studentsBackup = await databaseAll("SELECT * FROM students");
-                    console.log('----------', studentsBackup)
+                    let studentsBackup = await databaseAll(database, "SELECT * FROM students");
 
-                    await databaseRun("DROP TABLE IF EXISTS students");
+                    await databaseRun(database, "DROP TABLE IF EXISTS students");
 
                     await initializeDB();
 
@@ -226,7 +223,7 @@ function createWindow() {
                         } else {
                             student.multiplied_books = [student.multiplied_book_1, student.multiplied_book_2];
                         }
-                        await databaseRunParams(`INSERT INTO students (
+                        await databaseRunParams(database, `INSERT INTO students (
                                     uid,
                                     name, 
                                     surname, 
@@ -295,7 +292,7 @@ function createWindow() {
         data = JSON.parse(dataReceived);
         if (data.uid == null) {
             try {
-                await databaseRunParams(`INSERT INTO students (` +
+                await databaseRunParams(database, `INSERT INTO students (` +
                     `name, ` +
                     `surname, ` +
                     `class, ` +
@@ -311,7 +308,7 @@ function createWindow() {
                         data.date_multiplied
                     ]);
 
-                console.log('_____________________', await getLastInsertRowId())
+                // console.log('_____________________', await getLastInsertRowId())
                 event.returnValue = await getLastInsertRowId();
             } catch (err) {
                 console.error(err);
@@ -448,7 +445,7 @@ function createWindow() {
         if (data.id == null) {
             database.serialize(async() => {
                 try {
-                    await databaseRunParams('INSERT INTO books (title,author,language, points, isbn) VALUES (?, ?, ?, ?, ?)', [
+                    await databaseRunParams(database, 'INSERT INTO books (title,author,language, points, isbn) VALUES (?, ?, ?, ?, ?)', [
                         data.title,
                         data.author,
                         data.language,
@@ -456,7 +453,7 @@ function createWindow() {
                         data.isbn
                     ]);
 
-                    console.log('_____________________', this.lastID)
+                    // console.log('_____________________', this.lastID)
                     event.returnValue = await getLastInsertRowId();
                 } catch (err) {
                     console.error(err);
@@ -611,7 +608,7 @@ function createWindow() {
 
     ipc.on("importYear", (event, dataReceived) => {
         try {
-            console.log('-----------------', dataReceived, userDataPath + '/' + path.basename(dataReceived));
+            // console.log('-----------------', dataReceived, userDataPath + '/' + path.basename(dataReceived));
 
             // dataReceived is the path to the file like C:\Users\user\Documents\schuljahr_2021.db
             // copy the file to the userDataPath
@@ -619,6 +616,38 @@ function createWindow() {
             // if dataReceived path file starts with schuljahr_ leave as it is, else add schuljahr_ prefix
             fs.copyFileSync(dataReceived, userDataPath + '/' + (path.basename(dataReceived).startsWith('schuljahr_') ? path.basename(dataReceived, ".db") + " (Importiert am " + new Date().toLocaleDateString('ru') + ").db" : 'schuljahr_' + path.basename(dataReceived, ".db") + " (Importiert am " + new Date().toLocaleDateString('ru') + ").db"));
 
+        } catch (err) {
+            console.error(err);
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
+    });
+
+    ipc.on("importUnreadBooks", (event, dataReceived) => {
+        try {
+            database_with_unread_books = new sqlite3.Database(dataReceived);
+
+            database_with_unread_books.on('trace', (sql) => {
+                console.log('Query3:', sql);
+            });
+
+            database_with_unread_books.all('SELECT * FROM books', [], (err, rows) => {
+                console.log(rows)
+                for (let row of rows) {
+                    database.run('INSERT INTO books (title, author, language, points, isbn) VALUES (?, ?, ?, ?, ?)', [
+                        row.title,
+                        row.author,
+                        row.language,
+                        row.points,
+                        row.isbn
+                    ]);
+                }
+
+                if (err) {
+                    throw err;
+                }
+            });
 
         } catch (err) {
             console.error(err);
@@ -695,6 +724,33 @@ function createWindow() {
         event.returnValue = true;
     });
 
+    ipc.on("exportUnreadBooks", (event, dataReceived) => {
+        try {
+            fs.copyFileSync(userDataPath + '/schuljahr_' + dataReceived.year + '.db', dataReceived.path);
+            database_copied = new sqlite3.Database(dataReceived.path);
+
+            database_copied.on('trace', (sql) => {
+                console.log('Query2:', sql);
+            });
+
+            database_copied.serialize(async() => {
+                databaseRun(database_copied, `DROP TABLE IF EXISTS reset;`);
+                databaseRun(database_copied, `ALTER TABLE books ADD COLUMN was_read BOOLEAN DEFAULT 0;`);
+                databaseRun(database_copied, `UPDATE books SET was_read = 1 WHERE id IN (SELECT book_id FROM student_books WHERE passed = 1);`);
+                databaseRun(database_copied, `DELETE FROM student_books WHERE book_id IN (SELECT id FROM books);`);
+                databaseRun(database_copied, `DELETE FROM books WHERE was_read = 1;`);
+                databaseRun(database_copied, `DROP TABLE IF EXISTS student_books;`);
+                databaseRun(database_copied, `DROP TABLE IF EXISTS students;`);
+                databaseRun(database_copied, `VACUUM`);
+            });
+        } catch (err) {
+            console.error(err);
+            event.returnValue = false;
+            return;
+        }
+        event.returnValue = true;
+    });
+
     ipc.on("openFile", (event, dataReceived) => {
         shell.openPath(dataReceived);
     });
@@ -717,7 +773,6 @@ function createWindow() {
     });
 
     ipc.on("changeTitleYear", (event, dataReceived) => {
-        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", dataReceived);
         win.webContents.send('updateSchoolYear', dataReceived);
     });
 
@@ -725,8 +780,8 @@ function createWindow() {
 
 async function initializeDB() {
     // Enable foreign key constraints
-    await databaseRun("PRAGMA foreign_keys = ON");
-    await databaseRun("CREATE TABLE IF NOT EXISTS students (" +
+    await databaseRun(database, "PRAGMA foreign_keys = ON");
+    await databaseRun(database, "CREATE TABLE IF NOT EXISTS students (" +
         "uid INTEGER PRIMARY KEY, " +
         "name TEXT, " +
         "surname TEXT, " +
@@ -734,14 +789,14 @@ async function initializeDB() {
         "multiplied_book_1 INTEGER, " +
         "multiplied_book_2 INTEGER, " +
         "date_multiplied INTEGER DEFAULT CURRENT_TIMESTAMP)");
-    await databaseRun("CREATE TABLE IF NOT EXISTS books (" +
+    await databaseRun(database, "CREATE TABLE IF NOT EXISTS books (" +
         "id INTEGER PRIMARY KEY, " +
         "title TEXT, " +
         "author TEXT, " +
         "language TEXT, " +
         "points INTEGER, " +
         "isbn TEXT)");
-    await databaseRun("CREATE TABLE IF NOT EXISTS student_books (" +
+    await databaseRun(database, "CREATE TABLE IF NOT EXISTS student_books (" +
         "uid INTEGER, " +
         "book_id INTEGER, " +
         "passed BOOLEAN, " +
