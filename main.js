@@ -417,29 +417,36 @@ function createWindow() {
         // });
     });
     ipc.on('getBooks', (event, args) => {
-        database.all('SELECT * FROM books', [], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            event.returnValue = rows;
-        });
+        // database.all('SELECT * FROM books', [], (err, rows) => {
+        database.all(
+            "SELECT books.*, " +
+            "(SELECT COUNT(students.uid) " +
+            "FROM student_books " +
+            "JOIN students ON student_books.uid = students.uid " +
+            "WHERE student_books.book_id = books.id) AS studentsCount " +
+            "FROM books", [], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                event.returnValue = rows;
+            });
     })
     ipc.on('getBookStudents', (event, bookid) => {
-        database.all("SELECT students.uid, students.surname, students.name, students.class, student_books.date_added AS date_added FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            event.returnValue = rows;
-        });
-    })
-    ipc.on('getBookStudentsCount', (event, bookid) => {
-        database.all("SELECT COUNT(DISTINCT students.uid) AS count FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
-            if (err) {
-                throw err;
-            }
-            event.returnValue = rows[0].count;
-        });
-    })
+            database.all("SELECT students.uid, students.surname, students.name, students.class, student_books.date_added AS date_added FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
+                if (err) {
+                    throw err;
+                }
+                event.returnValue = rows;
+            });
+        })
+        // ipc.on('getBookStudentsCount', (event, bookid) => {
+        //     database.all("SELECT COUNT(DISTINCT students.uid) AS count FROM student_books JOIN students ON student_books.uid = students.uid WHERE student_books.book_id = " + bookid, [], (err, rows) => {
+        //         if (err) {
+        //             throw err;
+        //         }
+        //         event.returnValue = rows[0].count;
+        //     });
+        // })
     ipc.on("upsertBook", (event, dataReceived) => {
         data = JSON.parse(dataReceived);
         if (data.id == null) {

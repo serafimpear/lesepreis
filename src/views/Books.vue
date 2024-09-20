@@ -42,7 +42,7 @@
                         <div class="table-cell">{{ book.author }}</div>
                         <div class="table-cell">{{ book.language }}</div>
                         <div class="table-cell">{{ book.points }}</div>
-                        <div class="table-cell">{{ getBookStudentsCount(book.id) }}</div>
+                        <div class="table-cell">{{ book.studentsCount }}</div>
                         <div class="table-cell">{{ book.isbn }}</div>
                     </div>
                 </div>
@@ -89,7 +89,8 @@
                             style="font-size: 12px;font-style: italic;font-weight: 300;">
                             Kicken Sie auf ein Ergebnis, um
                             die Daten automatisch auszufüllen</div>
-                        <div v-if="searchBookWEBActive == false"><b>{{ bookStudents.length ? bookStudents.length : 0 }}</b> Schüler haben dieses
+                        <div v-if="searchBookWEBActive == false"><b>{{ bookStudents.length ? bookStudents.length : 0
+                                }}</b> Schüler haben dieses
                             Buch gelesen <template v-if="bookStudents.length">:</template>
                         </div>
                     </div>
@@ -235,10 +236,6 @@ export default {
             console.log(this.books)
         },
 
-        getBookStudentsCount: function (id) {
-            return ipcRenderer.sendSync("getBookStudentsCount", id);
-        },
-
         getBookStudents: function () {
             // const booksList = ipcRenderer.sendSync("getBookStudents", this.currentBook.id);
             this.bookStudents = ipcRenderer.sendSync("getBookStudents", this.currentBook.id);
@@ -370,7 +367,7 @@ export default {
             this.currentBookISBN = '';
             this.bookStudents = reactive(new Map());
         },
-        
+
         searchBookWEB: function () {
             this.searchBookWEBActive = true;
             this.bookResults = [];
@@ -434,8 +431,8 @@ export default {
                     elementA = a.isbn.toLowerCase();
                     elementB = b.isbn.toLowerCase();
                 } else if (criterion === 'read') {
-                    elementA = this.getBookStudentsCount(a.id);
-                    elementB = this.getBookStudentsCount(b.id);
+                    elementA = a.studentsCount.toLowerCase();
+                    elementB = b.studentsCount.toLowerCase();
                 }
 
 
