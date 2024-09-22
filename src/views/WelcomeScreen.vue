@@ -5,7 +5,7 @@
             <div class="welcome-controls">
                 <div>
                     <img class="welcome-controls-box-logo" src="@/assets/graphics/logo_text.svg">
-                    <p class="wrap">erstellt 2023 für die Schulbibliothek "Martin Benedikter" der Oberschulen
+                    <p class="wrap">erstellt 2023-2024 für die Schulbibliothek "Martin Benedikter" der Oberschulen
                         Fallmerayer in Brixen</p>
                     <b>Schuljahr auswählen</b>
                     <div class="years-table ui-table">
