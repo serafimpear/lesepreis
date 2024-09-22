@@ -351,7 +351,7 @@ ORDER BY points DESC;`
             if (student.multiplied_book_1 != -1) {
                 this.statistics.multiplied++;
             }
-            if (student.book_count > 3) {
+            if (student.passed_count >= 3) {
                 this.statistics.qualifiedStudents++;
             }
             this.statistics.readBooks += student.book_count;
