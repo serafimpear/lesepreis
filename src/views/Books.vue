@@ -431,8 +431,8 @@ export default {
                     elementA = a.isbn.toLowerCase();
                     elementB = b.isbn.toLowerCase();
                 } else if (criterion === 'read') {
-                    elementA = a.studentsCount.toLowerCase();
-                    elementB = b.studentsCount.toLowerCase();
+                    elementA = a.studentsCount;
+                    elementB = b.studentsCount;
                 }
 
 
