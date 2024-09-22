@@ -38,7 +38,7 @@ export default { data() { return { BooksPdfTemplate: `
             {{/each}}
             <tr class="footer">
                 <th colspan="3">
-                    Insgesamt haben Schüler {{sum}} mal ein Buch gelesen
+                    Insgesamt haben Schüler {{sum}} Mal ein Buch gelesen
                 </th>
             </tr>
         </table>
