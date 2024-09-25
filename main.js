@@ -8,6 +8,8 @@ const sqlite3 = require('sqlite3');
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 const gotTheLock = app.requestSingleInstanceLock() // dont allow 2 lesepreis windows
 
+// hi
+
 var database;
 
 // // if dont exist, create a file 'settings.ini' in the userDataPath, hence copy 'dist/assets/default.ini' to 'settings.ini'
