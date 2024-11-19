@@ -1,7 +1,7 @@
 <template>
     <div class="welcome-screen-instance">
         <div class="welcome-controls-box">
-            <img class="welcome-controls-box-background-logo" src="@/assets/graphics/logo.svg">
+            <!-- <img class="welcome-controls-box-background-logo" src="@/assets/graphics/logo.svg"> -->
             <div class="welcome-controls">
                 <div>
                     <img class="welcome-controls-box-logo" src="@/assets/graphics/logo_text.svg">
@@ -229,7 +229,8 @@ div.welcome-screen-instance {
     padding: 0;
     height: 100%;
     width: 100%;
-    background: url('@/assets/graphics/gradient.png');
+    /* background: url('@/assets/graphics/gradient.png'); */
+    background: url('@/assets/graphics/new_background.png');
     background-size: cover;
     display: flex;
     align-items: center;
@@ -274,7 +275,7 @@ img.welcome-controls-box-logo {
     padding: 50px;
     max-width: 500px;
     z-index: 1;
-    transform: translate(-21%, 0);
+    /* transform: translate(-21%, 0); */
     height: 100%;
     display: grid;
     grid-template-rows: 1fr auto 40px;
@@ -302,7 +303,7 @@ div.ui-table.years-table .table-row {
     }
 
     .welcome-controls {
-        transform: translate(-15%);
+        /* transform: translate(-15%); */
     }
 
     .welcome-controls-box {
@@ -334,6 +335,8 @@ div.ui-table.years-table .table-row {
 .bottom-text {
     position: absolute;
     bottom: 4em;
+    background: #F2B345;
+    box-shadow: #F2B345 0 0 58px 64px;
 }
 
 .hinweis {

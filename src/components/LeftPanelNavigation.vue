@@ -12,7 +12,8 @@
                 </span>
             </div>
             <div class="nav-element-logo">
-                <img src="@/assets/svgs/lesepreis-logo.png" class="lesepreis-logo" height="52">
+                <!-- <img src="@/assets/svgs/lesepreis-logo.png" class="lesepreis-logo" height="52"> -->
+                <img src="@/assets/graphics/new_small_logo.jpg" class="lesepreis-logo" height="40">
                 <span class="nav-element-description">
                     <span style="display: block; font-size: 1.2em; line-height: 1.2em;">Lesepreis</span>
                     <span style="display: block; font-size: 1.2em; font-weight: 600; line-height: 1.2em;">Verwaltung</span>
@@ -61,6 +62,22 @@
 <style>
 .exit-link:hover {
     text-decoration: none;
+}
+
+nav.left-panel-navigation img.lesepreis-logo {
+    transform: rotate(90deg) translate(0px, 28px);
+    transition: transform 0.5s ease-in;
+}
+
+@media only screen and (max-width: 1700px) and (max-height: 800px) {
+    nav.left-panel-navigation img.lesepreis-logo {
+        height: 27px;
+        transform: rotate(90deg) translate(0px, 20px);
+    }
+}
+
+nav.left-panel-navigation:hover img.lesepreis-logo {
+    transform: unset;
 }
 </style>
 

@@ -1,7 +1,7 @@
 {
     "name": "lesepreis-app",
     "productName": "Lesepreis Verwaltung",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "author": "Serafim Thaler, David Mairhofer, Elias Walter Ebner",
     "description": "Eine App, basiert auf vue.js und electron.js für die Verwaltung vom Lesepreis in den Oberschulen Fallmerayer",
     "private": true,
