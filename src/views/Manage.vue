@@ -101,23 +101,22 @@ export default {
                 // LEFT JOIN books as b ON sb.book_id = b.id
                 // GROUP BY s.uid 
                 // ORDER BY points DESC;`
-
-                `SELECT SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END) AS points, 
-COUNT(b.id) AS book_count,
-COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count, s.*,
-
-CASE WHEN COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) > 2 THEN TRUE ELSE FALSE END AS passed,
-  COALESCE(
-    CASE 
-      WHEN s.multiplied_book_1 = -1 OR s.multiplied_book_2 = -1 THEN 0 
-      ELSE COALESCE(mb1.points, 0) * COALESCE(mb2.points, 0) 
-    END + SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END), 
-    0
-  ) AS points
+`SELECT 
+    COUNT(b.id) AS book_count,
+    COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) AS passed_count,
+    s.*,
+    CASE WHEN COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) > 2 THEN TRUE ELSE FALSE END AS passed,
+    COALESCE(
+        CASE 
+            WHEN s.multiplied_book_1 = -1 OR s.multiplied_book_2 = -1 THEN 0 
+            ELSE COALESCE(mb1.points, 0) * COALESCE(mb2.points, 0) 
+        END + SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END), 
+        0
+    ) AS points
 
 FROM students AS s
-  LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
-  LEFT JOIN books AS mb2 ON s.multiplied_book_2 = mb2.id
+LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
+LEFT JOIN books AS mb2 ON s.multiplied_book_2 = mb2.id
 LEFT JOIN student_books AS sb ON s.uid = sb.uid
 LEFT JOIN books AS b ON sb.book_id = b.id
 GROUP BY s.uid
@@ -220,6 +219,7 @@ ORDER BY points DESC;`
                 orientation: "portrait",
                 border: "5mm",
             };
+            console.log(this.students);
             const doc = {
                 html: this.StudentsPdfTemplate, // <-- changed, now with 'import'
                 data: {
