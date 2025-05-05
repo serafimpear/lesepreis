@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="bottom-text"><b>UI, Logik:</b> Serafim Thaler, 5AN&nbsp;&nbsp;&nbsp;<b>Logik, Datenbanken:</b> David
-            Mairhofer, 5AT&nbsp;&nbsp;&nbsp;<span style="opacity: 0.5;"><b>Min. Beitr.:</b> Elias Ebner, 5AN</span></div>
+            Mairhofer, 5AT&nbsp;&nbsp;&nbsp;<span style="opacity: 0.5;"><b>Beitr.:</b> Elias Ebner, 5AN</span></div>
         <div class="bottom-line"></div>
     </div>
     <Modal v-show="modalVisible" :title="modalTitle" :subtitle="modalSubtitle" :textCancel="modalButtonTextCancel"
