@@ -42,18 +42,18 @@
         <div class="statistics-section">
             <h1>Statistik</h1>
             <div class="statistics-block">
-                <b>Insgesamt Schüler:</b> {{ this.statistics.totalStudents }}
+                <b>Insgesamt Schüler:</b> <span class="fw-400">{{ this.statistics.totalStudents }}</span>
                 <p class="indented">
-                    Qualifiziert: {{ this.statistics.qualifiedStudents }} <br>
+                    Qualifiziert: <span class="fw-400">{{ this.statistics.qualifiedStudents }}</span> <br>
                 </p>
 
-                <b>Insgesamt Bücher:</b> {{ this.statistics.books }}
+                <b>Insgesamt Bücher:</b> <span class="fw-400">{{ this.statistics.books }}</span>
                 <p class="indented">
-                    Deutsche: {{ this.statistics.germanBooks }} <br>
-                    Italienische: {{ this.statistics.italianBooks }} <br>
-                    Englische: {{ this.statistics.englishBooks }} <br>
-                    Französische: {{ this.statistics.frenchBooks }} <br>
-                    Russische: {{ this.statistics.russianBooks }}
+                    Deutsche: <span class="fw-400">{{ this.statistics.germanBooks }}</span> <br>
+                    Italienische: <span class="fw-400">{{ this.statistics.italianBooks }}</span> <br>
+                    Englische: <span class="fw-400">{{ this.statistics.englishBooks }}</span> <br>
+                    Französische: <span class="fw-400">{{ this.statistics.frenchBooks }}</span> <br>
+                    Russische: <span class="fw-400">{{ this.statistics.russianBooks }}</span>
                 </p>
                 <!--p class="indented">
                     <b>Gelesen:</b> {{ 1 }}
@@ -61,8 +61,8 @@
 
                 <b>Insgesamt haben Teilnehmer:</b>
                 <p class="indented">
-                    {{ this.statistics.readBooks }} Mal Bücher gelesen<br>
-                    {{ this.statistics.multiplied }} Mal multipliziert
+                    <span class="fw-400">{{ this.statistics.readBooks }}</span> Mal Bücher gelesen<br>
+                    <span class="fw-400">{{ this.statistics.multiplied }}</span> Mal multipliziert
                 </p>
             </div>
         </div>
