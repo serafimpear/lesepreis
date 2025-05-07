@@ -64,6 +64,12 @@
                     <span class="fw-400">{{ this.statistics.readBooks }}</span> Mal Bücher gelesen<br>
                     <span class="fw-400">{{ this.statistics.multiplied }}</span> Mal multipliziert
                 </p>
+                
+                <b>Summe der Lose und Punkte:</b>
+                <p class="indented">
+                    <span class="fw-400">{{ this.statistics.totalPointsPassed }}</span> Lose (qualifizierte Schüler)<br>
+                    <span class="fw-400">{{ this.statistics.totalPoints }}</span> Punkte (alle Schüler)
+                </p>
             </div>
         </div>
     </main>
@@ -208,10 +214,10 @@ ORDER BY points DESC;`
         createStudentsLeaderboard: function (pathToSave, count) {
             if (!pathToSave) return;
 
-            let sum = 0;
-            this.students.forEach(student => {
-                sum += student.points;
-            });
+            //let sum = 0;
+            //this.students.forEach(student => {
+            //    sum += student.points;
+            //});
 
             var options = {
                 width: "210mm",
@@ -224,7 +230,8 @@ ORDER BY points DESC;`
                 html: this.StudentsPdfTemplate, // <-- changed, now with 'import'
                 data: {
                     users: this.students,
-                    sum: sum,
+                    sum: this.statistics.totalPoints,
+                    sumQualified: this.statistics.totalPointsPassed,
                     date: (new Date()).toLocaleDateString('de-DE'),
                     year: this.schoolYear,
                     version: "v" + this.version
@@ -345,14 +352,18 @@ ORDER BY points DESC;`
             russianBooks: 0,
             frenchBooks: 0,
             italianBooks: 0,
+            totalPointsPassed: 0,
+            totalPoints: 0,
         }
 
         this.students.forEach((student) => {
             if (student.multiplied_book_1 != -1) {
                 this.statistics.multiplied++;
             }
+            this.statistics.totalPoints += student.points;
             if (student.passed_count >= 3) {
                 this.statistics.qualifiedStudents++;
+                this.statistics.totalPointsPassed += student.points;
             }
             this.statistics.readBooks += student.book_count;
         });

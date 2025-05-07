@@ -81,7 +81,19 @@ export default { data() { return { StudentsPdfTemplate: `
             {{/each}}
             <tr class="footer">
                 <th>
-                    Summe Lose:
+                    Summe Lose (qualifizierter Schüler):
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>
+                    {{sumQualified}}
+                </th>
+            </tr>
+            <tr class="footer">
+                <th>
+                    Punkte insgesamt (von allen Schülern):
                 </th>
                 <th></th>
                 <th></th>
