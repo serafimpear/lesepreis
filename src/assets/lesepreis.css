@@ -561,3 +561,7 @@ div.books-list div.table-row {
 .indented {
     padding-left: 1em;
 }
+
+.fw-400 {
+    font-weight: 400;
+}
