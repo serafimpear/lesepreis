@@ -38,7 +38,7 @@
                 @click="createBooksLeaderboard(saveFile('Rangliste der Bücher speichern', `Rangliste der Bücher ${(new Date()).toLocaleDateString('de-DE')}`))" />
         </div> -->
         </div>
-        <div>&nbsp;</div>
+        <div class="vertical-line">&nbsp;</div>
         <div class="statistics-section">
             <h1>Statistik</h1>
             <div class="statistics-block">
