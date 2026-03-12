@@ -53,7 +53,8 @@
                     Italienische: <span class="fw-400">{{ this.statistics.italianBooks }}</span> <br>
                     Englische: <span class="fw-400">{{ this.statistics.englishBooks }}</span> <br>
                     Französische: <span class="fw-400">{{ this.statistics.frenchBooks }}</span> <br>
-                    Russische: <span class="fw-400">{{ this.statistics.russianBooks }}</span>
+                    Russische: <span class="fw-400">{{ this.statistics.russianBooks }}</span> <br>
+                    Spanische: <span class="fw-400">{{ this.statistics.spanishBooks }}</span>
                 </p>
                 <!--p class="indented">
                     <b>Gelesen:</b> {{ 1 }}
@@ -351,6 +352,7 @@ ORDER BY points DESC;`
             russianBooks: 0,
             frenchBooks: 0,
             italianBooks: 0,
+            spanishBooks: 0,
             totalPointsPassed: 0,
             totalPoints: 0,
         }
@@ -378,6 +380,8 @@ ORDER BY points DESC;`
                 this.statistics.frenchBooks++;
             } else if (book.language.toLowerCase() === 'italienisch') {
                 this.statistics.italianBooks++;
+            } else if (book.language.toLowerCase() === 'spanisch') {
+                this.statistics.spanishBooks++;
             }
         });
     },
