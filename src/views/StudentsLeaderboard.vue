@@ -676,6 +676,24 @@ ORDER BY
             } else {
                 this.readBookWindowVisible = true;
             }
+        },
+
+        cleanupBeforeAppClose: function () {
+            if (this.currentStudent) {
+                const name = this.currentStudent.name.replace(/['"`]/g, '').trim();
+                const surname = this.currentStudent.surname.replace(/['"`]/g, '').trim();
+                const studentClass = this.currentStudent.class.replace(/['"`]/g, '').trim();
+
+                // If all fields are empty, nuke it before the app shuts down
+                if (name === "" && surname === "" && studentClass === "") {
+                    ipcRenderer.sendSync("deleteStudent", this.currentStudent.uid);
+                }
+            }
+        },
+
+        beforeUnmount() {
+            // NEW: Clean up the listener to prevent memory leaks
+            window.removeEventListener('beforeunload', this.cleanupBeforeAppClose);
         }
     },
 
@@ -690,10 +708,10 @@ ORDER BY
             that.updateStudentsRemote();
         });
 
-        // filter students and remove everyone with (this.currentStudent.name == "" || this.currentStudent.surname == "" || this.currentStudent.class == "")
-        this.students = reactive(new Map([...this.students.values()].filter(student => {
-            return (student.name != "" && student.surname != "" && student.class != "")
-        }).map(student => [student.uid, student])));
+        this.students = reactive(new Map([...this.students.values()].map(student => [student.uid, student])));
+
+        // NEW: Listen for the app hard-closing
+        window.addEventListener('beforeunload', this.cleanupBeforeAppClose);
     },
 
     computed: {
