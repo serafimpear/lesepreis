@@ -99,6 +99,7 @@
                     <div class="student-books ui-table" v-if="currentStudent.book_count > 0">
                         <div class="table-row table-header-row">
                             <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
+                            <div class="table-cell"><img src="@/assets/svgs/icon-bingo.svg" class="table-icon"></div>
                             <div class="table-cell">Titel
                                 <SortIcon />
                             </div>
@@ -116,11 +117,15 @@
                             </div>
                         </div>
                         <div class="table-data">
-                            <div class="table-row"
-                                v-for="student_book in studentBooks.get(currentStudent.uid).values()">
+                            <div class="table-row" v-for="student_book in studentBooks.get(currentStudent.uid).values()">
                                 <div v-if="student_book.passed" class="table-cell" title="Prüfung bestanden"><img
-                                        src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
+                                        src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
                                 <div v-else class="table-cell" title="Prüfung NICHT bestanden"><img
+                                        src="@/assets/svgs/icon-no-red.svg" class="table-icon">
+                                </div>
+                                <div v-if="student_book.bingo" class="table-cell" title="Für Bingo verwendet"><img
+                                        src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
+                                <div v-else class="table-cell" title="Für Bingo NICHT verwendet"><img
                                         src="@/assets/svgs/icon-no.svg" class="table-icon">
                                 </div>
                                 <div class="table-cell">
@@ -150,7 +155,7 @@
                     <div class="multiplication-header">
                         <InputFieldTrueFalse text="Multiplikation" value="durchgeführt" img="true" />
                         <InputField text="Punkte"
-                            :value="books.get(currentStudent.multiplied_book_1).points * books.get(currentStudent.multiplied_book_2).points"
+                            :value="books.get(currentStudent.multiplied_book_1).points * 3"
                             disabled="disabled" number="number" />
                         <InputField text="Datum"
                             :value="`${new Date(currentStudent.date_multiplied).toLocaleDateString('de-DE')}`"
@@ -174,7 +179,7 @@
                         </div>
                         <div class="table-data">
                             <div class="table-row"
-                                v-for="book_id in [currentStudent.multiplied_book_1, currentStudent.multiplied_book_2]">
+                                v-for="book_id in [currentStudent.multiplied_book_1]">
                                 <div class="table-cell">
                                     <div class="table-cell-centered-content">{{ books.get(
                                         book_id).title }}
@@ -352,15 +357,14 @@ SELECT
   CASE WHEN COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) > 2 THEN TRUE ELSE FALSE END AS passed,
   COALESCE(
     CASE 
-      WHEN s.multiplied_book_1 = -1 OR s.multiplied_book_2 = -1 THEN 0 
-      ELSE COALESCE(mb1.points, 0) * COALESCE(mb2.points, 0) 
+      WHEN s.multiplied_book_1 = -1 THEN 0 
+      ELSE COALESCE(mb1.points, 0) * 3
     END + SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END), 
     0
   ) AS total_points
 FROM 
   students AS s
   LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
-  LEFT JOIN books AS mb2 ON s.multiplied_book_2 = mb2.id
   LEFT JOIN student_books AS sb ON s.uid = sb.uid
   LEFT JOIN books AS b ON sb.book_id = b.id
 GROUP BY 
@@ -443,7 +447,6 @@ ORDER BY
                 failed_count: 0,
                 book_count: 0,
                 multiplied_book_1: -1,
-                multiplied_book_2: -1,
                 date_multiplied: 0,
             };
             const csuid = ipcRenderer.sendSync("upsertStudent", JSON.stringify(this.currentStudent));
@@ -490,7 +493,7 @@ ORDER BY
         },
 
         addBookToStudent: function ([bookID, passed, date_added]) {
-            this.readBookWindowVisible = false;
+            // this.readBookWindowVisible = false;
             this.studentBooks.get(this.currentStudent.uid).set(bookID, { uid: this.currentStudent.uid, book_id: bookID, passed: passed, date_added: date_added })
             this.currentStudent.book_count++;
             if (passed) {
@@ -506,8 +509,8 @@ ORDER BY
         },
 
         removeBookFromStudent: function (bookID) {
-            this.readBookWindowVisible = false;
-            if (bookID === this.currentStudent.multiplied_book_1 || bookID === this.currentStudent.multiplied_book_2) {
+            // this.readBookWindowVisible = false;
+            if (bookID === this.currentStudent.multiplied_book_1) {
                 this.ask({
                     type: 'alert',
                     subtitle: 'Buch entfernen Fehlgeschlagen',
@@ -535,18 +538,19 @@ ORDER BY
                 this.studentBooks.get(this.currentStudent.uid).delete(bookID);
                 ipcRenderer.sendSync('DBQuery', `DELETE FROM student_books WHERE uid = ${this.currentStudent.uid} AND book_id = ${bookID};`);
             }, () => {
-                this.readBookWindowVisible = true;
+                // this.readBookWindowVisible = true;
             });
         },
 
-        updateBookFromStudent: function ([bookToChangeID, passed]) {
-            this.readBookWindowVisible = false;
-            this.readBookWindowVisible = false;
-            if (bookToChangeID === this.currentStudent.multiplied_book_1 || bookToChangeID === this.currentStudent.multiplied_book_2) {
+        updateBookFromStudent: function ([bookToChangeID, passed, bingo]) {
+            // this.readBookWindowVisible = false;
+            // this.readBookWindowVisible = false;
+            console.log("PASSEDDDDDDDDDD:   " + passed);
+            if ((bookToChangeID === this.currentStudent.multiplied_book_1) && !passed) {
                 this.ask({
                     type: 'alert',
-                    subtitle: 'Änderung des Bestanden-Status Fehlgeschlagen',
-                    content: `Der Schüler verwendet dieses Buch zum Multiplizieren!`,
+                    subtitle: 'Änderung Fehlgeschlagen',
+                    content: `Änderung des Bestanden-Status nicht möglich. Der Schüler verwendet dieses Buch zum Multiplizieren!`,
                 }, () => { }, () => { });
                 return;
             }
@@ -562,18 +566,18 @@ ORDER BY
                 this.currentStudent.total_points -= this.books.get(bookToChangeID).points;
             }
             this.studentBooks.get(this.currentStudent.uid).get(bookToChangeID).passed = passed;
-            ipcRenderer.sendSync('DBQuery', `UPDATE student_books SET passed = ${passed} WHERE uid = ${this.currentStudent.uid} AND book_id = ${bookToChangeID};`);
+            this.studentBooks.get(this.currentStudent.uid).get(bookToChangeID).bingo = bingo;
+            ipcRenderer.sendSync('DBQuery', `UPDATE student_books SET passed = ${passed}, bingo = ${bingo} WHERE uid = ${this.currentStudent.uid} AND book_id = ${bookToChangeID};`);
             // this.currentStudentBeforeEdit = this.deepClone(this.currentStudent);
         },
 
-        multiplyBooks: function ([book1ID, book2ID]) {
+        multiplyBooks: function ([book1ID]) {
             this.multiplyWindowVisible = false;
             if (this.currentStudent.multiplied_book_1 !== -1) {
-                this.currentStudent.total_points -= this.books.get(this.currentStudent.multiplied_book_1).points * this.books.get(this.currentStudent.multiplied_book_2).points;
+                this.currentStudent.total_points -= this.books.get(this.currentStudent.multiplied_book_1).points * 3;
             }
             this.currentStudent.multiplied_book_1 = book1ID;
-            this.currentStudent.multiplied_book_2 = book2ID;
-            this.currentStudent.total_points += this.books.get(this.currentStudent.multiplied_book_1).points * this.books.get(this.currentStudent.multiplied_book_2).points;
+            this.currentStudent.total_points += this.books.get(this.currentStudent.multiplied_book_1).points * 3;
 
             this.currentStudent.date_multiplied = Date.now();
             // this.saveStudent(false); // not needed because of watcher
@@ -584,9 +588,8 @@ ORDER BY
             if (this.currentStudent.multiplied_book_1 === -1) {
                 return;
             }
-            this.currentStudent.total_points -= this.books.get(this.currentStudent.multiplied_book_1).points * this.books.get(this.currentStudent.multiplied_book_2).points;
+            this.currentStudent.total_points -= this.books.get(this.currentStudent.multiplied_book_1).points * 3;
             this.currentStudent.multiplied_book_1 = -1;
-            this.currentStudent.multiplied_book_2 = -1;
             // this.saveStudent(false); // not needed because of watcher
         },
 
@@ -619,11 +622,11 @@ ORDER BY
         },
 
         multiplyIfPossible: function () {
-            if (this.currentStudent.book_count < 2) {
+            if (this.currentStudent.book_count < 1) {
                 this.ask({
                     type: 'alert',
                     subtitle: 'Sie können nicht multiplizieren',
-                    content: `Der Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” hat zu wenige Bücher gelesen (es müssen mindestens 2 gelesene und bestätigte Bücher sein)`,
+                    content: `Der Schüler “${this.currentStudent.name} ${this.currentStudent.surname}” hat zu wenige Bücher gelesen (es müssen mindestens 1 gelesenes und bestätigtes Buch in einer Fremdsprache sein)`,
                     okButton: 'Ja'
                 }, () => {
                     passed = true;
@@ -662,7 +665,7 @@ ORDER BY
             return isequal
         },
         showReadBookWindow: function () {
-            if (this.currentStudent.name == "") {
+            if (this.currentStudent.name == "" || this.currentStudent.surname == "" || this.currentStudent.class == "") {
                 this.ask({
                     type: 'alert',
                     subtitle: 'Bücher verwalten',

@@ -40,6 +40,7 @@
                 <div class="books-list-add-read ui-table" v-if="currentView == 'read_books'">
                     <div class="table-row table-header-row">
                         <div class="table-cell"><img src="@/assets/svgs/icon-1.svg" class="table-icon"></div>
+                        <div class="table-cell"><img src="@/assets/svgs/icon-bingo.svg" class="table-icon"></div>
                         <div class="table-cell">Titel
                             <SortIcon />
                         </div>
@@ -59,10 +60,15 @@
                     <div class="table-data">
                         <template v-for="student_book in studentBooks.values()">
                             <div :class="{ 'table-row': true, 'highlighted': selectedBook?.id == student_book.book_id }"
-                                @click="if (selectedBook?.id == student_book.book_id) { selectedBook = null; } else { selectedBook = books.get(student_book.book_id); } bookPassed = undefined ">
+                                @click="if (selectedBook?.id == student_book.book_id) { selectedBook = null; bookPassed = undefined; bookBingo = undefined; } else { selectedBook = books.get(student_book.book_id); bookPassed = Boolean(student_book.passed); bookBingo = Boolean(student_book.bingo); } console.log('YOU:  ', bookPassed, bookBingo, typeof bookPassed,) ">
                                 <div v-if="student_book.passed" class="table-cell" title="Prüfung bestanden"><img
-                                        src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
+                                        src="@/assets/svgs/icon-yes-green.svg" class="table-icon"></div>
                                 <div v-else class="table-cell" title="Prüfung NICHT bestanden"><img
+                                        src="@/assets/svgs/icon-no-red.svg" class="table-icon">
+                                </div>
+                                <div v-if="student_book.bingo" class="table-cell" title="Für Bingo verwendet"><img
+                                        src="@/assets/svgs/icon-yes.svg" class="table-icon"></div>
+                                <div v-else class="table-cell" title="Für Bingo NICHT verwendet"><img
                                         src="@/assets/svgs/icon-no.svg" class="table-icon">
                                 </div>
                                 <div class="table-cell">
@@ -86,19 +92,48 @@
                     </div>
                 </div>
                 <div class="addbookwindow-buttons">
-                    <div class="addbook-window-passed-radio-box"
-                        v-if="(selectedBook !== null) && (currentView == 'not_read_books')">
-                        <div class="addbook-window-passed-radio-box-title">Prüfung</div>
-                        <RadioInput inputid="radio_aw_1" text="bestanden" color="green" @click="bookPassed = true" />
-                        <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false" />
-                    </div>
-                    <div class="addbook-window-passed-radio-box"
-                        v-if="(selectedBook !== null) && (currentView == 'read_books')">
-                        <div class="addbook-window-passed-radio-box-title">Prüfung</div>
-                        <RadioInput inputid="radio_aw_1" text="bestanden" color="green" @click="bookPassed = true"
-                            :checked="studentBooks.get(selectedBook.id).passed" />
-                        <RadioInput inputid="radio_aw_2" text="nicht bestanden" color="red" @click="bookPassed = false"
-                            :checked="!studentBooks.get(selectedBook.id).passed" />
+                    <div>
+                        <!-- <div class="addbook-window-passed-radio-box"
+                            v-if="(selectedBook !== null) && (currentView == 'not_read_books')">
+                            <div class="addbook-window-passed-radio-box-title">Prüfung</div>
+                            <RadioInput inputid="radio_aw_1" name="radio_aw" text="bestanden" color="green" @click="bookPassed = true" />
+                            <RadioInput inputid="radio_aw_2" name="radio_aw" text="nicht bestanden" color="red" @click="bookPassed = false" />
+                        </div>
+                        <div class="addbook-window-passed-radio-box"
+                            v-if="(selectedBook !== null) && (currentView == 'read_books')">
+                            <div class="addbook-window-passed-radio-box-title">Prüfung</div>
+                            <RadioInput inputid="radio_aw_1" name="radio_aw" text="bestanden" color="green" @click="bookPassed = true"
+                                :checked="studentBooks.get(selectedBook.id).passed" />
+                            <RadioInput inputid="radio_aw_2" name="radio_aw" text="nicht bestanden" color="red" @click="bookPassed = false"
+                                :checked="!studentBooks.get(selectedBook.id).passed" />
+                        </div>
+                        <div class="addbook-window-passed-radio-box"
+                            v-if="(selectedBook !== null) && (currentView == 'read_books')">
+                            <div class="addbook-window-passed-radio-box-title">Bingo</div>
+                            <RadioInput inputid="radio_aw_bingo_1" name="radio_aw_bingo" text="verwendet" color="green" @click="bookBingo = true"
+                                :checked="studentBooks.get(selectedBook.id).bingo" />
+                            <RadioInput inputid="radio_aw_bingo_2" name="radio_aw_bingo" text="nicht verwendet" color="red" @click="bookBingo = false"
+                                :checked="!studentBooks.get(selectedBook.id).bingo" />
+                        </div> -->
+                        <div class="addbook-window-passed-radio-box" v-if="(selectedBook !== null) && (currentView == 'not_read_books')">
+                            <div class="addbook-window-passed-radio-box-title">Prüfung</div>
+                            <RadioInput inputid="radio_aw_unread_1" name="radio_aw_unread" text="bestanden" color="green" @click="bookPassed = true" :checked="bookPassed === true" />
+                            <RadioInput inputid="radio_aw_unread_2" name="radio_aw_unread" text="nicht bestanden" color="red" @click="bookPassed = false" :checked="bookPassed === false" />
+                        </div>
+
+                        <div class="addbook-window-passed-radio-box" v-if="(selectedBook !== null) && (currentView == 'read_books')">
+                            <div class="addbook-window-passed-radio-box-title">Prüfung</div>
+                            <RadioInput inputid="radio_aw_read_1" name="radio_aw_read" text="bestanden" color="green" @click="bookPassed = true" :checked="bookPassed === true" />
+                            <RadioInput inputid="radio_aw_read_2" name="radio_aw_read" text="nicht bestanden" color="red" @click="bookPassed = false; bookBingo = false" :checked="bookPassed === false" />                    </div>
+
+                        <div class="addbook-window-passed-radio-box" 
+                            v-if="(selectedBook !== null) && (currentView == 'read_books')"
+                            :style="bookPassed === false ? 'opacity: 0.5; pointer-events: none;' : ''">
+                            
+                            <div class="addbook-window-passed-radio-box-title">Bingo&nbsp;</div>
+                            <RadioInput inputid="radio_aw_bingo_1" name="radio_aw_bingo" text="verwendet" color="green" @click="bookBingo = true" :checked="bookBingo === true" />
+                            <RadioInput inputid="radio_aw_bingo_2" name="radio_aw_bingo" text="nicht verwendet" color="red" @click="bookBingo = false" :checked="bookBingo === false" />
+                        </div>
                     </div>
                     <DateInputField class="addbook-window-date-picker" v-if="selectedBook !== null && currentView == 'not_read_books'" v-model="date_added" text="Datum" />
                     <!-- <Button text="Abbrechen" @click="close(false)" /> -->
@@ -107,8 +142,14 @@
                         text="Hinzufügen" @click="selectBook" color="green" />
                     <Button v-if="selectedBook !== null && currentView == 'read_books'" text="Entfernen"
                         @click="removeBook" color="red" tclass="remove-button" />
-                    <Button v-if="(selectedBook !== null && currentView == 'read_books') && ((selectedBook.passed != bookPassed) && typeof bookPassed == 'boolean')"
-                        text="Änderungen speichern" @click="updateBook" color="green" />
+                    <!-- <Button v-if="(selectedBook !== null && currentView == 'read_books') && ((Boolean(selectedBook.passed) != bookPassed || Boolean(selectedBook.bingo) != bookBingo) && (typeof bookPassed == 'boolean' && typeof bookBingo == 'boolean'))"
+                        text="Änderungen speichern" @click="updateBook" color="green" /> -->
+                    <Button 
+                        v-if="(selectedBook !== null && currentView == 'read_books') && ((Boolean(studentBooks.get(selectedBook.id).passed) != bookPassed || Boolean(studentBooks.get(selectedBook.id).bingo) != bookBingo) && (typeof bookPassed == 'boolean' && typeof bookBingo == 'boolean'))"
+                        text="Änderungen speichern" 
+                        @click="updateBook" 
+                        color="green" 
+                    />
                 </div>
             </div>
         </div>
@@ -128,6 +169,7 @@ export default {
         return {
             searchBook: '',
             bookPassed: undefined,
+            bookBingo: undefined,
             selectedBook: null,
             currentView: 'not_read_books',
             searchBookFromNotRead: '',
@@ -147,13 +189,22 @@ export default {
     props: ['books', 'studentBooks'],
 
     methods: {
+        // reset() {
+        //     this.bookPassed = undefined;
+        //     this.bookBingo = undefined;
+        //     this.selectedBook = null
+        //     try {
+        //     document.getElementById("radio_aw_1").checked = false
+        //     document.getElementById("radio_aw_2").checked = false
+        //     document.getElementById("radio_aw_bingo_1").checked = false
+        //     document.getElementById("radio_aw_bingo_2").checked = false
+        //     } catch (e) {}
+        // },
+
         reset() {
             this.bookPassed = undefined;
-            this.selectedBook = null
-            try {
-            document.getElementById("radio_aw_1").checked = false
-            document.getElementById("radio_aw_2").checked = false
-            } catch (e) {}
+            this.bookBingo = undefined;
+            this.selectedBook = null;
         },
 
         close(result) {
@@ -167,7 +218,7 @@ export default {
         },
 
         updateBook() {
-            this.$emit("updateBook", [this.selectedBook.id, this.bookPassed]);
+            this.$emit("updateBook", [this.selectedBook.id, this.bookPassed, this.bookBingo]);
             this.reset();
         },
 
@@ -290,7 +341,7 @@ export default {
 }
 
 .ui-table.books-list-add-read .table-row {
-    grid-template-columns: 26px 1fr 1fr 5em 5em 3em;
+    grid-template-columns: 26px 26px 1fr 1fr 5em 5em 3em;
 }
 
 .addbook-window-passed-radio-box-title {

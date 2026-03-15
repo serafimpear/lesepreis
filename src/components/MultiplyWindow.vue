@@ -3,7 +3,9 @@
         <div class="multiplywindow-background">
             <div class="multiplywindow-window">
                 <div class="multiplywindow-title">Bücher multiplizieren
-                    <div class="italic-small">Wählen Sie 2 Bücher aus: ein deutsches und eines in einer anderen Sprache
+                    <div class="italic-small">
+                        <!-- Wählen Sie 2 Bücher aus: ein deutsches und eines in einer anderen Sprache -->
+                            Wählen Sie ein Buch in einer Fremdsprache
                     </div>
                 </div>
                 <div class="books-list ui-table">
@@ -22,7 +24,7 @@
                         </div>
                     </div>
                     <div class="table-data">
-                        <template v-for="cbook in studentBooks.values()">
+                        <template v-for="cbook in [...studentBooks.values()].filter(cb => books.get(cb.book_id).language.toUpperCase() !== 'DEUTSCH')">
                             <div :class="{ 'table-row': true, 'highlighted': selectedBooks.includes(cbook.book_id) }"
                                 v-if="cbook.passed" @click="selectBook(cbook)">
                                 <div class="table-cell">{{ books.get(cbook.book_id).title }}</div>
@@ -34,11 +36,11 @@
                     </div>
                 </div>
                 <div class="multiplywindow-buttons">
-                    <div v-if="multiplicationPoints" class="multiplication-points-display">Punkte beim Multiplizieren:&nbsp;
+                    <div v-if="multiplicationPoints" class="multiplication-points-display">Punkte beim Multiplizieren (&#215;3):&nbsp;
                         <span class="font-weight: 300;">{{ multiplicationPoints }}</span>
                     </div>
                     <Button text="Abbrechen" @click="close(false)" />
-                    <Button v-if="selectedBooks.length == 2" text="Multiplizieren"
+                    <Button v-if="selectedBooks.length == 1" text="Multiplizieren"
                         @click="this.$emit('multiplyBooks', selectedBooks);" />
                 </div>
             </div>
@@ -74,20 +76,19 @@ export default {
         selectBook: function (cbook) {
             if (!this.selectedBooks.includes(cbook.book_id)) {
 
-                if (this.selectedBooks.length < 2) {
+                if (this.selectedBooks.length < 1) {
                     let book_content = this.books.get(cbook.book_id);
-                    if (this.selectedBooks.length == 0 || ((book_content.language.toUpperCase() == "DEUTSCH") !== ((this.books.get(this.selectedBooks[0])).language.toUpperCase() == "DEUTSCH"))) {
+                    if (book_content.language.toUpperCase() != "DEUTSCH") {
                         this.selectedBooks.push(cbook.book_id);
                     }
-                    // if it is possible to select (if not (e.g. 2nd book is german), do not highlight it):
                 }
             } else {
                 // if already selected, remove the highlight
                 this.selectedBooks.splice(this.selectedBooks.indexOf(cbook.book_id), 1);
             }
-            if (this.selectedBooks.length == 2) {
+            if (this.selectedBooks.length == 1) {
                 // calculate points
-                this.multiplicationPoints = this.books.get(this.selectedBooks[0]).points * this.books.get(this.selectedBooks[1]).points;
+                this.multiplicationPoints = this.books.get(this.selectedBooks[0]).points * 3;
             } else {
                 this.multiplicationPoints = 0;
             }

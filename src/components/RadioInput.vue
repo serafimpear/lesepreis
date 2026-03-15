@@ -1,6 +1,6 @@
 <template>
     <label :class="['container', color + '-container']">{{ text }}
-        <input :id=inputid type="radio" name="radio" :checked=checked>
+        <input :id=inputid type="radio" :name=name :checked=checked>
         <span :class="['checkmark', color + '-checkmark']"></span>
     </label>
 </template>
@@ -13,7 +13,7 @@ export default {
         }
     },
 
-    props: ['text', 'color', 'inputid', 'checked'],
+    props: ['text', 'color', 'inputid', 'checked', 'name'],
 }
 </script>
 

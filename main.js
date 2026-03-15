@@ -223,7 +223,7 @@ function createWindow() {
                         if (student.multiplied_book_1 < 0) {
                             student.multiplied_books = [-1, -1];
                         } else {
-                            student.multiplied_books = [student.multiplied_book_1, student.multiplied_book_2];
+                            student.multiplied_books = [student.multiplied_book_1];
                         }
                         await databaseRunParams(database, `INSERT INTO students (
                                     uid,
@@ -231,15 +231,13 @@ function createWindow() {
                                     surname, 
                                     class, 
                                     multiplied_book_1, 
-                                    multiplied_book_2, 
                                     date_multiplied
-                                    ) VALUES (?, ?, ?, ?, ?, ?, ?)`, [
+                                    ) VALUES (?, ?, ?, ?, ?, ?)`, [
                             student.uid,
                             student.name,
                             student.surname,
                             student.class,
                             student.multiplied_books[0],
-                            student.multiplied_books[1],
                             student.date_multiplied
                         ]);
                         let books = JSON.parse(student.books);
@@ -253,6 +251,19 @@ function createWindow() {
                         };
                     };
                 }
+                // check if 'bingo' column exists, add it if it doesnt
+                let hasBingoColumn = await databaseGet(database, "SELECT 1 FROM pragma_table_info('student_books') WHERE name='bingo'");
+                
+                if (!hasBingoColumn) {
+                    if (!fs.existsSync(userDataPath + '/backup')) {
+                        fs.mkdirSync(userDataPath + '/backup');
+                    }
+
+                    fs.copyFileSync(userDataPath + `/schuljahr_${dataReceived}.db`, userDataPath + `/backup/schuljahr_${dataReceived}_${Date.now()}.db`);
+                    
+                    await databaseRun(database, `ALTER TABLE student_books ADD COLUMN bingo BOOLEAN DEFAULT 0;`);
+                }
+
                 event.returnValue = true;
             } catch (err) {
                 console.error('&&&&&&&&&&&&&&&&&', err);
@@ -299,14 +310,12 @@ function createWindow() {
                     `surname, ` +
                     `class, ` +
                     `multiplied_book_1, ` +
-                    `multiplied_book_2, ` +
                     `date_multiplied` +
-                    `) VALUES (?, ?, ?, ?, ?, ?)`, [
+                    `) VALUES (?, ?, ?, ?, ?)`, [
                         data.name,
                         data.surname,
                         data.class,
                         data.multiplied_book_1,
-                        data.multiplied_book_2,
                         data.date_multiplied
                     ]);
 
@@ -351,14 +360,12 @@ function createWindow() {
                 `surname = ?, ` +
                 `class = ?, ` +
                 `multiplied_book_1 = ?, ` +
-                `multiplied_book_2 = ?, ` +
                 `date_multiplied = ?` +
                 ` WHERE uid = ?`, [
                     data.name,
                     data.surname,
                     data.class,
                     data.multiplied_book_1,
-                    data.multiplied_book_2,
                     data.date_multiplied,
                     data.uid
                 ])
@@ -796,7 +803,6 @@ async function initializeDB() {
         "surname TEXT, " +
         "class TEXT, " +
         "multiplied_book_1 INTEGER, " +
-        "multiplied_book_2 INTEGER, " +
         "date_multiplied INTEGER DEFAULT CURRENT_TIMESTAMP)");
     await databaseRun(database, "CREATE TABLE IF NOT EXISTS books (" +
         "id INTEGER PRIMARY KEY, " +
