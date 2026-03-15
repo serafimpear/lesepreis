@@ -3,7 +3,14 @@
 Eine App, basiert auf electron.js & vue.js für die Verwaltung vom Lesepreis in den Oberschulen J.Ph.Fallmerayer
 > ![image](https://github.com/serafimpear/lesepreis/assets/67895914/b809901f-52e3-4474-8db1-5f460b56c689)
 
-# Update: Release 2.0.0!
+# To-Do/Wishlist 
+* **Generation von einem PDF mit ungedruckten Losen (d.h. zusätlich abspeichern wie viel Lose bereits gedruckt/wie viele fehlen), anstatt manuell erstellen**
+* Setting zum Hochladen von Background-Image und Logo (anstatt hardgecoded)
+
+# Update: Release 3.0.0
+Spielregeländerungen: Multiplikation -> x3
+
+# Release 2.0.0!
 ![image](https://github.com/user-attachments/assets/532a6108-e3fc-4854-a785-b5990ad576ae)
 
 
