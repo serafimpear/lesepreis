@@ -76,7 +76,7 @@ export default {
     right: 0;
     bottom: 0;
     background: #0003;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     justify-content: center;
     align-items: center;

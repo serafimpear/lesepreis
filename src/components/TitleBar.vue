@@ -85,8 +85,8 @@ export default {
 
     methods: {
         truncateSchoolYear(schoolYear) {
-            if (schoolYear.length > 7) {
-                return schoolYear.substring(0, 4) + '...';
+            if (schoolYear.length > 7+3) {
+                return schoolYear.substring(0, 4+3) + '...';
             }
             return schoolYear;
         }
@@ -151,7 +151,7 @@ div#app-title {
     user-select: none;
     text-align: center;
     position: fixed;
-    left: calc(50% - 115px);
+    left: calc(50% - 125px);
 }
 
 div#titleBar button {

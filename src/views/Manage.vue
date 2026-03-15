@@ -5,8 +5,8 @@
             <!-- <div style="font-size: 16px; font-style: normal; font-weight: 300;">Hier können Sie Daten vom
                 Programm verwalten, z.B. Ranglisten exportieren</div><br> -->
             <div class="ui-infobox">
-                <div style="font-size: 16px;"><b>Hinweis:</b> die Rangliste wird als HTML-Datei gespeichert.<br>
-                    <b>In Zukunft wird diese Funktion durch einen PDF-Export ersetzt</b>
+                <div style="font-size: 16px;"><b>Hinweis:</b> die Rangliste wird als HTML-Datei gespeichert.
+                    <!-- <br><b>In Zukunft wird diese Funktion durch einen PDF-Export ersetzt</b> -->
                 </div>
             </div>
             <div class="text-button">
@@ -115,15 +115,14 @@ export default {
     CASE WHEN COUNT(CASE WHEN sb.passed = true THEN sb.book_id END) > 2 THEN TRUE ELSE FALSE END AS passed,
     COALESCE(
         CASE 
-            WHEN s.multiplied_book_1 = -1 OR s.multiplied_book_2 = -1 THEN 0 
-            ELSE COALESCE(mb1.points, 0) * COALESCE(mb2.points, 0) 
+            WHEN s.multiplied_book_1 = -1 THEN 0 
+            ELSE COALESCE(mb1.points, 0) * 3
         END + SUM(CASE WHEN sb.passed = true THEN COALESCE(b.points, 0) ELSE 0 END), 
         0
     ) AS points
 
 FROM students AS s
 LEFT JOIN books AS mb1 ON s.multiplied_book_1 = mb1.id
-LEFT JOIN books AS mb2 ON s.multiplied_book_2 = mb2.id
 LEFT JOIN student_books AS sb ON s.uid = sb.uid
 LEFT JOIN books AS b ON sb.book_id = b.id
 GROUP BY s.uid

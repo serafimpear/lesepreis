@@ -4,10 +4,10 @@
             <h1>Einstellungen</h1>
             <div class="ui-infobox">
                 <div style="font-size: 16px;"><b>Achtung:</b>
-                    sollte das Programm die Bücher nach dem ISBN-Code nicht automatisch finden, muss höchstwahrscheinlich der Google API Key erneuert oder ersetzt werden. Bitte wenden Sie sich an einen Informatik-Lehrer, um den API Key zu erneuern.
+                    sollte das Programm die Bücher nach dem ISBN-Code nicht automatisch finden, muss höchstwahrscheinlich der Google Books API Key erneuert oder ersetzt werden. Bitte wenden Sie sich an einen Informatik-Lehrer, um den API Key zu erneuern.
                 </div>
             </div>
-            <InputField class="apikeyinput" v-model="googleAPIKey" text="Google API Key"
+            <InputField class="apikeyinput" v-model="googleAPIKey" text="Google Books API Key"
                         :value="googleAPIKey" />
             <Button style="margin-left:auto;margin-top:10px" type="yes" text="Speichern" color="green" @click="setAPIKey()" />
         </div>
